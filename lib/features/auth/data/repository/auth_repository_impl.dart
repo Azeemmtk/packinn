@@ -4,6 +4,7 @@ import '../../../../core/error/failures.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repository/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
+import '../model/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -109,6 +110,44 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(AuthFailure(e.message));
     } catch (e) {
       return Left(AuthFailure('OTP verification failed: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> saveUserToFirestore(UserEntity user) async {
+    try {
+      final userModel = UserModel.fromEntity(user);
+      await remoteDataSource.saveUserToFirestore(userModel);
+      return const Right(null);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure('Failed to save user: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity?>> getUserFromFirestore(String uid) async {
+    try {
+      final user = await remoteDataSource.getUserFromFirestore(uid);
+      return Right(user);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure('Failed to get user: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> updateUserProfile(UserEntity user) async {
+    try {
+      final userModel = UserModel.fromEntity(user);
+      final updatedUser = await remoteDataSource.updateUserInFirestore(userModel);
+      return Right(updatedUser);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure('Failed to update user: ${e.toString()}'));
     }
   }
 }

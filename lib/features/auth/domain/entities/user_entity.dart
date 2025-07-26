@@ -6,6 +6,12 @@ class UserEntity extends Equatable {
   final String? displayName;
   final String? photoURL;
   final bool emailVerified;
+  final String? name;
+  final String? phone;
+  final int? age;
+  final String? address;
+  final String role;
+  final String? profileImageUrl;
 
   const UserEntity({
     required this.uid,
@@ -13,8 +19,54 @@ class UserEntity extends Equatable {
     this.displayName,
     this.photoURL,
     this.emailVerified = false,
+    this.name,
+    this.phone,
+    this.age,
+    this.address,
+    this.role = 'user', // Default role for this app
+    this.profileImageUrl,
   });
 
   @override
-  List<Object?> get props => [uid, email, displayName, photoURL, emailVerified];
+  List<Object?> get props => [
+    uid,
+    email,
+    displayName,
+    photoURL,
+    emailVerified,
+    name,
+    phone,
+    age,
+    address,
+    role,
+    profileImageUrl,
+  ];
+
+  UserEntity copyWith({
+    String? uid,
+    String? email,
+    String? displayName,
+    String? photoURL,
+    bool? emailVerified,
+    String? name,
+    String? phone,
+    int? age,
+    String? address,
+    String? role,
+    String? profileImageUrl,
+  }) {
+    return UserEntity(
+      uid: uid ?? this.uid,
+      email: email ?? this.email,
+      displayName: displayName ?? this.displayName,
+      photoURL: photoURL ?? this.photoURL,
+      emailVerified: emailVerified ?? this.emailVerified,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      age: age ?? this.age,
+      address: address ?? this.address,
+      role: role ?? this.role,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+    );
+  }
 }

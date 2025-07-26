@@ -11,4 +11,9 @@ abstract class AuthRepository {
   Future<Either<Failure, bool>> isUserSignedIn();
   Future<Either<Failure, void>> sendPasswordResetEmail(String email);
   Future<Either<Failure, void>> verifyOTP(String otp);
+
+  // New methods for Firestore operations
+  Future<Either<Failure, void>> saveUserToFirestore(UserEntity user);
+  Future<Either<Failure, UserEntity?>> getUserFromFirestore(String uid);
+  Future<Either<Failure, UserEntity>> updateUserProfile(UserEntity user);
 }

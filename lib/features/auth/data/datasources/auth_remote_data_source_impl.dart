@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../../../core/error/exceptions.dart';
@@ -7,10 +8,12 @@ import 'auth_remote_data_source.dart';
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth firebaseAuth;
   final GoogleSignIn googleSignIn;
+  final FirebaseFirestore firestore;
 
   AuthRemoteDataSourceImpl({
     required this.firebaseAuth,
     required this.googleSignIn,
+    required this.firestore,
   });
 
   @override
@@ -34,13 +37,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const AuthException('Failed to sign in with Google');
       }
 
-      return UserModel(
+      // Create user model from Google Sign-In
+      final userModel = UserModel.fromGoogleSignIn(
         uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
+        email: user.email!,
+        displayName: user.displayName ?? '',
         photoURL: user.photoURL,
         emailVerified: user.emailVerified,
       );
+
+      // Check if user exists in Firestore
+      final existingUser = await getUserFromFirestore(user.uid);
+
+      if (existingUser == null) {
+        // New user - save to Firestore with empty additional fields
+        await saveUserToFirestore(userModel);
+        return userModel;
+      } else {
+        // Existing user - return from Firestore (has complete profile)
+        return existingUser;
+      }
     } on FirebaseAuthException catch (e) {
       throw AuthException(e.message ?? 'Google sign-in failed');
     } catch (e) {
@@ -61,13 +77,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const AuthException('Failed to sign in with email and password');
       }
 
-      return UserModel(
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        emailVerified: user.emailVerified,
-      );
+      // Get user from Firestore
+      final userFromFirestore = await getUserFromFirestore(user.uid);
+
+      if (userFromFirestore != null) {
+        return userFromFirestore;
+      } else {
+        // If not in Firestore, create and save
+        final userModel = UserModel(
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          emailVerified: user.emailVerified,
+          role: 'user',
+        );
+        await saveUserToFirestore(userModel);
+        return userModel;
+      }
     } on FirebaseAuthException catch (e) {
       throw AuthException(_getAuthErrorMessage(e.code));
     } catch (e) {
@@ -88,13 +115,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const AuthException('Failed to create user account');
       }
 
-      return UserModel(
+      // Create user model with empty additional fields
+      final userModel = UserModel(
         uid: user.uid,
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
         emailVerified: user.emailVerified,
+        role: 'user', // Set role as 'user' for PackInn app
       );
+
+      // Save to Firestore
+      await saveUserToFirestore(userModel);
+
+      return userModel;
     } on FirebaseAuthException catch (e) {
       throw AuthException(_getAuthErrorMessage(e.code));
     } catch (e) {
@@ -120,12 +154,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final User? user = firebaseAuth.currentUser;
       if (user == null) return null;
 
-      return UserModel(
+      // Get complete user data from Firestore
+      final userFromFirestore = await getUserFromFirestore(user.uid);
+
+      return userFromFirestore ?? UserModel(
         uid: user.uid,
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
         emailVerified: user.emailVerified,
+        role: 'user',
       );
     } catch (e) {
       throw AuthException('Failed to get current user: ${e.toString()}');
@@ -155,11 +193,54 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> verifyOTP(String otp) async {
     try {
-      // Implement OTP verification logic based on your requirements
-      // This is a placeholder implementation
       throw const AuthException('OTP verification not implemented yet');
     } catch (e) {
       throw AuthException('OTP verification failed: ${e.toString()}');
+    }
+  }
+
+  // ✅ ADD THESE MISSING FIRESTORE METHODS:
+
+  @override
+  Future<void> saveUserToFirestore(UserModel user) async {
+    try {
+      await firestore
+          .collection('users')
+          .doc(user.uid)
+          .set(user.toFirestore());
+    } catch (e) {
+      throw AuthException('Failed to save user to Firestore: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<UserModel?> getUserFromFirestore(String uid) async {
+    try {
+      final doc = await firestore.collection('users').doc(uid).get();
+
+      if (doc.exists) {
+        return UserModel.fromFirestore(doc);
+      }
+      return null;
+    } catch (e) {
+      throw AuthException('Failed to get user from Firestore: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<UserModel> updateUserInFirestore(UserModel user) async {
+    try {
+      final updateData = user.toFirestore();
+      updateData['updatedAt'] = FieldValue.serverTimestamp();
+
+      await firestore
+          .collection('users')
+          .doc(user.uid)
+          .update(updateData);
+
+      return user;
+    } catch (e) {
+      throw AuthException('Failed to update user in Firestore: ${e.toString()}');
     }
   }
 
