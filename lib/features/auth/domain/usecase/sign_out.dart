@@ -1,11 +1,15 @@
-import 'package:packinn/features/auth/domain/repository/auth_repository.dart';
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
+import '../../../../core/usecases/usecase.dart';
+import '../repository/auth_repository.dart';
 
-class SignOut {
+class SignOut implements UseCaseNoParams<void> {
   final AuthRepository repository;
 
   SignOut(this.repository);
 
-  Future<void> call() async {
-    await repository.signOut();
+  @override
+  Future<Either<Failure, void>> call() async {
+    return await repository.signOut();
   }
 }

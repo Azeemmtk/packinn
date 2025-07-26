@@ -1,36 +1,21 @@
-import 'package:packinn/features/auth/domain/entities/user_entity.dart';
+import '../../domain/entities/user_entity.dart';
 
-class UserModel {
-  final String uid;
-  final String? email;
-  final String? name;
-  final String? phone;
-  final int age;
-  final String? address;
-  final String role;
-  final String? profileImageUrl;
-
-  UserModel({
-    required this.uid,
-    this.email,
-    this.name,
-    this.phone,
-    this.age = 0,
-    this.address,
-    this.role = 'user',
-    this.profileImageUrl,
+class UserModel extends UserEntity {
+  const UserModel({
+    required super.uid,
+    super.email,
+    super.displayName,
+    super.photoURL,
+    super.emailVerified,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      uid: json['uid'] as String,
-      email: json['email'] as String?,
-      name: json['name'] as String?,
-      phone: json['phone'] as String?,
-      age: (json['age'] as int?) ?? 0,
-      address: json['address'] as String?,
-      role: (json['role'] as String?) ?? 'user',
-      profileImageUrl: json['profileImageUrl'] as String?,
+      uid: json['uid'] ?? '',
+      email: json['email'],
+      displayName: json['displayName'],
+      photoURL: json['photoURL'],
+      emailVerified: json['emailVerified'] ?? false,
     );
   }
 
@@ -38,25 +23,19 @@ class UserModel {
     return {
       'uid': uid,
       'email': email,
-      'name': name,
-      'phone': phone,
-      'age': age,
-      'address': address,
-      'role': role,
-      'profileImageUrl': profileImageUrl,
+      'displayName': displayName,
+      'photoURL': photoURL,
+      'emailVerified': emailVerified,
     };
   }
 
-  UserEntity toEntity() {
-    return UserEntity(
-      uid: uid,
-      email: email,
-      name: name,
-      phone: phone,
-      age: age,
-      address: address,
-      role: role,
-      profileImageUrl: profileImageUrl,
+  factory UserModel.fromEntity(UserEntity entity) {
+    return UserModel(
+      uid: entity.uid,
+      email: entity.email,
+      displayName: entity.displayName,
+      photoURL: entity.photoURL,
+      emailVerified: entity.emailVerified,
     );
   }
 }

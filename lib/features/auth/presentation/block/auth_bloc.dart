@@ -1,78 +1,110 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:packinn/features/auth/domain/usecase/google_sign_in.dart';
-import 'package:packinn/features/auth/domain/usecase/sign_out.dart';
-import 'package:packinn/features/auth/presentation/block/auth_event.dart';
-import 'package:packinn/features/auth/presentation/block/auth_state.dart';
 import '../../domain/usecase/check_auth_status.dart';
+import '../../domain/usecase/google_sign_in.dart';
+import '../../domain/usecase/sign_in_with_email.dart';
+import '../../domain/usecase/sign_out.dart';
+import '../../domain/usecase/sign_up_with_email.dart';
+import 'auth_event.dart';
+import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final GoogleSignIn googleSignIn;
-  final SignOut signOut;
   final CheckAuthStatus checkAuthStatus;
-  final FirebaseAuth firebaseAuth;
+  final GoogleSignIn googleSignIn;
+  final SignInWithEmail signInWithEmail;
+  final SignUpWithEmail signUpWithEmail;
+  final SignOut signOut;
 
   AuthBloc({
-    required this.googleSignIn,
-    required this.signOut,
-    required this.firebaseAuth,
     required this.checkAuthStatus,
-  }) : super(AuthInitial()) {
-    on<GoogleSignInEvent>(_onGoogleSignIn);
-    on<SignOutEvent>(_onSignOut);
-    on<CheckAuthStatusEvent>(_onCheckAuthStatus);
-  }
-
-  Future<void> _onGoogleSignIn(
-      GoogleSignInEvent event, Emitter<AuthState> emit) async {
-    emit(AuthLoading());
-    try {
-      final user = await googleSignIn();
-      if (user != null) {
-        print('Emitting AuthAuthenticated with user: ${user.uid}');
-        emit(AuthAuthenticated(user));
-      } else {
-        print('Emitting AuthError: Google Sign-In cancelled');
-        emit(const AuthError('Google Sign-In cancelled'));
-      }
-    } catch (e) {
-      print('Emitting AuthError: Google Sign-In failed: $e');
-      emit(AuthError('Google Sign-In failed: $e'));
-    }
-  }
-
-  Future<void> _onSignOut(SignOutEvent event, Emitter<AuthState> emit) async {
-    if (firebaseAuth.currentUser == null) {
-      print('No user signed in, emitting AuthInitial');
-      emit(AuthInitial());
-      return;
-    }
-    emit(AuthLoading());
-    try {
-      await signOut();
-      print('Emitting AuthInitial after sign out');
-      emit(AuthInitial());
-    } catch (e) {
-      print('Emitting AuthError: Sign out failed: $e');
-      emit(AuthError('Sign out failed: $e'));
-    }
+    required this.googleSignIn,
+    required this.signInWithEmail,
+    required this.signUpWithEmail,
+    required this.signOut,
+  }) : super(const AuthInitial()) {
+    on<AuthCheckStatusEvent>(_onCheckAuthStatus);
+    on<AuthSignInWithGoogleEvent>(_onSignInWithGoogle);
+    on<AuthSignInWithEmailEvent>(_onSignInWithEmail);
+    on<AuthSignUpWithEmailEvent>(_onSignUpWithEmail);
+    on<AuthSignOutEvent>(_onSignOut);
   }
 
   Future<void> _onCheckAuthStatus(
-      CheckAuthStatusEvent event, Emitter<AuthState> emit) async {
-    emit(AuthLoading());
-    try {
-      final user = await checkAuthStatus();
-      if (user != null) {
-        print('Emitting AuthAuthenticated with user: ${user.uid}');
-        emit(AuthAuthenticated(user));
-      } else {
-        print('Emitting AuthInitial: No authenticated user');
-        emit(AuthInitial());
-      }
-    } catch (e) {
-      print('Emitting AuthError: Check auth status failed: $e');
-      emit(AuthError('Check auth status failed: $e'));
-    }
+      AuthCheckStatusEvent event,
+      Emitter<AuthState> emit,
+      ) async {
+    emit(const AuthLoading());
+
+    final result = await checkAuthStatus();
+
+    result.fold(
+          (failure) => emit(AuthError(message: failure.message)),
+          (user) {
+        if (user != null) {
+          emit(AuthAuthenticated(user: user));
+        } else {
+          emit(const AuthUnauthenticated());
+        }
+      },
+    );
+  }
+
+  Future<void> _onSignInWithGoogle(
+      AuthSignInWithGoogleEvent event,
+      Emitter<AuthState> emit,
+      ) async {
+    emit(const AuthLoading());
+
+    final result = await googleSignIn();
+
+    result.fold(
+          (failure) => emit(AuthError(message: failure.message)),
+          (user) => emit(AuthAuthenticated(user: user)),
+    );
+  }
+
+  Future<void> _onSignInWithEmail(
+      AuthSignInWithEmailEvent event,
+      Emitter<AuthState> emit,
+      ) async {
+    emit(const AuthLoading());
+
+    final result = await signInWithEmail(
+      SignInParams(email: event.email, password: event.password),
+    );
+
+    result.fold(
+          (failure) => emit(AuthError(message: failure.message)),
+          (user) => emit(AuthAuthenticated(user: user)),
+    );
+  }
+
+  Future<void> _onSignUpWithEmail(
+      AuthSignUpWithEmailEvent event,
+      Emitter<AuthState> emit,
+      ) async {
+    emit(const AuthLoading());
+
+    final result = await signUpWithEmail(
+      SignUpParams(email: event.email, password: event.password),
+    );
+
+    result.fold(
+          (failure) => emit(AuthError(message: failure.message)),
+          (user) => emit(AuthAuthenticated(user: user)),
+    );
+  }
+
+  Future<void> _onSignOut(
+      AuthSignOutEvent event,
+      Emitter<AuthState> emit,
+      ) async {
+    emit(const AuthLoading());
+
+    final result = await signOut();
+
+    result.fold(
+          (failure) => emit(AuthError(message: failure.message)),
+          (_) => emit(const AuthUnauthenticated()),
+    );
   }
 }

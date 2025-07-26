@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:packinn/features/auth/domain/entities/user_entity.dart';
+import '../../domain/entities/user_entity.dart';
 
 abstract class AuthState extends Equatable {
   const AuthState();
@@ -8,24 +8,40 @@ abstract class AuthState extends Equatable {
   List<Object?> get props => [];
 }
 
-class AuthInitial extends AuthState {}
+class AuthInitial extends AuthState {
+  const AuthInitial();
+}
 
-class AuthLoading extends AuthState {}
+class AuthLoading extends AuthState {
+  const AuthLoading();
+}
 
 class AuthAuthenticated extends AuthState {
   final UserEntity user;
 
-  const AuthAuthenticated(this.user);
+  const AuthAuthenticated({required this.user});
 
   @override
   List<Object?> get props => [user];
 }
 
+class AuthUnauthenticated extends AuthState {
+  const AuthUnauthenticated();
+}
+
 class AuthError extends AuthState {
   final String message;
 
-  const AuthError(this.message);
+  const AuthError({required this.message});
 
   @override
   List<Object?> get props => [message];
+}
+
+class AuthPasswordResetSent extends AuthState {
+  const AuthPasswordResetSent();
+}
+
+class AuthOTPVerified extends AuthState {
+  const AuthOTPVerified();
 }

@@ -1,12 +1,16 @@
-import 'package:packinn/features/auth/domain/entities/user_entity.dart';
-import 'package:packinn/features/auth/domain/repository/auth_repository.dart';
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
+import '../../../../core/usecases/usecase.dart';
+import '../entities/user_entity.dart';
+import '../repository/auth_repository.dart';
 
-class GoogleSignIn {
+class GoogleSignIn implements UseCaseNoParams<UserEntity> {
   final AuthRepository repository;
 
   GoogleSignIn(this.repository);
 
-  Future<UserEntity?> call() async {
-    return await repository.googleSignIn();
+  @override
+  Future<Either<Failure, UserEntity>> call() async {
+    return await repository.signInWithGoogle();
   }
 }

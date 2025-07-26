@@ -1,70 +1,114 @@
-import 'package:packinn/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:packinn/features/auth/data/datasources/auth_local_data_source.dart';
-import 'package:packinn/features/auth/data/datasources/user_remote_data_source.dart';
-import 'package:packinn/features/auth/domain/entities/user_entity.dart';
-import 'package:packinn/features/auth/domain/repository/auth_repository.dart';
-
-import '../model/user_model.dart';
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/error/failures.dart';
+import '../../domain/entities/user_entity.dart';
+import '../../domain/repository/auth_repository.dart';
+import '../datasources/auth_remote_data_source.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthDataSource remoteDataSourceAuth;
-  final UserRemoteDataSource remoteDataSourceUser;
-  final AuthLocalDataSource sharedPrefsDataSource;
+  final AuthRemoteDataSource remoteDataSource;
 
-  AuthRepositoryImpl({
-    required this.remoteDataSourceAuth,
-    required this.remoteDataSourceUser,
-    required this.sharedPrefsDataSource,
-  });
+  AuthRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<UserEntity?> googleSignIn() async {
-    print('AuthRepositoryImpl: Starting Google Sign-In');
-    final user = await remoteDataSourceAuth.googleSignIn();
-    if (user != null) {
-      print(
-          'AuthRepositoryImpl: Google Sign-In successful, saving user profile');
-      final userModel = UserModel(
-        uid: user.uid,
-        email: user.email,
-        name: user.name ?? '',
-        phone: '',
-        age: 0,
-        address: '',
-        role: 'user',
-        profileImageUrl: '',
-      );
-      await remoteDataSourceUser.saveUserProfile(userModel);
-      print('AuthRepositoryImpl: Setting isAuthenticated = true');
-      await sharedPrefsDataSource.setAuthenticated(true);
-      return userModel.toEntity();
-    } else {
-      print('AuthRepositoryImpl: Google Sign-In failed or cancelled');
+  Future<Either<Failure, UserEntity>> signInWithGoogle() async {
+    try {
+      final user = await remoteDataSource.signInWithGoogle();
+      return Right(user);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure('Unexpected error: ${e.toString()}'));
     }
-    return null;
   }
 
   @override
-  Future<void> signOut() async {
-    print('AuthRepositoryImpl: Starting sign out');
-    await remoteDataSourceAuth.signOut();
-    print('AuthRepositoryImpl: Setting isAuthenticated = false');
-    await sharedPrefsDataSource.setAuthenticated(false);
+  Future<Either<Failure, UserEntity>> signInWithEmailPassword(String email, String password) async {
+    try {
+      final user = await remoteDataSource.signInWithEmailPassword(email, password);
+      return Right(user);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure('Unexpected error: ${e.toString()}'));
+    }
   }
 
   @override
-  Future<UserEntity?> checkAuthStatus() async {
-    final isAuthenticated = await sharedPrefsDataSource.isAuthenticated();
-    print(
-        'AuthRepositoryImpl: isAuthenticated from SharedPreferences = $isAuthenticated');
-    if (!isAuthenticated) {
-      print(
-          'AuthRepositoryImpl: Not authenticated in SharedPreferences, returning null');
-      return null;
+  Future<Either<Failure, UserEntity>> signUpWithEmailPassword(String email, String password) async {
+    try {
+      final user = await remoteDataSource.signUpWithEmailPassword(email, password);
+      return Right(user);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure('Unexpected error: ${e.toString()}'));
     }
-    final user = await remoteDataSourceAuth.checkAuthStatus();
-    print(
-        'AuthRepositoryImpl: Firebase user check result = ${user != null ? user.uid : null}');
-    return user;
+  }
+
+  @override
+  Future<Either<Failure, void>> signOut() async {
+    try {
+      await remoteDataSource.signOut();
+      return const Right(null);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure('Sign out failed: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity?>> getCurrentUser() async {
+    try {
+      final user = await remoteDataSource.getCurrentUser();
+      return Right(user);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure('Failed to get current user: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> isUserSignedIn() async {
+    try {
+      final isSignedIn = await remoteDataSource.isUserSignedIn();
+      return Right(isSignedIn);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure('Failed to check auth status: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> sendPasswordResetEmail(String email) async {
+    try {
+      await remoteDataSource.sendPasswordResetEmail(email);
+      return const Right(null);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure('Failed to send reset email: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> verifyOTP(String otp) async {
+    try {
+      await remoteDataSource.verifyOTP(otp);
+      return const Right(null);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure('OTP verification failed: ${e.toString()}'));
+    }
   }
 }

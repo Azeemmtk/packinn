@@ -10,11 +10,15 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await init();
-  await sl.allReady();
+
+  // Initialize Dependencies
+  await initializeDependencies();
+
   runApp(const MyApp());
 }
 
@@ -24,9 +28,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     getSize(context);
+
     return BlocProvider(
-      create: (context) => sl<AuthBloc>(),
+      create: (context) => getIt<AuthBloc>(),
       child: MaterialApp(
+        title: 'PackInn',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,

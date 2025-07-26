@@ -21,7 +21,7 @@ class GoogleSignInButtonWidget extends StatelessWidget {
             onPressed: isLoading
                 ? null
                 : () {
-                    context.read<AuthBloc>().add(GoogleSignInEvent());
+                    context.read<AuthBloc>().add(AuthSignInWithGoogleEvent());
                   },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,

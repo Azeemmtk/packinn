@@ -1,12 +1,16 @@
-import 'package:packinn/features/auth/domain/entities/user_entity.dart';
-import 'package:packinn/features/auth/domain/repository/auth_repository.dart';
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
+import '../../../../core/usecases/usecase.dart';
+import '../entities/user_entity.dart';
+import '../repository/auth_repository.dart';
 
-class CheckAuthStatus {
+class CheckAuthStatus implements UseCaseNoParams<UserEntity?> {
   final AuthRepository repository;
 
   CheckAuthStatus(this.repository);
 
-  Future<UserEntity?> call() async {
-    return await repository.checkAuthStatus();
+  @override
+  Future<Either<Failure, UserEntity?>> call() async {
+    return await repository.getCurrentUser();
   }
 }
