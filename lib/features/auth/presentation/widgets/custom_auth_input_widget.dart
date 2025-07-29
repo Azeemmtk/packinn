@@ -4,25 +4,122 @@ import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
 
 class CustomAuthInputWidget extends StatefulWidget {
-  const CustomAuthInputWidget(
-      {super.key,
-      this.isSecure = false,
-      required this.title,
-      required this.initial,
-      required this.icon,
-      });
+   const CustomAuthInputWidget({
+    super.key,
+    this.isSecure = false,
+    required this.title,
+    required this.hint,
+    required this.icon,
+    required this.onChanged,
+    this.errorText,
+    this.isNum= false,
+  });
 
+  final bool isNum;
   final bool isSecure;
   final String title;
-  final String initial;
+  final String hint;
   final IconData icon;
+  final Function(String) onChanged;
+  final String? errorText;
 
   @override
   State<CustomAuthInputWidget> createState() => _CustomAuthWidgetState();
 }
 
 class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
-  late bool secure = widget.isSecure ? true : false;
+  late bool secure = widget.isSecure;
+  late TextEditingController _controller;
+  OverlayEntry? _overlayEntry;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+    _controller.addListener(() {
+      widget.onChanged(_controller.text);
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _removeOverlay();
+    super.dispose();
+  }
+
+  void _showErrorOverlay(BuildContext context) {
+    _removeOverlay(); // Remove any existing overlay
+
+    // Get the position of the widget
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final position = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+
+    // Calculate screen size for boundary checking
+    final screenSize = MediaQuery.of(context).size;
+
+    // Adjust position to ensure the overlay stays within screen bounds
+    double left = position.dx;
+    double top = position.dy + size.height + 8; // Below the field
+    const overlayWidth = 200.0; // Fixed width for the overlay
+    const overlayHeight = 40.0; // Approximate height
+
+    // Ensure the overlay doesn't go off-screen horizontally
+    if (left + overlayWidth > screenSize.width) {
+      left = screenSize.width -
+          overlayWidth -
+          8; // Align to right edge with padding
+    }
+    if (left < 8) {
+      left = 8; // Align to left edge with padding
+    }
+
+    // Ensure the overlay doesn't go off-screen vertically
+    if (top + overlayHeight > screenSize.height) {
+      top = position.dy - overlayHeight - 8; // Place above the field
+    }
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        left: left,
+        top: top,
+        width: overlayWidth,
+        child: Material(
+          elevation: 4,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.red[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.red),
+            ),
+            child: Text(
+              widget.errorText!,
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: width * 0.035,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+
+    // Remove overlay after 2 seconds
+    Future.delayed(Duration(seconds: 2), () {
+      _removeOverlay();
+    });
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,31 +134,45 @@ class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
           ),
         ),
         TextFormField(
+          controller: _controller,
           obscureText: secure,
+          keyboardType: widget.isNum ? TextInputType.number: null,
           decoration: InputDecoration(
-            hintText: widget.initial,
+            hintText: widget.hint,
+            hintStyle: TextStyle(color: Colors.grey.shade400),
             isDense: true,
             contentPadding: EdgeInsets.symmetric(vertical: 10),
-            suffixIcon: widget.isSecure
+            suffixIcon: widget.errorText != null
                 ? IconButton(
                     onPressed: () {
-                      setState(() {
-                        secure = !secure;
-                      });
+                      _showErrorOverlay(context);
                     },
-                    icon: secure
-                        ? Icon(
-                            CupertinoIcons.eye_slash,
-                            size: width * 0.06,
-                            color: customGrey,
-                          )
-                        : Icon(
-                            CupertinoIcons.eye,
-                            size: width * 0.06,
-                            color: customGrey,
-                          ),
+                    icon: Icon(
+                      Icons.warning_amber_rounded,
+                      size: width * 0.06,
+                      color: Colors.red,
+                    ),
                   )
-                : null,
+                : (widget.isSecure
+                    ? IconButton(
+                        onPressed: () {
+                          setState(() {
+                            secure = !secure;
+                          });
+                        },
+                        icon: secure
+                            ? Icon(
+                                CupertinoIcons.eye_slash,
+                                size: width * 0.06,
+                                color: customGrey,
+                              )
+                            : Icon(
+                                CupertinoIcons.eye,
+                                size: width * 0.06,
+                                color: customGrey,
+                              ),
+                      )
+                    : null),
             prefixIcon: Container(
               margin: EdgeInsets.only(right: 8),
               child: Row(

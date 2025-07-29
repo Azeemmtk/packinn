@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/const.dart';
-import '../../../auth/presentation/block/auth_bloc.dart';
-import '../../../auth/presentation/block/auth_event.dart';
-import '../../../auth/presentation/block/auth_state.dart';
+import '../../../auth/presentation/provider/bloc/auth_bloc.dart';
+import '../../../auth/presentation/provider/bloc/auth_event.dart';
+import '../../../auth/presentation/provider/bloc/auth_state.dart';
 import '../../../auth/presentation/screens/sign_in_screen.dart';
 
-
 class HomeCustomAppbarWidget extends StatelessWidget {
-  const HomeCustomAppbarWidget({
-    super.key,
-  });
+  const HomeCustomAppbarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthUnauthenticated) {
-          // Navigate to sign-in screen when signed out
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const SignInScreen()),
                 (route) => false,
@@ -47,7 +42,6 @@ class HomeCustomAppbarWidget extends StatelessWidget {
             children: [
               height20,
               height10,
-              // Profile and Notification Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -169,14 +163,13 @@ class HomeCustomAppbarWidget extends StatelessWidget {
                       ],
                       child: IconButton(
                         icon: const Icon(Icons.notifications_none),
-                        onPressed: null, // Handled by PopupMenuButton
+                        onPressed: null,
                       ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              // Title
               const Text(
                 'Explore',
                 style: TextStyle(
@@ -230,7 +223,6 @@ class HomeCustomAppbarWidget extends StatelessWidget {
               ),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
-                // Show logout success message
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Logged out successfully'),
@@ -238,7 +230,6 @@ class HomeCustomAppbarWidget extends StatelessWidget {
                     duration: Duration(seconds: 2),
                   ),
                 );
-                // Trigger sign out event
                 context.read<AuthBloc>().add(const AuthSignOutEvent());
               },
             ),

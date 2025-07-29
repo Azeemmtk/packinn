@@ -10,6 +10,7 @@ class UserModel extends UserEntity {
     super.emailVerified,
     super.name,
     super.phone,
+    super.phoneVerified,
     super.age,
     super.address,
     super.role,
@@ -25,6 +26,7 @@ class UserModel extends UserEntity {
       emailVerified: json['emailVerified'] ?? false,
       name: json['name'],
       phone: json['phone'],
+      phoneVerified: json['phoneVerified'] ?? false,
       age: json['age'],
       address: json['address'],
       role: json['role'] ?? 'user',
@@ -46,6 +48,7 @@ class UserModel extends UserEntity {
       emailVerified: data['emailVerified'] ?? false,
       name: data['name'],
       phone: data['phone'],
+      phoneVerified: data['phoneVerified'],
       age: data['age'],
       address: data['address'],
       role: data['role'] ?? 'user',
@@ -62,6 +65,7 @@ class UserModel extends UserEntity {
       'emailVerified': emailVerified,
       'name': name,
       'phone': phone,
+      'phoneVerified': phoneVerified,
       'age': age,
       'address': address,
       'role': role,
@@ -87,6 +91,7 @@ class UserModel extends UserEntity {
       emailVerified: entity.emailVerified,
       name: entity.name,
       phone: entity.phone,
+      phoneVerified: entity.phoneVerified,
       age: entity.age,
       address: entity.address,
       role: entity.role,
@@ -110,6 +115,7 @@ class UserModel extends UserEntity {
       emailVerified: emailVerified,
       name: null, // Empty - to be filled later
       phone: null, // Empty - to be filled later
+      phoneVerified: false,
       age: null, // Empty - to be filled later
       address: null, // Empty - to be filled later
       role: 'user', // Default role for PackInn app

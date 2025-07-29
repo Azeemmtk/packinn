@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/error/failures.dart';
 import '../model/user_model.dart';
 import 'auth_remote_data_source.dart';
 
@@ -24,13 +27,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const AuthException('Google sign-in was cancelled');
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential = await firebaseAuth.signInWithCredential(credential);
+      final UserCredential userCredential =
+          await firebaseAuth.signInWithCredential(credential);
       final User? user = userCredential.user;
 
       if (user == null) {
@@ -54,85 +59,19 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         await saveUserToFirestore(userModel);
         return userModel;
       } else {
+        if (existingUser.role != 'user') {
+          String cRole = existingUser.role;
+          signOut();
+          throw AuthException(
+              'This account is already registered in the $cRole app.');
+        }
         // Existing user - return from Firestore (has complete profile)
         return existingUser;
       }
     } on FirebaseAuthException catch (e) {
       throw AuthException(e.message ?? 'Google sign-in failed');
     } catch (e) {
-      throw AuthException('Unexpected error during Google sign-in: ${e.toString()}');
-    }
-  }
-
-  @override
-  Future<UserModel> signInWithEmailPassword(String email, String password) async {
-    try {
-      final UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      final User? user = userCredential.user;
-      if (user == null) {
-        throw const AuthException('Failed to sign in with email and password');
-      }
-
-      // Get user from Firestore
-      final userFromFirestore = await getUserFromFirestore(user.uid);
-
-      if (userFromFirestore != null) {
-        return userFromFirestore;
-      } else {
-        // If not in Firestore, create and save
-        final userModel = UserModel(
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          emailVerified: user.emailVerified,
-          role: 'user',
-        );
-        await saveUserToFirestore(userModel);
-        return userModel;
-      }
-    } on FirebaseAuthException catch (e) {
-      throw AuthException(_getAuthErrorMessage(e.code));
-    } catch (e) {
-      throw AuthException('Unexpected error during sign-in: ${e.toString()}');
-    }
-  }
-
-  @override
-  Future<UserModel> signUpWithEmailPassword(String email, String password) async {
-    try {
-      final UserCredential userCredential = await firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      final User? user = userCredential.user;
-      if (user == null) {
-        throw const AuthException('Failed to create user account');
-      }
-
-      // Create user model with empty additional fields
-      final userModel = UserModel(
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        emailVerified: user.emailVerified,
-        role: 'user', // Set role as 'user' for PackInn app
-      );
-
-      // Save to Firestore
-      await saveUserToFirestore(userModel);
-
-      return userModel;
-    } on FirebaseAuthException catch (e) {
-      throw AuthException(_getAuthErrorMessage(e.code));
-    } catch (e) {
-      throw AuthException('Unexpected error during sign-up: ${e.toString()}');
+      throw AuthException('${e.toString()}');
     }
   }
 
@@ -157,14 +96,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       // Get complete user data from Firestore
       final userFromFirestore = await getUserFromFirestore(user.uid);
 
-      return userFromFirestore ?? UserModel(
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        emailVerified: user.emailVerified,
-        role: 'user',
-      );
+      return userFromFirestore ??
+          UserModel(
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            emailVerified: user.emailVerified,
+            role: 'user',
+          );
     } catch (e) {
       throw AuthException('Failed to get current user: ${e.toString()}');
     }
@@ -186,16 +126,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } on FirebaseAuthException catch (e) {
       throw AuthException(_getAuthErrorMessage(e.code));
     } catch (e) {
-      throw AuthException('Failed to send password reset email: ${e.toString()}');
-    }
-  }
-
-  @override
-  Future<void> verifyOTP(String otp) async {
-    try {
-      throw const AuthException('OTP verification not implemented yet');
-    } catch (e) {
-      throw AuthException('OTP verification failed: ${e.toString()}');
+      throw AuthException(
+          'Failed to send password reset email: ${e.toString()}');
     }
   }
 
@@ -204,10 +136,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> saveUserToFirestore(UserModel user) async {
     try {
-      await firestore
-          .collection('users')
-          .doc(user.uid)
-          .set(user.toFirestore());
+      await firestore.collection('users').doc(user.uid).set(user.toFirestore());
     } catch (e) {
       throw AuthException('Failed to save user to Firestore: ${e.toString()}');
     }
@@ -233,14 +162,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final updateData = user.toFirestore();
       updateData['updatedAt'] = FieldValue.serverTimestamp();
 
-      await firestore
-          .collection('users')
-          .doc(user.uid)
-          .update(updateData);
+      await firestore.collection('users').doc(user.uid).update(updateData);
 
       return user;
     } catch (e) {
-      throw AuthException('Failed to update user in Firestore: ${e.toString()}');
+      throw AuthException(
+          'Failed to update user in Firestore: ${e.toString()}');
     }
   }
 
@@ -254,6 +181,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         return 'An account already exists with this email address.';
       case 'weak-password':
         return 'The password provided is too weak.';
+      case 'invalid-credential':
+        return 'The email or password is incorrect.';
       case 'invalid-email':
         return 'The email address is not valid.';
       case 'too-many-requests':
@@ -262,6 +191,126 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         return 'This user account has been disabled.';
       default:
         return 'Authentication failed. Please try again.';
+    }
+  }
+
+  @override
+  Future<String> sendOtp(String phoneNumber) async {
+    final completer = Completer<String>();
+    try {
+      await firebaseAuth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (_) {},
+        verificationFailed: (error) {
+          completer.completeError(
+              AuthFailure(error.message ?? 'Verification failed'));
+        },
+        codeSent: (verId, forceResendingToken) {
+          print('dataSourse=========$verId');
+          completer.complete(verId);
+        },
+        codeAutoRetrievalTimeout: (_) {
+          if (!completer.isCompleted) {
+            completer
+                .completeError(AuthFailure('Code auto-retrieval timed out'));
+          }
+        },
+      );
+      return await completer.future;
+    } catch (e) {
+      throw AuthException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> verifyOtp(String verificationId, String otp) async {
+    try {
+      final credential = PhoneAuthProvider.credential(
+          verificationId: verificationId, smsCode: otp);
+      final userCredential =
+          await firebaseAuth.signInWithCredential(credential);
+      final User? user = userCredential.user;
+      if (user == null) {
+        throw const AuthException('Failed to create user account');
+      }
+      return UserModel(
+        uid: user.uid,
+        phoneVerified: true,
+      );
+    } catch (e) {
+      throw AuthFailure(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> signInWithEmail(String email, String password) async {
+    try {
+      final userCredential = await firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final firebaseUser = userCredential.user;
+
+      if (firebaseUser == null) {
+        throw AuthFailure('Failed to signIn');
+      }
+      // Fetch user data from Firestore
+      final userFromFirestore = await getUserFromFirestore(firebaseUser.uid);
+      if (userFromFirestore != null) {
+        if (userFromFirestore.role != 'user') {
+          String cRole = userFromFirestore.role;
+          await signOut();
+          throw AuthFailure(
+              'This account is already registered in the $cRole app.');
+        }
+        return userFromFirestore;
+      }
+      // If no Firestore data exists, create a minimal UserModel
+      return UserModel(
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL,
+        emailVerified: firebaseUser.emailVerified,
+        role: 'user',
+      );
+    } on FirebaseAuthException catch (e){
+      print(e.code);
+      throw AuthFailure(_getAuthErrorMessage(e.code));
+    }
+    catch (e) {
+      throw AuthFailure(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> signUpWithEmail(
+      String name, String email, String phone, String password) async {
+
+    print('remote=========== $name, $email, $phone, $password..............');
+
+    try {
+      final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final firebaseUser = userCredential.user;
+      if (firebaseUser == null) {
+        throw AuthFailure('Failed to create user');
+      }
+
+      final userModel = UserModel(
+          uid: firebaseUser.uid,
+          name: name,
+          email: email,
+          phone: phone,
+          emailVerified: firebaseUser.emailVerified,
+          role: 'user');
+      await saveUserToFirestore(userModel);
+      return userModel;
+    } catch (e) {
+      throw AuthFailure(e.toString());
     }
   }
 }

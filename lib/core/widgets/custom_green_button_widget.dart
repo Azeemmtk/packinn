@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-
-import '../constants/colors.dart';
-import '../constants/const.dart';
-
+import 'package:packinn/core/constants/colors.dart';
+import 'package:packinn/core/constants/const.dart';
 
 class CustomGreenButtonWidget extends StatelessWidget {
+  final String name;
+  final VoidCallback? onPressed;
+  final Widget? child;
+
   const CustomGreenButtonWidget({
     super.key,
     required this.name,
-    required this.onPressed
+    required this.onPressed,
+    this.child,
   });
-
-  final String name;
-  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +20,22 @@ class CustomGreenButtonWidget extends StatelessWidget {
       width: width * 0.8,
       height: 50,
       child: ElevatedButton(
-        onPressed:onPressed,
+        onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: mainColor, // background color
+          backgroundColor: mainColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10), // rounded corners
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
-        child: Text(
-          name,
-          style: TextStyle(fontSize: width * 0.06,fontWeight: FontWeight.bold, color: Colors.white),
-        ),
+        child: child ??
+            Text(
+              name,
+              style: TextStyle(
+                fontSize: width * 0.06,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
       ),
     );
   }

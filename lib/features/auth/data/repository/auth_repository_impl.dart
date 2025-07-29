@@ -26,34 +26,6 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> signInWithEmailPassword(String email, String password) async {
-    try {
-      final user = await remoteDataSource.signInWithEmailPassword(email, password);
-      return Right(user);
-    } on AuthException catch (e) {
-      return Left(AuthFailure(e.message));
-    } on NetworkException catch (e) {
-      return Left(NetworkFailure(e.message));
-    } catch (e) {
-      return Left(AuthFailure('Unexpected error: ${e.toString()}'));
-    }
-  }
-
-  @override
-  Future<Either<Failure, UserEntity>> signUpWithEmailPassword(String email, String password) async {
-    try {
-      final user = await remoteDataSource.signUpWithEmailPassword(email, password);
-      return Right(user);
-    } on AuthException catch (e) {
-      return Left(AuthFailure(e.message));
-    } on NetworkException catch (e) {
-      return Left(NetworkFailure(e.message));
-    } catch (e) {
-      return Left(AuthFailure('Unexpected error: ${e.toString()}'));
-    }
-  }
-
-  @override
   Future<Either<Failure, void>> signOut() async {
     try {
       await remoteDataSource.signOut();
@@ -90,30 +62,6 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, void>> sendPasswordResetEmail(String email) async {
-    try {
-      await remoteDataSource.sendPasswordResetEmail(email);
-      return const Right(null);
-    } on AuthException catch (e) {
-      return Left(AuthFailure(e.message));
-    } catch (e) {
-      return Left(AuthFailure('Failed to send reset email: ${e.toString()}'));
-    }
-  }
-
-  @override
-  Future<Either<Failure, void>> verifyOTP(String otp) async {
-    try {
-      await remoteDataSource.verifyOTP(otp);
-      return const Right(null);
-    } on AuthException catch (e) {
-      return Left(AuthFailure(e.message));
-    } catch (e) {
-      return Left(AuthFailure('OTP verification failed: ${e.toString()}'));
-    }
-  }
-
-  @override
   Future<Either<Failure, void>> saveUserToFirestore(UserEntity user) async {
     try {
       final userModel = UserModel.fromEntity(user);
@@ -142,12 +90,56 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, UserEntity>> updateUserProfile(UserEntity user) async {
     try {
       final userModel = UserModel.fromEntity(user);
-      final updatedUser = await remoteDataSource.updateUserInFirestore(userModel);
+      final updatedUser =
+          await remoteDataSource.updateUserInFirestore(userModel);
       return Right(updatedUser);
     } on AuthException catch (e) {
       return Left(AuthFailure(e.message));
     } catch (e) {
       return Left(AuthFailure('Failed to update user: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> sendOtp(String phoneNumber) async {
+    try {
+      final verificationId = await remoteDataSource.sendOtp(phoneNumber);
+      return Right(verificationId);
+    } catch (e) {
+      return Left(AuthFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> verifyOtp(
+      String verificationId, String otp) async {
+    try {
+      final user = await remoteDataSource.verifyOtp(verificationId, otp);
+      return Right(user);
+    } catch (e) {
+      return Left(AuthFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> signInWithEmail(String email, String password) async{
+    try{
+      final user= await remoteDataSource.signInWithEmail(email, password);
+      return Right(user);
+    } on AuthFailure catch (e) {
+      return Left(e);
+    } catch (e) {
+      return Left(AuthFailure('An unexpected error occurred: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> signUpWithEmail(String name, String email, String phone, String password) async{
+    try{
+      final user= await remoteDataSource.signUpWithEmail(name, email, phone, password);
+      return Right(user);
+    } catch (e){
+      return Left(AuthFailure(e.toString()));
     }
   }
 }

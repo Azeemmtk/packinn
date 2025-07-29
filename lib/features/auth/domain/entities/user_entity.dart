@@ -8,6 +8,7 @@ class UserEntity extends Equatable {
   final bool emailVerified;
   final String? name;
   final String? phone;
+  final bool phoneVerified;
   final int? age;
   final String? address;
   final String role;
@@ -21,6 +22,7 @@ class UserEntity extends Equatable {
     this.emailVerified = false,
     this.name,
     this.phone,
+    this.phoneVerified= false,
     this.age,
     this.address,
     this.role = 'user', // Default role for this app
@@ -36,6 +38,7 @@ class UserEntity extends Equatable {
     emailVerified,
     name,
     phone,
+    phoneVerified,
     age,
     address,
     role,
@@ -50,6 +53,7 @@ class UserEntity extends Equatable {
     bool? emailVerified,
     String? name,
     String? phone,
+    bool? phoneVerified,
     int? age,
     String? address,
     String? role,
@@ -63,6 +67,7 @@ class UserEntity extends Equatable {
       emailVerified: emailVerified ?? this.emailVerified,
       name: name ?? this.name,
       phone: phone ?? this.phone,
+      phoneVerified: phoneVerified ?? this.phoneVerified,
       age: age ?? this.age,
       address: address ?? this.address,
       role: role ?? this.role,

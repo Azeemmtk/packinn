@@ -5,11 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/constants/colors.dart';
-import 'package:packinn/features/auth/presentation/block/auth_bloc.dart';
 import 'package:packinn/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:packinn/features/hostel_management/presentation/screens/home_screen.dart';
-import '../block/auth_event.dart';
-import '../block/auth_state.dart';
+import '../provider/bloc/auth_bloc.dart';
+import '../provider/bloc/auth_event.dart';
+import '../provider/bloc/auth_state.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,12 +18,10 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
   late AnimationController _logoController;
   late AnimationController _textController;
   late AnimationController _loadingController;
-
   late Animation<double> _logoFadeAnimation;
   late Animation<double> _logoScaleAnimation;
   late Animation<double> _textFadeAnimation;
@@ -33,67 +31,34 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
-
-    // Initialize animation controllers
     _logoController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-
     _textController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-
     _loadingController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
+    _logoFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.easeInOut),
+    );
+    _logoScaleAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
+    );
+    _textFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _textController, curve: Curves.easeIn),
+    );
+    _textSlideAnimation = Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
+      CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic),
+    );
+    _loadingFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _loadingController, curve: Curves.easeIn),
+    );
 
-    // Logo animations
-    _logoFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _logoController,
-      curve: Curves.easeInOut,
-    ));
-
-    _logoScaleAnimation = Tween<double>(
-      begin: 0.3,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _logoController,
-      curve: Curves.elasticOut,
-    ));
-
-    // Text animations
-    _textFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _textController,
-      curve: Curves.easeIn,
-    ));
-
-    _textSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.5),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _textController,
-      curve: Curves.easeOutCubic,
-    ));
-
-    // Loading animation
-    _loadingFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _loadingController,
-      curve: Curves.easeIn,
-    ));
-
-    // Wait for Firebase auth state and animations
     Future.wait([
       FirebaseAuth.instance.authStateChanges().first,
       Future.delayed(const Duration(seconds: 4)),
@@ -108,21 +73,14 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Call getSize here instead of initState - MediaQuery is available now
     getSize(context);
-    // Start animations sequence after MediaQuery is available
     _startAnimationSequence();
   }
 
   void _startAnimationSequence() async {
-    // Start logo animation immediately
     _logoController.forward();
-
-    // Start text animation after logo
     await Future.delayed(const Duration(milliseconds: 800));
     if (mounted) _textController.forward();
-
-    // Start loading animation after text
     await Future.delayed(const Duration(milliseconds: 500));
     if (mounted) _loadingController.forward();
   }
@@ -137,29 +95,30 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Ensure getSize is called in build method as well for safety
     getSize(context);
-
     return Scaffold(
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           print('SplashScreen BlocConsumer received state: $state');
-          if (state is AuthAuthenticated) {
+          if (state is AuthAuthenticated && mounted) {
             print('SplashScreen: Navigating to HomeScreen for user ${state.user.uid}');
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const HomeScreen()),
                   (route) => false,
             );
-          } else if (state is AuthUnauthenticated) {
+          } else if (state is AuthUnauthenticated && mounted) {
             print('SplashScreen: Navigating to WelcomeScreen');
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const WelcomeScreen()),
                   (route) => false,
             );
-          } else if (state is AuthError) {
+          } else if (state is AuthError && mounted) {
             print('SplashScreen: Error state received: ${state.message}');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error: ${state.message}')),
+            );
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const WelcomeScreen()),
@@ -173,7 +132,6 @@ class _SplashScreenState extends State<SplashScreen>
             width: double.infinity,
             child: Stack(
               children: [
-                // Background Image with overlay
                 SizedBox(
                   height: double.infinity,
                   width: double.infinity,
@@ -185,7 +143,6 @@ class _SplashScreenState extends State<SplashScreen>
                         width: double.infinity,
                         height: double.infinity,
                       ),
-                      // Subtle overlay for better text visibility
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -201,13 +158,10 @@ class _SplashScreenState extends State<SplashScreen>
                     ],
                   ),
                 ),
-
-                // Main Content
                 Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Animated Logo
                       AnimatedBuilder(
                         animation: _logoController,
                         builder: (context, child) {
@@ -241,10 +195,7 @@ class _SplashScreenState extends State<SplashScreen>
                           );
                         },
                       ),
-
                       const SizedBox(height: 20),
-
-                      // Animated App Name
                       AnimatedBuilder(
                         animation: _textController,
                         builder: (context, child) {
@@ -288,10 +239,7 @@ class _SplashScreenState extends State<SplashScreen>
                           );
                         },
                       ),
-
                       const SizedBox(height: 10),
-
-                      // Animated Tagline
                       AnimatedBuilder(
                         animation: _textController,
                         builder: (context, child) {
@@ -318,10 +266,7 @@ class _SplashScreenState extends State<SplashScreen>
                           );
                         },
                       ),
-
                       const SizedBox(height: 30),
-
-                      // Animated Loading Indicator
                       AnimatedBuilder(
                         animation: _loadingController,
                         builder: (context, child) {
@@ -329,7 +274,7 @@ class _SplashScreenState extends State<SplashScreen>
                             opacity: _loadingFadeAnimation,
                             child: Column(
                               children: [
-                                if (state is AuthLoading || state is AuthInitial)
+                                if (state is AuthEmailLoading || state is AuthGoogleLoading || state is AuthInitial)
                                   Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
@@ -340,16 +285,14 @@ class _SplashScreenState extends State<SplashScreen>
                                       width: 24,
                                       height: 24,
                                       child: CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white,
-                                        ),
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                         strokeWidth: 2.5,
                                       ),
                                     ),
                                   ),
-                                if (state is AuthLoading || state is AuthInitial)
+                                if (state is AuthEmailLoading || state is AuthGoogleLoading || state is AuthInitial)
                                   const SizedBox(height: 10),
-                                if (state is AuthLoading || state is AuthInitial)
+                                if (state is AuthEmailLoading || state is AuthGoogleLoading || state is AuthInitial)
                                   Text(
                                     'Initializing...',
                                     style: GoogleFonts.poppins(
@@ -365,11 +308,10 @@ class _SplashScreenState extends State<SplashScreen>
                           );
                         },
                       ),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
-
-                // Version Info at Bottom
                 Positioned(
                   bottom: 40,
                   left: 0,

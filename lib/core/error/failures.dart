@@ -11,6 +11,9 @@ abstract class Failure extends Equatable {
 
 class AuthFailure extends Failure {
   const AuthFailure(super.message);
+
+  @override
+  String toString() =>message;
 }
 
 class NetworkFailure extends Failure {

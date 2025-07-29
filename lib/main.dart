@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/theme/app_theme.dart';
-import 'package:packinn/features/auth/presentation/block/auth_bloc.dart';
 import 'package:packinn/features/auth/presentation/screens/splash_screen.dart';
 import 'core/constants/const.dart';
+import 'features/auth/presentation/provider/bloc/auth_bloc.dart';
 import 'firebase_options.dart';
 
 void main() async {

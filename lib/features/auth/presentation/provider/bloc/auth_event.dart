@@ -29,10 +29,14 @@ class AuthSignInWithEmailEvent extends AuthEvent {
 }
 
 class AuthSignUpWithEmailEvent extends AuthEvent {
+  final String name;
+  final String phone;
   final String email;
   final String password;
 
   const AuthSignUpWithEmailEvent({
+    required this.name,
+    required this.phone,
     required this.email,
     required this.password,
   });
@@ -54,11 +58,21 @@ class AuthSendPasswordResetEvent extends AuthEvent {
   List<Object?> get props => [email];
 }
 
-class AuthVerifyOTPEvent extends AuthEvent {
-  final String otp;
+class SendOtpEvent extends AuthEvent {
+  final String phoneNumber;
 
-  const AuthVerifyOTPEvent({required this.otp});
+  const SendOtpEvent(this.phoneNumber);
 
   @override
-  List<Object?> get props => [otp];
+  List<Object> get props => [phoneNumber];
+}
+
+class VerifyOtpEvent extends AuthEvent {
+  final String verificationId;
+  final String otp;
+
+  const VerifyOtpEvent(this.verificationId, this.otp);
+
+  @override
+  List<Object> get props => [verificationId, otp];
 }
