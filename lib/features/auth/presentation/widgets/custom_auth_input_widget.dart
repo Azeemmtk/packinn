@@ -4,7 +4,7 @@ import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
 
 class CustomAuthInputWidget extends StatefulWidget {
-   const CustomAuthInputWidget({
+  const CustomAuthInputWidget({
     super.key,
     this.isSecure = false,
     required this.title,
@@ -12,7 +12,8 @@ class CustomAuthInputWidget extends StatefulWidget {
     required this.icon,
     required this.onChanged,
     this.errorText,
-    this.isNum= false,
+    this.isNum = false,
+    this.controller,
   });
 
   final bool isNum;
@@ -22,6 +23,7 @@ class CustomAuthInputWidget extends StatefulWidget {
   final IconData icon;
   final Function(String) onChanged;
   final String? errorText;
+  final TextEditingController? controller;
 
   @override
   State<CustomAuthInputWidget> createState() => _CustomAuthWidgetState();
@@ -35,7 +37,7 @@ class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    _controller = widget.controller ?? TextEditingController();
     _controller.addListener(() {
       widget.onChanged(_controller.text);
     });
@@ -43,15 +45,16 @@ class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (widget.controller == null) {
+      _controller.dispose();
+    }
     _removeOverlay();
     super.dispose();
   }
 
   void _showErrorOverlay(BuildContext context) {
-    _removeOverlay(); // Remove any existing overlay
+    _removeOverlay();
 
-    // Get the position of the widget
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
     final position = renderBox.localToGlobal(Offset.zero);
@@ -68,9 +71,7 @@ class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
 
     // Ensure the overlay doesn't go off-screen horizontally
     if (left + overlayWidth > screenSize.width) {
-      left = screenSize.width -
-          overlayWidth -
-          8; // Align to right edge with padding
+      left = screenSize.width - overlayWidth - 8; // Align to right edge with padding
     }
     if (left < 8) {
       left = 8; // Align to left edge with padding
@@ -90,7 +91,7 @@ class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
           elevation: 4,
           borderRadius: BorderRadius.circular(8),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.red[50],
               borderRadius: BorderRadius.circular(8),
@@ -111,7 +112,7 @@ class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
     Overlay.of(context).insert(_overlayEntry!);
 
     // Remove overlay after 2 seconds
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       _removeOverlay();
     });
   }
@@ -136,45 +137,45 @@ class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
         TextFormField(
           controller: _controller,
           obscureText: secure,
-          keyboardType: widget.isNum ? TextInputType.number: null,
+          keyboardType: widget.isNum ? TextInputType.number : null,
           decoration: InputDecoration(
             hintText: widget.hint,
             hintStyle: TextStyle(color: Colors.grey.shade400),
             isDense: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
             suffixIcon: widget.errorText != null
                 ? IconButton(
-                    onPressed: () {
-                      _showErrorOverlay(context);
-                    },
-                    icon: Icon(
-                      Icons.warning_amber_rounded,
-                      size: width * 0.06,
-                      color: Colors.red,
-                    ),
-                  )
+              onPressed: () {
+                _showErrorOverlay(context);
+              },
+              icon: Icon(
+                Icons.warning_amber_rounded,
+                size: width * 0.06,
+                color: Colors.red,
+              ),
+            )
                 : (widget.isSecure
-                    ? IconButton(
-                        onPressed: () {
-                          setState(() {
-                            secure = !secure;
-                          });
-                        },
-                        icon: secure
-                            ? Icon(
-                                CupertinoIcons.eye_slash,
-                                size: width * 0.06,
-                                color: customGrey,
-                              )
-                            : Icon(
-                                CupertinoIcons.eye,
-                                size: width * 0.06,
-                                color: customGrey,
-                              ),
-                      )
-                    : null),
+                ? IconButton(
+              onPressed: () {
+                setState(() {
+                  secure = !secure;
+                });
+              },
+              icon: secure
+                  ? Icon(
+                CupertinoIcons.eye_slash,
+                size: width * 0.06,
+                color: customGrey,
+              )
+                  : Icon(
+                CupertinoIcons.eye,
+                size: width * 0.06,
+                color: customGrey,
+              ),
+            )
+                : null),
             prefixIcon: Container(
-              margin: EdgeInsets.only(right: 8),
+              margin: const EdgeInsets.only(right: 8),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -194,17 +195,17 @@ class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
                 ],
               ),
             ),
-            border: UnderlineInputBorder(
+            border: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.green, width: 2),
             ),
-            enabledBorder: UnderlineInputBorder(
+            enabledBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.green, width: 2),
             ),
-            focusedBorder: UnderlineInputBorder(
+            focusedBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.green, width: 2),
             ),
           ),
-          style: TextStyle(color: Color(0xFF616161)),
+          style: const TextStyle(color: Color(0xFF616161)),
         ),
       ],
     );

@@ -28,14 +28,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
 
       final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
       final UserCredential userCredential =
-          await firebaseAuth.signInWithCredential(credential);
+      await firebaseAuth.signInWithCredential(credential);
       final User? user = userCredential.user;
 
       if (user == null) {
@@ -43,15 +43,28 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
 
       // Create user model from Google Sign-In
-      final userModel = UserModel.fromGoogleSignIn(
+      final userModel = UserModel(
         uid: user.uid,
         email: user.email!,
         displayName: user.displayName ?? '',
         photoURL: user.photoURL,
+        phone: user.phoneNumber ?? 'unKnown',
         emailVerified: user.emailVerified,
+        role: 'user'
       );
 
-      // Check if user exists in Firestore
+      // Check if email exists in hostel_owners collection
+      final hostelOwnerQuery = await firestore
+          .collection('hostel_owners')
+          .where('email', isEqualTo: user.email)
+          .get();
+
+      if (hostelOwnerQuery.docs.isNotEmpty) {
+        await signOut();
+        throw const AuthException('This account is already registered in the hostel owner app.');
+      }
+
+      // Check if user exists in Firestore users collection
       final existingUser = await getUserFromFirestore(user.uid);
 
       if (existingUser == null) {
@@ -61,7 +74,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       } else {
         if (existingUser.role != 'user') {
           String cRole = existingUser.role;
-          signOut();
+          await signOut();
           throw AuthException(
               'This account is already registered in the $cRole app.');
         }
@@ -130,8 +143,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'Failed to send password reset email: ${e.toString()}');
     }
   }
-
-  // ✅ ADD THESE MISSING FIRESTORE METHODS:
 
   @override
   Future<void> saveUserToFirestore(UserModel user) async {
@@ -228,7 +239,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final credential = PhoneAuthProvider.credential(
           verificationId: verificationId, smsCode: otp);
       final userCredential =
-          await firebaseAuth.signInWithCredential(credential);
+      await firebaseAuth.signInWithCredential(credential);
       final User? user = userCredential.user;
       if (user == null) {
         throw const AuthException('Failed to create user account');
@@ -275,11 +286,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         emailVerified: firebaseUser.emailVerified,
         role: 'user',
       );
-    } on FirebaseAuthException catch (e){
+    } on FirebaseAuthException catch (e) {
       print(e.code);
       throw AuthFailure(_getAuthErrorMessage(e.code));
-    }
-    catch (e) {
+    } catch (e) {
       throw AuthFailure(e.toString());
     }
   }
@@ -287,10 +297,19 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserModel> signUpWithEmail(
       String name, String email, String phone, String password) async {
-
     print('remote=========== $name, $email, $phone, $password..............');
 
     try {
+      // Check if email exists in hostel_owners collection
+      final hostelOwnerQuery = await firestore
+          .collection('hostel_owners')
+          .where('email', isEqualTo: email)
+          .get();
+
+      if (hostelOwnerQuery.docs.isNotEmpty) {
+        throw const AuthException('This account is already registered in the hostel owner app.');
+      }
+
       final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -305,6 +324,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           name: name,
           email: email,
           phone: phone,
+          phoneVerified: true,
           emailVerified: firebaseUser.emailVerified,
           role: 'user');
       await saveUserToFirestore(userModel);

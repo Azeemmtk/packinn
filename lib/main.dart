@@ -6,17 +6,20 @@ import 'package:packinn/core/theme/app_theme.dart';
 import 'package:packinn/features/auth/presentation/screens/splash_screen.dart';
 import 'core/constants/const.dart';
 import 'features/auth/presentation/provider/bloc/auth_bloc.dart';
+import 'features/auth/presentation/provider/bloc/email/email_auth_bloc.dart';
+import 'features/auth/presentation/provider/bloc/google/google_auth_bloc.dart';
+import 'features/auth/presentation/provider/bloc/otp/otp_auth_bloc.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
+// Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize Dependencies
+// Initialize Dependencies
   await initializeDependencies();
 
   runApp(const MyApp());
@@ -29,8 +32,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     getSize(context);
 
-    return BlocProvider(
-      create: (context) => getIt<AuthBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => getIt<AuthBloc>()),
+        BlocProvider(create: (context) => getIt<EmailAuthBloc>()),
+        BlocProvider(create: (context) => getIt<GoogleAuthBloc>()),
+        BlocProvider(create: (context) => getIt<OtpAuthBloc>()),
+      ],
       child: MaterialApp(
         title: 'PackInn',
         debugShowCheckedModeBanner: false,

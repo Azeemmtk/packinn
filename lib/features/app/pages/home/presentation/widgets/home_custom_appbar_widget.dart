@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/constants/colors.dart';
-import '../../../../core/constants/const.dart';
-import '../../../auth/presentation/provider/bloc/auth_bloc.dart';
-import '../../../auth/presentation/provider/bloc/auth_event.dart';
-import '../../../auth/presentation/provider/bloc/auth_state.dart';
-import '../../../auth/presentation/screens/sign_in_screen.dart';
+import '../../../../../../core/constants/colors.dart';
+import '../../../../../../core/constants/const.dart';
+import '../../../../../auth/presentation/provider/bloc/auth_bloc.dart';
+import '../../../../../auth/presentation/provider/bloc/email/email_auth_state.dart';
+import '../../../../../auth/presentation/screens/sign_in_screen.dart';
 
 class HomeCustomAppbarWidget extends StatelessWidget {
   const HomeCustomAppbarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<AuthBloc, dynamic>(
       listener: (context, state) {
-        if (state is AuthUnauthenticated) {
+        if (state is EmailAuthInitial) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const SignInScreen()),
                 (route) => false,
           );
-        } else if (state is AuthError) {
+        } else if (state is EmailAuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error: ${state.message}'),
@@ -45,7 +44,7 @@ class HomeCustomAppbarWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  BlocBuilder<AuthBloc, AuthState>(
+                  BlocBuilder<AuthBloc, dynamic>(
                     builder: (context, state) {
                       return Container(
                         decoration: BoxDecoration(
@@ -65,7 +64,7 @@ class HomeCustomAppbarWidget extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               radius: 16,
-                              backgroundImage: state is AuthAuthenticated &&
+                              backgroundImage: state is EmailAuthAuthenticated &&
                                   state.user.photoURL != null
                                   ? NetworkImage(state.user.photoURL!)
                                   : const NetworkImage(
@@ -77,7 +76,7 @@ class HomeCustomAppbarWidget extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  state is AuthAuthenticated &&
+                                  state is EmailAuthAuthenticated &&
                                       state.user.displayName?.isNotEmpty == true
                                       ? state.user.displayName!
                                       : 'Azeem ali',
@@ -230,7 +229,7 @@ class HomeCustomAppbarWidget extends StatelessWidget {
                     duration: Duration(seconds: 2),
                   ),
                 );
-                context.read<AuthBloc>().add(const AuthSignOutEvent());
+                context.read<AuthBloc>().add(SignOutEvent());
               },
             ),
           ],

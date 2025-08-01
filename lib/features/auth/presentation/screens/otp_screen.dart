@@ -4,11 +4,12 @@ import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/widgets/custom_green_button_widget.dart';
-import 'package:packinn/features/auth/presentation/provider/bloc/auth_bloc.dart';
-import 'package:packinn/features/auth/presentation/provider/bloc/auth_event.dart';
-import 'package:packinn/features/auth/presentation/provider/bloc/auth_state.dart';
+import 'package:packinn/features/auth/presentation/provider/bloc/email/email_auth_bloc.dart';
+import 'package:packinn/features/auth/presentation/provider/bloc/email/email_auth_event.dart';
+import 'package:packinn/features/auth/presentation/provider/bloc/otp/otp_auth_bloc.dart';
+import 'package:packinn/features/auth/presentation/provider/bloc/otp/otp_auth_event.dart';
+import 'package:packinn/features/auth/presentation/provider/bloc/otp/otp_auth_state.dart';
 import 'package:packinn/features/auth/presentation/provider/cubit/otp_cubit.dart';
-import 'package:packinn/features/auth/presentation/provider/cubit/sign_up_cubit.dart';
 import 'package:packinn/features/auth/presentation/screens/new_password_screen.dart';
 import 'package:packinn/features/auth/presentation/screens/sign_in_screen.dart';
 import 'package:packinn/features/auth/presentation/widgets/otp_input_widget.dart';
@@ -30,35 +31,40 @@ class OtpScreen extends StatelessWidget {
     return BlocProvider<OtpCubit>(
       create: (context) => getIt<OtpCubit>(),
       child: Scaffold(
-        body: BlocListener<AuthBloc, AuthState>(
+        body: BlocListener<OtpAuthBloc, OtpAuthState>(
           listener: (context, state) {
-            if (state is AuthAuthenticated && status == 'FP') {
+            if (state is OtpAuthAuthenticated && status == 'FP') {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const NewPasswordScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const NewPasswordScreen()),
               );
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Verification Successful!')),
               );
-            } else if (state is AuthAuthenticated && status == 'RE') {
-              print('otpScreen============${data['name']},${data['email']}, ${data['phone']}, ${data['password']}');
-              context.read<AuthBloc>().add(
-                AuthSignUpWithEmailEvent(
-                  name: data['name']!,
-                  email: data['email']!,
-                  phone: data['phone']!,
-                  password: data['password']!,
-                ),
-              );
+            } else if (state is OtpAuthAuthenticated && status == 'RE') {
+              print(
+                  'otpScreen============${data['name']},${data['email']}, ${data['phone']}, ${data['password']}');
+              context.read<EmailAuthBloc>().add(
+                    EmailAuthSignUp(
+                      name: data['name']!,
+                      email: data['email']!,
+                      phone: data['phone']!,
+                      password: data['password']!,
+                    ),
+                  );
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const SignInScreen(fromSignUp: true,)),
-                    (route) => false,
+                MaterialPageRoute(
+                    builder: (context) => const SignInScreen(fromSignUp: true)),
+                (route) => false,
               );
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Signed up successfully as ${state.user.email}')),
+                SnackBar(
+                    content:
+                        Text('Signed up successfully as ${state.user.email}')),
               );
-            } else if (state is AuthError) {
+            } else if (state is OtpAuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
@@ -86,15 +92,14 @@ class OtpScreen extends StatelessWidget {
                     style: TextStyle(fontSize: width * 0.05),
                   ),
                   SizedBox(height: height * 0.02),
-                  BlocBuilder<SignUpCubit, SignUpState>(
-                    bloc: getIt<SignUpCubit>(),
-                    builder: (context, state) => Text(
-                      state.phone.isNotEmpty ? '+91${state.phone}' : '+79******91',
-                      style: TextStyle(
-                        fontSize: width * 0.047,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                  Text(
+                    data['phone']!.isNotEmpty
+                        ? '+91${data['phone']}'
+                        : '+79******91',
+                    style: TextStyle(
+                      fontSize: width * 0.047,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
                   SizedBox(height: height * 0.02),
@@ -102,12 +107,14 @@ class OtpScreen extends StatelessWidget {
                   SizedBox(height: height * 0.08),
                   TextButton(
                     onPressed: () {
-                      final signUpState = getIt<SignUpCubit>().state;
-                      if (signUpState.phone.isNotEmpty) {
-                        context.read<AuthBloc>().add(SendOtpEvent('+91${signUpState.phone}'));
+                      if (data['phone']!.isNotEmpty) {
+                        context
+                            .read<OtpAuthBloc>()
+                            .add(OtpAuthSendOtp('+91${data['phone']}'));
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Phone number not available')),
+                          const SnackBar(
+                              content: Text('Phone number not available')),
                         );
                       }
                     },
@@ -127,10 +134,13 @@ class OtpScreen extends StatelessWidget {
                         onPressed: () {
                           print('OTP entered: $otp');
                           if (otp.isNotEmpty) {
-                            context.read<AuthBloc>().add(VerifyOtpEvent(verificationId, otp));
+                            context
+                                .read<OtpAuthBloc>()
+                                .add(OtpAuthVerifyOtp(verificationId, otp));
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Please enter the OTP')),
+                              const SnackBar(
+                                  content: Text('Please enter the OTP')),
                             );
                           }
                         },

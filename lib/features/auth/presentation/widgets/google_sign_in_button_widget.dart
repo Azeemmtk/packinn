@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
-import '../provider/bloc/auth_bloc.dart';
-import '../provider/bloc/auth_event.dart';
+import '../provider/bloc/google/google_auth_bloc.dart';
+import '../provider/bloc/google/google_auth_event.dart';
 
 class GoogleSignInButtonWidget extends StatelessWidget {
   final bool isLoading;
@@ -25,7 +24,7 @@ class GoogleSignInButtonWidget extends StatelessWidget {
         onPressed: isLoading
             ? null
             : () {
-          context.read<AuthBloc>().add(const AuthSignInWithGoogleEvent());
+          context.read<GoogleAuthBloc>().add(const GoogleAuthSignIn());
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: mainColor,

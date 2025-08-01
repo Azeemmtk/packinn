@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:packinn/core/constants/const.dart';
-import 'package:packinn/core/constants/colors.dart';
+import 'package:packinn/features/app/Navigation/presentation/screen/main_screen.dart';
 import 'package:packinn/features/auth/presentation/screens/welcome_screen.dart';
-import 'package:packinn/features/hostel_management/presentation/screens/home_screen.dart';
+import '../../../app/pages/home/presentation/screen/home_screen.dart';
 import '../provider/bloc/auth_bloc.dart';
-import '../provider/bloc/auth_event.dart';
-import '../provider/bloc/auth_state.dart';
+import '../provider/bloc/email/email_auth_state.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -65,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     ]).then((_) {
       if (mounted) {
         print('SplashScreen: Dispatching CheckAuthStatusEvent');
-        context.read<AuthBloc>().add(const AuthCheckStatusEvent());
+        context.read<AuthBloc>().add( CheckAuthStatusEvent());
       }
     });
   }
@@ -97,24 +96,24 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   Widget build(BuildContext context) {
     getSize(context);
     return Scaffold(
-      body: BlocConsumer<AuthBloc, AuthState>(
+      body: BlocConsumer<AuthBloc, dynamic>(
         listener: (context, state) {
-          print('SplashScreen BlocConsumer received state: $state');
-          if (state is AuthAuthenticated && mounted) {
+          print('SplashScreen AuthBloc received state: $state');
+          if (state is EmailAuthAuthenticated && mounted) {
             print('SplashScreen: Navigating to HomeScreen for user ${state.user.uid}');
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              MaterialPageRoute(builder: (context) => const MainScreen()),
                   (route) => false,
             );
-          } else if (state is AuthUnauthenticated && mounted) {
+          } else if (state is EmailAuthInitial && mounted) {
             print('SplashScreen: Navigating to WelcomeScreen');
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const WelcomeScreen()),
                   (route) => false,
             );
-          } else if (state is AuthError && mounted) {
+          } else if (state is EmailAuthError && mounted) {
             print('SplashScreen: Error state received: ${state.message}');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Error: ${state.message}')),
@@ -274,7 +273,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                             opacity: _loadingFadeAnimation,
                             child: Column(
                               children: [
-                                if (state is AuthEmailLoading || state is AuthGoogleLoading || state is AuthInitial)
+                                if (state is EmailAuthLoading)
                                   Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
@@ -290,9 +289,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                                       ),
                                     ),
                                   ),
-                                if (state is AuthEmailLoading || state is AuthGoogleLoading || state is AuthInitial)
+                                if (state is EmailAuthLoading)
                                   const SizedBox(height: 10),
-                                if (state is AuthEmailLoading || state is AuthGoogleLoading || state is AuthInitial)
+                                if (state is EmailAuthLoading)
                                   Text(
                                     'Initializing...',
                                     style: GoogleFonts.poppins(

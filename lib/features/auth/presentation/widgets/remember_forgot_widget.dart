@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/const.dart';
-import '../provider/bloc/auth_bloc.dart';
-import '../provider/bloc/auth_event.dart';
-import '../provider/bloc/auth_state.dart';
+import '../provider/bloc/otp/otp_auth_bloc.dart';
+import '../provider/bloc/otp/otp_auth_event.dart';
+import '../provider/bloc/otp/otp_auth_state.dart';
 import '../screens/otp_screen.dart';
 
 class RememberForgotWidget extends StatefulWidget {
@@ -38,17 +38,15 @@ class _RememberForgotWidgetState extends State<RememberForgotWidget> {
               final phone = phoneController.text.trim();
               if (phone.isNotEmpty && phone.length >= 10) {
                 Navigator.pop(dialogContext);
-                context.read<AuthBloc>().add(SendOtpEvent('+91$phone'));
-                // Listen for OtpSent state to navigate
-                context.read<AuthBloc>().stream.firstWhere((state) => state is OtpSent).then((state) {
+                context.read<OtpAuthBloc>().add(OtpAuthSendOtp('+91$phone'));
+                context.read<OtpAuthBloc>().stream.firstWhere((state) => state is OtpSent).then((state) {
                   if (state is OtpSent) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => OtpScreen(
                           status: 'FP',
-                          data:{
-                          },
+                          data: {},
                           verificationId: state.verificationId,
                         ),
                       ),

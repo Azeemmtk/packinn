@@ -5,13 +5,13 @@ import 'package:packinn/core/constants/const.dart';
 class CustomGreenButtonWidget extends StatelessWidget {
   final String name;
   final VoidCallback? onPressed;
-  final Widget? child;
+  final bool isLoading;
 
   const CustomGreenButtonWidget({
     super.key,
     required this.name,
-    required this.onPressed,
-    this.child,
+    this.onPressed,
+    this.isLoading = false,
   });
 
   @override
@@ -20,22 +20,31 @@ class CustomGreenButtonWidget extends StatelessWidget {
       width: width * 0.8,
       height: 50,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: mainColor,
+          disabledBackgroundColor: mainColor.withOpacity(0.6),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
         ),
-        child: child ??
-            Text(
-              name,
-              style: TextStyle(
-                fontSize: width * 0.06,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
+        child: isLoading
+            ? const SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        )
+            : Text(
+          name,
+          style: TextStyle(
+            fontSize: width * 0.06,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }
