@@ -56,56 +56,78 @@ class SignUpCubit extends Cubit<SignUpState> {
   SignUpCubit() : super(SignUpState());
 
   void updateName(String name) {
-    emit(state.copyWith(name: name, nameError: null));
+    emit(state.copyWith(
+      name: name,
+      nameError: _validateName(name),
+    ));
   }
 
   void updateEmail(String email) {
-    emit(state.copyWith(email: email, emailError: null));
+    emit(state.copyWith(
+      email: email,
+      emailError: _validateEmail(email),
+    ));
   }
 
   void updatePhone(String phone) {
-    emit(state.copyWith(phone: phone, phoneError: null));
+    emit(state.copyWith(
+      phone: phone,
+      phoneError: _validatePhone(phone),
+    ));
   }
 
   void updatePassword(String password) {
-    emit(state.copyWith(password: password, passwordError: null));
+    emit(state.copyWith(
+      password: password,
+      passwordError: _validatePassword(password),
+      confirmPasswordError: _validateConfirmPassword(password, state.confirmPassword),
+    ));
   }
 
   void updateConfirmPassword(String confirmPassword) {
-    emit(state.copyWith(confirmPassword: confirmPassword, confirmPasswordError: null));
+    emit(state.copyWith(
+      confirmPassword: confirmPassword,
+      confirmPasswordError: _validateConfirmPassword(state.password, confirmPassword),
+    ));
+  }
+
+  // Validation methods
+  String? _validateName(String name) {
+    if (name.isEmpty) return 'Name is required';
+    return null;
+  }
+
+  String? _validateEmail(String email) {
+    if (email.isEmpty) return 'Email is required';
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) return 'Invalid email format';
+    return null;
+  }
+
+  String? _validatePhone(String phone) {
+    if (phone.isEmpty) return 'Phone number is required';
+    if (phone.length < 10) return 'Phone number must be at least 10 digits';
+    return null;
+  }
+
+  String? _validatePassword(String password) {
+    if (password.isEmpty) return 'Password is required';
+    if (password.length < 6) return 'Password must be at least 6 characters';
+    return null;
+  }
+
+  String? _validateConfirmPassword(String password, String confirmPassword) {
+    if (confirmPassword.isEmpty) return 'Confirm password is required';
+    if (password != confirmPassword) return 'Passwords do not match';
+    return null;
   }
 
   Map<String, String>? submitForm() {
-    String? nameError;
-    String? emailError;
-    String? phoneError;
-    String? passwordError;
-    String? confirmPasswordError;
-
-    // Validate each field
-    if (state.name.isEmpty) {
-      nameError = 'Name is required';
-    }
-    if (state.email.isEmpty) {
-      emailError = 'Email is required';
-    } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(state.email)) {
-      emailError = 'Invalid email format';
-    }
-    if (state.phone.isEmpty) {
-      phoneError = 'Phone number is required';
-    } else if (state.phone.length < 10) {
-      phoneError = 'Phone number must be at least 10 digits';
-    }
-    if (state.password.isEmpty) {
-      passwordError = 'Password is required';
-    } else if (state.password.length < 6) {
-      passwordError = 'Password must be at least 6 characters';
-    }
-    if (state.confirmPassword.isEmpty) {
-      confirmPasswordError = 'Confirm password is required';
-    } else if (state.password != state.confirmPassword) {
-      confirmPasswordError = 'Passwords do not match';
-    }
+    // Re-validate all fields to ensure consistency
+    final nameError = _validateName(state.name);
+    final emailError = _validateEmail(state.email);
+    final phoneError = _validatePhone(state.phone);
+    final passwordError = _validatePassword(state.password);
+    final confirmPasswordError = _validateConfirmPassword(state.password, state.confirmPassword);
 
     // If any validation fails, update state with errors
     if (nameError != null ||

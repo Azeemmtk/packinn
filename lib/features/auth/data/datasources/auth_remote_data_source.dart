@@ -1,4 +1,3 @@
-
 import '../model/user_model.dart';
 
 abstract class AuthRemoteDataSource {
@@ -9,8 +8,9 @@ abstract class AuthRemoteDataSource {
   Future<UserModel?> getCurrentUser();
   Future<bool> isUserSignedIn();
   Future<void> sendPasswordResetEmail(String email);
+  Future<void> updateUserPassword(String uid, String newPassword);
 
-  // Add these missing Firestore methods
+  // Firestore methods
   Future<void> saveUserToFirestore(UserModel user);
   Future<UserModel?> getUserFromFirestore(String uid);
   Future<UserModel> updateUserInFirestore(UserModel user);

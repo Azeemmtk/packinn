@@ -42,7 +42,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const AuthException('Failed to sign in with Google');
       }
 
-      // Create user model from Google Sign-In
       final userModel = UserModel(
         uid: user.uid,
         email: user.email!,
@@ -50,10 +49,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         photoURL: user.photoURL,
         phone: user.phoneNumber ?? 'unKnown',
         emailVerified: user.emailVerified,
-        role: 'user'
+        role: 'user',
       );
 
-      // Check if email exists in hostel_owners collection
       final hostelOwnerQuery = await firestore
           .collection('hostel_owners')
           .where('email', isEqualTo: user.email)
@@ -61,14 +59,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       if (hostelOwnerQuery.docs.isNotEmpty) {
         await signOut();
-        throw const AuthException('This account is already registered in the hostel owner app.');
+        throw const AuthException(
+            'This account is already registered in the hostel owner app.');
       }
 
-      // Check if user exists in Firestore users collection
       final existingUser = await getUserFromFirestore(user.uid);
 
       if (existingUser == null) {
-        // New user - save to Firestore with empty additional fields
         await saveUserToFirestore(userModel);
         return userModel;
       } else {
@@ -78,7 +75,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           throw AuthException(
               'This account is already registered in the $cRole app.');
         }
-        // Existing user - return from Firestore (has complete profile)
         return existingUser;
       }
     } on FirebaseAuthException catch (e) {
@@ -106,7 +102,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final User? user = firebaseAuth.currentUser;
       if (user == null) return null;
 
-      // Get complete user data from Firestore
       final userFromFirestore = await getUserFromFirestore(user.uid);
 
       return userFromFirestore ??
@@ -135,12 +130,33 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> sendPasswordResetEmail(String email) async {
     try {
+      print('Attempting to send password reset email for: $email');
       await firebaseAuth.sendPasswordResetEmail(email: email);
+      print('Password reset email sent successfully for: $email');
     } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException in sendPasswordResetEmail: ${e.code} - ${e.message}');
       throw AuthException(_getAuthErrorMessage(e.code));
     } catch (e) {
-      throw AuthException(
-          'Failed to send password reset email: ${e.toString()}');
+      print('Error in sendPasswordResetEmail: ${e.toString()}');
+      throw AuthException('Failed to send password reset email: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<void> updateUserPassword(String uid, String newPassword) async {
+    try {
+      final user = firebaseAuth.currentUser;
+      if (user == null || user.uid != uid) {
+        throw const AuthException('User not authenticated or UID mismatch');
+      }
+      await user.updatePassword(newPassword);
+      print('Password updated successfully for UID: $uid');
+    } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException in updateUserPassword: ${e.code} - ${e.message}');
+      throw AuthException(_getAuthErrorMessage(e.code));
+    } catch (e) {
+      print('Error in updateUserPassword: ${e.toString()}');
+      throw AuthException('Failed to update password: ${e.toString()}');
     }
   }
 
@@ -200,6 +216,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         return 'Too many unsuccessful attempts. Please try again later.';
       case 'user-disabled':
         return 'This user account has been disabled.';
+      case 'requires-recent-login':
+        return 'Please sign in again to update your password.';
       default:
         return 'Authentication failed. Please try again.';
     }
@@ -266,7 +284,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (firebaseUser == null) {
         throw AuthFailure('Failed to signIn');
       }
-      // Fetch user data from Firestore
       final userFromFirestore = await getUserFromFirestore(firebaseUser.uid);
       if (userFromFirestore != null) {
         if (userFromFirestore.role != 'user') {
@@ -277,7 +294,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         }
         return userFromFirestore;
       }
-      // If no Firestore data exists, create a minimal UserModel
       return UserModel(
         uid: firebaseUser.uid,
         email: firebaseUser.email,
@@ -300,14 +316,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     print('remote=========== $name, $email, $phone, $password..............');
 
     try {
-      // Check if email exists in hostel_owners collection
       final hostelOwnerQuery = await firestore
           .collection('hostel_owners')
           .where('email', isEqualTo: email)
           .get();
 
       if (hostelOwnerQuery.docs.isNotEmpty) {
-        throw const AuthException('This account is already registered in the hostel owner app.');
+        throw const AuthException(
+            'This account is already registered in the hostel owner app.');
       }
 
       final userCredential = await firebaseAuth.createUserWithEmailAndPassword(

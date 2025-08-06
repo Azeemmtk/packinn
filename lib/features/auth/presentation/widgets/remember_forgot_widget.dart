@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/const.dart';
-import '../provider/bloc/otp/otp_auth_bloc.dart';
-import '../provider/bloc/otp/otp_auth_event.dart';
-import '../provider/bloc/otp/otp_auth_state.dart';
-import '../screens/otp_screen.dart';
+import '../provider/bloc/email/email_auth_bloc.dart';
+import '../provider/bloc/email/email_auth_event.dart';
+import '../provider/bloc/email/email_auth_state.dart';
 
 class RememberForgotWidget extends StatefulWidget {
   const RememberForgotWidget({super.key});
@@ -17,16 +16,16 @@ class RememberForgotWidget extends StatefulWidget {
 class _RememberForgotWidgetState extends State<RememberForgotWidget> {
   bool isCheck = false;
 
-  void _showPhoneInputDialog(BuildContext context) {
-    final phoneController = TextEditingController();
+  void _showEmailInputDialog(BuildContext context) {
+    final emailController = TextEditingController();
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Enter Phone Number'),
+        title: const Text('Enter Email Address'),
         content: TextField(
-          controller: phoneController,
-          keyboardType: TextInputType.phone,
-          decoration: const InputDecoration(hintText: 'Enter phone number'),
+          controller: emailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(hintText: 'Enter your email'),
         ),
         actions: [
           TextButton(
@@ -35,31 +34,17 @@ class _RememberForgotWidgetState extends State<RememberForgotWidget> {
           ),
           TextButton(
             onPressed: () {
-              final phone = phoneController.text.trim();
-              if (phone.isNotEmpty && phone.length >= 10) {
+              final email = emailController.text.trim().toLowerCase();
+              if (email.isNotEmpty && RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
                 Navigator.pop(dialogContext);
-                context.read<OtpAuthBloc>().add(OtpAuthSendOtp('+91$phone'));
-                context.read<OtpAuthBloc>().stream.firstWhere((state) => state is OtpSent).then((state) {
-                  if (state is OtpSent) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OtpScreen(
-                          status: 'FP',
-                          data: {},
-                          verificationId: state.verificationId,
-                        ),
-                      ),
-                    );
-                  }
-                });
+                context.read<EmailAuthBloc>().add(EmailAuthSendPasswordReset(email: email));
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please enter a valid phone number')),
+                  const SnackBar(content: Text('Please enter a valid email address')),
                 );
               }
             },
-            child: const Text('Send OTP'),
+            child: const Text('Send Reset Link'),
           ),
         ],
       ),
@@ -68,38 +53,53 @@ class _RememberForgotWidgetState extends State<RememberForgotWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Checkbox(
-          activeColor: mainColor,
-          value: isCheck,
-          onChanged: (value) {
-            setState(() {
-              isCheck = !isCheck;
-            });
-          },
-        ),
-        Text(
-          'Remember Me',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: width * 0.039,
-            color: Colors.black,
+    return BlocListener<EmailAuthBloc, EmailAuthState>(
+      listener: (context, state) {
+        if (state is EmailAuthPasswordResetSent) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Password reset email sent! Check your inbox and follow the link to reset your password.'),
+            ),
+          );
+        } else if (state is EmailAuthError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
+      },
+      child: Row(
+        children: [
+          Checkbox(
+            activeColor: mainColor,
+            value: isCheck,
+            onChanged: (value) {
+              setState(() {
+                isCheck = !isCheck;
+              });
+            },
           ),
-        ),
-        const Spacer(),
-        TextButton(
-          onPressed: () => _showPhoneInputDialog(context),
-          child: Text(
-            'Forgot password?',
+          Text(
+            'Remember Me',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: width * 0.041,
-              color: mainColor,
+              fontSize: width * 0.039,
+              color: Colors.black,
             ),
           ),
-        ),
-      ],
+          const Spacer(),
+          TextButton(
+            onPressed: () => _showEmailInputDialog(context),
+            child: Text(
+              'Forgot password?',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: width * 0.041,
+                color: mainColor,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

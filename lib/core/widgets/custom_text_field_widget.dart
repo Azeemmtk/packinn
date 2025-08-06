@@ -11,12 +11,14 @@ class CustomTextFieldWidget extends StatefulWidget {
     this.isSecure = false,
     this.errorText,
     this.onChanged,
+    this.controller,
   });
 
   final String text;
   final bool isSecure;
   final String? errorText;
   final ValueChanged<String>? onChanged;
+  final TextEditingController? controller;
 
   @override
   State<CustomTextFieldWidget> createState() => _CustomTextFieldWidgetState();
@@ -31,6 +33,7 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
       width: width * 0.9,
       height: widget.errorText != null ? height * 0.08 : height * 0.06,
       child: TextFormField(
+        controller: widget.controller,
         obscureText: secure,
         onChanged: widget.onChanged,
         decoration: InputDecoration(

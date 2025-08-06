@@ -9,6 +9,8 @@ import 'features/auth/presentation/provider/bloc/auth_bloc.dart';
 import 'features/auth/presentation/provider/bloc/email/email_auth_bloc.dart';
 import 'features/auth/presentation/provider/bloc/google/google_auth_bloc.dart';
 import 'features/auth/presentation/provider/bloc/otp/otp_auth_bloc.dart';
+import 'features/auth/presentation/provider/cubit/sign_in_cubit.dart';
+import 'features/auth/presentation/provider/cubit/sign_up_cubit.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -38,6 +40,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => getIt<EmailAuthBloc>()),
         BlocProvider(create: (context) => getIt<GoogleAuthBloc>()),
         BlocProvider(create: (context) => getIt<OtpAuthBloc>()),
+        BlocProvider(create: (context) => getIt<SignUpCubit>(),),
+        BlocProvider(create: (context) => getIt<SignInCubit>(),),
       ],
       child: MaterialApp(
         title: 'PackInn',

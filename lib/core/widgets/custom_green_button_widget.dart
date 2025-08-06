@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:packinn/core/constants/colors.dart';
-import 'package:packinn/core/constants/const.dart';
+
+
+import '../constants/colors.dart';
+import '../constants/const.dart';
 
 class CustomGreenButtonWidget extends StatelessWidget {
   final String name;
   final VoidCallback? onPressed;
   final bool isLoading;
+  final Color color;
 
   const CustomGreenButtonWidget({
     super.key,
     required this.name,
     this.onPressed,
+    this.color= mainColor,
     this.isLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: width * 0.8,
+      width: double.infinity,
       height: 50,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: mainColor,
+          backgroundColor: color,
           disabledBackgroundColor: mainColor.withOpacity(0.6),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),

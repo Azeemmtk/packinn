@@ -91,7 +91,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final userModel = UserModel.fromEntity(user);
       final updatedUser =
-          await remoteDataSource.updateUserInFirestore(userModel);
+      await remoteDataSource.updateUserInFirestore(userModel);
       return Right(updatedUser);
     } on AuthException catch (e) {
       return Left(AuthFailure(e.message));
@@ -122,24 +122,54 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> signInWithEmail(String email, String password) async{
-    try{
-      final user= await remoteDataSource.signInWithEmail(email, password);
+  Future<Either<Failure, UserEntity>> signInWithEmail(
+      String email, String password) async {
+    try {
+      final user = await remoteDataSource.signInWithEmail(email, password);
       return Right(user);
-    } on AuthFailure catch (e) {
-      return Left(e);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
     } catch (e) {
-      return Left(AuthFailure('An unexpected error occurred: ${e.toString()}'));
+      return Left(
+          AuthFailure('An unexpected error occurred: ${e.toString()}'));
     }
   }
 
   @override
-  Future<Either<Failure, UserEntity>> signUpWithEmail(String name, String email, String phone, String password) async{
-    try{
-      final user= await remoteDataSource.signUpWithEmail(name, email, phone, password);
+  Future<Either<Failure, UserEntity>> signUpWithEmail(
+      String name, String email, String phone, String password) async {
+    try {
+      final user =
+      await remoteDataSource.signUpWithEmail(name, email, phone, password);
       return Right(user);
-    } catch (e){
+    } catch (e) {
       return Left(AuthFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> sendPasswordResetEmail(String email) async {
+    try {
+      await remoteDataSource.sendPasswordResetEmail(email);
+      return const Right(null);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(
+          AuthFailure('Failed to send password reset email: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateUserPassword(
+      String uid, String newPassword) async {
+    try {
+      await remoteDataSource.updateUserPassword(uid, newPassword);
+      return const Right(null);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure('Failed to update password: ${e.toString()}'));
     }
   }
 }

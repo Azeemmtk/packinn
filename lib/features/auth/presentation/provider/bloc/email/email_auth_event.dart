@@ -18,20 +18,20 @@ class EmailAuthSignIn extends EmailAuthEvent {
 }
 
 class EmailAuthSignUp extends EmailAuthEvent {
-  final String name;
-  final String phone;
   final String email;
   final String password;
+  final String name;
+  final String phone;
 
   const EmailAuthSignUp({
-    required this.name,
-    required this.phone,
     required this.email,
     required this.password,
+    required this.name,
+    required this.phone,
   });
 
   @override
-  List<Object?> get props => [name, phone, email, password];
+  List<Object?> get props => [email, password, name, phone];
 }
 
 class EmailAuthSendPasswordReset extends EmailAuthEvent {
@@ -41,4 +41,21 @@ class EmailAuthSendPasswordReset extends EmailAuthEvent {
 
   @override
   List<Object?> get props => [email];
+}
+
+class EmailAuthUpdatePassword extends EmailAuthEvent {
+  final String uid;
+  final String newPassword;
+
+  const EmailAuthUpdatePassword({required this.uid, required this.newPassword});
+
+  @override
+  List<Object?> get props => [uid, newPassword];
+}
+
+class EmailAuthReset extends EmailAuthEvent {
+  const EmailAuthReset();
+
+  @override
+  List<Object?> get props => [];
 }

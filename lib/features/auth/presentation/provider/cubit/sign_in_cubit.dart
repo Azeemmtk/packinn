@@ -5,14 +5,14 @@ class SignInState {
   final String password;
   final String? emailError;
   final String? passwordError;
-  final bool isSubmitting; // Added isSubmitting flag
+  final bool isSubmitting;
 
   SignInState({
     this.email = '',
     this.password = '',
     this.emailError,
     this.passwordError,
-    this.isSubmitting = false, // Default to false
+    this.isSubmitting = false,
   });
 
   SignInState copyWith({

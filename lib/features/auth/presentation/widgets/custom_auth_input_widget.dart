@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:packinn/core/constants/colors.dart';
-import 'package:packinn/core/constants/const.dart';
+
+import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/const.dart';
 
 class CustomAuthInputWidget extends StatefulWidget {
   const CustomAuthInputWidget({
@@ -52,70 +53,70 @@ class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
     super.dispose();
   }
 
-  void _showErrorOverlay(BuildContext context) {
-    _removeOverlay();
-
-    final renderBox = context.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
-    final position = renderBox.localToGlobal(Offset.zero);
-    final size = renderBox.size;
-
-    // Calculate screen size for boundary checking
-    final screenSize = MediaQuery.of(context).size;
-
-    // Adjust position to ensure the overlay stays within screen bounds
-    double left = position.dx;
-    double top = position.dy + size.height + 8; // Below the field
-    const overlayWidth = 200.0; // Fixed width for the overlay
-    const overlayHeight = 40.0; // Approximate height
-
-    // Ensure the overlay doesn't go off-screen horizontally
-    if (left + overlayWidth > screenSize.width) {
-      left = screenSize.width - overlayWidth - 8; // Align to right edge with padding
-    }
-    if (left < 8) {
-      left = 8; // Align to left edge with padding
-    }
-
-    // Ensure the overlay doesn't go off-screen vertically
-    if (top + overlayHeight > screenSize.height) {
-      top = position.dy - overlayHeight - 8; // Place above the field
-    }
-
-    _overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        left: left,
-        top: top,
-        width: overlayWidth,
-        child: Material(
-          elevation: 4,
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.red[50],
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.red),
-            ),
-            child: Text(
-              widget.errorText!,
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: width * 0.035,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    Overlay.of(context).insert(_overlayEntry!);
-
-    // Remove overlay after 2 seconds
-    Future.delayed(const Duration(seconds: 2), () {
-      _removeOverlay();
-    });
-  }
+  // void _showErrorOverlay(BuildContext context) {
+  //   _removeOverlay();
+  //
+  //   final renderBox = context.findRenderObject() as RenderBox?;
+  //   if (renderBox == null) return;
+  //   final position = renderBox.localToGlobal(Offset.zero);
+  //   final size = renderBox.size;
+  //
+  //   // Calculate screen size for boundary checking
+  //   final screenSize = MediaQuery.of(context).size;
+  //
+  //   // Adjust position to ensure the overlay stays within screen bounds
+  //   double left = position.dx;
+  //   double top = position.dy + size.height + 8; // Below the field
+  //   const overlayWidth = 200.0; // Fixed width for the overlay
+  //   const overlayHeight = 40.0; // Approximate height
+  //
+  //   // Ensure the overlay doesn't go off-screen horizontally
+  //   if (left + overlayWidth > screenSize.width) {
+  //     left = screenSize.width - overlayWidth - 8; // Align to right edge with padding
+  //   }
+  //   if (left < 8) {
+  //     left = 8; // Align to left edge with padding
+  //   }
+  //
+  //   // Ensure the overlay doesn't go off-screen vertically
+  //   if (top + overlayHeight > screenSize.height) {
+  //     top = position.dy - overlayHeight - 8; // Place above the field
+  //   }
+  //
+  //   _overlayEntry = OverlayEntry(
+  //     builder: (context) => Positioned(
+  //       left: left,
+  //       top: top,
+  //       width: overlayWidth,
+  //       child: Material(
+  //         elevation: 4,
+  //         borderRadius: BorderRadius.circular(8),
+  //         child: Container(
+  //           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+  //           decoration: BoxDecoration(
+  //             color: Colors.red[50],
+  //             borderRadius: BorderRadius.circular(8),
+  //             border: Border.all(color: Colors.red),
+  //           ),
+  //           child: Text(
+  //             widget.errorText!,
+  //             style: TextStyle(
+  //               color: Colors.red,
+  //               fontSize: width * 0.035,
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  //
+  //   Overlay.of(context).insert(_overlayEntry!);
+  //
+  //   // Remove overlay after 2 seconds
+  //   Future.delayed(const Duration(seconds: 2), () {
+  //     _removeOverlay();
+  //   });
+  // }
 
   void _removeOverlay() {
     _overlayEntry?.remove();
@@ -143,18 +144,20 @@ class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
             hintStyle: TextStyle(color: Colors.grey.shade400),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 10),
-            suffixIcon: widget.errorText != null
-                ? IconButton(
-              onPressed: () {
-                _showErrorOverlay(context);
-              },
-              icon: Icon(
-                Icons.warning_amber_rounded,
-                size: width * 0.06,
-                color: Colors.red,
-              ),
-            )
-                : (widget.isSecure
+            suffixIcon:
+            // widget.errorText != null
+            //     ? IconButton(
+            //   onPressed: () {
+            //     _showErrorOverlay(context);
+            //   },
+            //   icon: Icon(
+            //     Icons.warning_amber_rounded,
+            //     size: width * 0.06,
+            //     color: Colors.red,
+            //   ),
+            // )
+            //     : (
+            widget.isSecure
                 ? IconButton(
               onPressed: () {
                 setState(() {
@@ -173,7 +176,9 @@ class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
                 color: customGrey,
               ),
             )
-                : null),
+                : null
+            // )
+            ,
             prefixIcon: Container(
               margin: const EdgeInsets.only(right: 8),
               child: Row(
@@ -196,13 +201,18 @@ class _CustomAuthWidgetState extends State<CustomAuthInputWidget> {
               ),
             ),
             border: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.green, width: 2),
+              borderSide: BorderSide(color: mainColor, width: 2),
             ),
             enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.green, width: 2),
+              borderSide: BorderSide(color: mainColor, width: 2),
             ),
             focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.green, width: 2),
+              borderSide: BorderSide(color: mainColor, width: 2),
+            ),
+            errorText: widget.errorText, // Display error text directly below the field
+            errorStyle: TextStyle(
+              color: Colors.red,
+              fontSize: width * 0.035,
             ),
           ),
           style: const TextStyle(color: Color(0xFF616161)),
