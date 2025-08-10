@@ -1,0 +1,161 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../../core/constants/colors.dart';
+import '../../../../../../core/constants/const.dart';
+import '../provider/cubit/search_filter/search_filter_cubit.dart';
+import '../provider/cubit/search_filter/search_filter_state.dart';
+
+class FilterSectionWidget extends StatelessWidget {
+  const FilterSectionWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Sample facilities and room types (in a real app, these would come from data)
+    final List<String> availableFacilities = [
+      'WiFi',
+      'Washing Machine',
+      'Fridge',
+      'Iron Box',
+      'Parking',
+      'Kitchen'
+    ];
+    final List<String> availableRoomTypes = ['Single', 'Double', 'Triple', 'Dormitory'];
+
+    return Container(
+      padding: EdgeInsets.all(padding),
+      height: height * 0.67,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: BlocBuilder<SearchFilterCubit, SearchFilterState>(
+        builder: (context, state) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: customGrey,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              height10,
+              const Text(
+                'Filters',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              height20,
+              // Distance Range Slider
+              const Text('Distance (km)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              RangeSlider(
+                values: state.distanceRange,
+                min: 2,
+                max: 20,
+                divisions: 18,
+                activeColor: mainColor,
+                inactiveColor: secondaryColor,
+                labels: RangeLabels(
+                  state.distanceRange.start.round().toString(),
+                  state.distanceRange.end.round().toString(),
+                ),
+                onChanged: (RangeValues values) {
+                  context.read<SearchFilterCubit>().updateDistanceRange(values);
+                },
+              ),
+              height20,
+              // Facilities Filter
+              const Text('Facilities', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              height10,
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: availableFacilities.map((facility) {
+                  return ChoiceChip(
+                    label: Text(facility),
+                    selected: state.facilities.contains(facility),
+                    onSelected: (selected) {
+                      context.read<SearchFilterCubit>().toggleFacility(facility);
+                    },
+                    selectedColor: mainColor,
+                    backgroundColor: textFieldColor,
+                    labelStyle: TextStyle(
+                      color: state.facilities.contains(facility) ? Colors.white : Colors.black,
+                    ),
+                  );
+                }).toList(),
+              ),
+              height20,
+              // Room Types Filter
+              const Text('Room Types', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              height10,
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: availableRoomTypes.map((roomType) {
+                  return ChoiceChip(
+                    label: Text(roomType),
+                    selected: state.roomTypes.contains(roomType),
+                    onSelected: (selected) {
+                      context.read<SearchFilterCubit>().toggleRoomType(roomType);
+                    },
+                    selectedColor: mainColor,
+                    backgroundColor: textFieldColor,
+                    labelStyle: TextStyle(
+                      color: state.roomTypes.contains(roomType) ? Colors.white : Colors.black,
+                    ),
+                  );
+                }).toList(),
+              ),
+              height20,
+              // Price Range Slider
+              const Text('Price Range (₹/month)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              RangeSlider(
+                values: state.priceRange,
+                min: 1000,
+                max: 10000,
+                divisions: 18,
+                activeColor: mainColor,
+                inactiveColor: secondaryColor,
+                labels: RangeLabels(
+                  state.priceRange.start.round().toString(),
+                  state.priceRange.end.round().toString(),
+                ),
+                onChanged: (RangeValues values) {
+                  context.read<SearchFilterCubit>().updatePriceRange(values);
+                },
+              ),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      context.read<SearchFilterCubit>().resetFilters();
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Cancel', style: TextStyle(color: Colors.redAccent, fontSize: 16)),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<SearchFilterCubit>().applyFilters();
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: mainColor,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: const Text('Apply Filters', style: TextStyle(color: Colors.white, fontSize: 16)),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}

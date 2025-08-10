@@ -6,20 +6,9 @@ import 'available_room_widget.dart';
 
 class ReviewRoomSection extends StatelessWidget {
 
-   ReviewRoomSection({super.key,});
+   const ReviewRoomSection({super.key, required this.rooms,});
 
-  List<Map<String, dynamic>> rooms=[
-    {
-      'type': 'Ac',
-      'count': 7,
-      'rate': 2500.0,
-    },
-    {
-      'type': 'Ac',
-      'count': 7,
-      'rate': 2500.0,
-    },
-  ];
+  final List<Map<String, dynamic>> rooms;
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
+
+import '../../../../../../core/constants/colors.dart';
 
 class BuildSmallHostelCard extends StatelessWidget {
   const BuildSmallHostelCard({super.key,
@@ -10,7 +13,7 @@ class BuildSmallHostelCard extends StatelessWidget {
 
   final String imageUrl;
   final String title;
-  final String rent;
+  final double rent;
   final String distance;
 
 
@@ -42,6 +45,28 @@ class BuildSmallHostelCard extends StatelessWidget {
               width: double.infinity,
               height: 96,
               fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  // Image loaded → fade in
+                  return AnimatedOpacity(
+                    opacity: 1.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: child,
+                  );
+                }
+
+                // Show shimmer while loading
+                return Shimmer.fromColors(
+                  baseColor: secondaryColor,
+                  highlightColor: mainColor,
+                  direction: ShimmerDirection.ltr,
+                  child: Container(
+                    width: double.infinity,
+                    height: 96,
+                    color: Colors.white,
+                  ),
+                );
+              },
             ),
           ),
           Padding(

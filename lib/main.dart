@@ -5,6 +5,7 @@ import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/theme/app_theme.dart';
 import 'package:packinn/features/auth/presentation/screens/splash_screen.dart';
 import 'core/constants/const.dart';
+import 'features/app/pages/home/presentation/provider/bloc/hostel_bloc.dart';
 import 'features/auth/presentation/provider/bloc/auth_bloc.dart';
 import 'features/auth/presentation/provider/bloc/email/email_auth_bloc.dart';
 import 'features/auth/presentation/provider/bloc/google/google_auth_bloc.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => getIt<OtpAuthBloc>()),
         BlocProvider(create: (context) => getIt<SignUpCubit>(),),
         BlocProvider(create: (context) => getIt<SignInCubit>(),),
+        BlocProvider(create: (context) => getIt<HostelBloc>()..add(FetchHostelsData()),)
       ],
       child: MaterialApp(
         title: 'PackInn',

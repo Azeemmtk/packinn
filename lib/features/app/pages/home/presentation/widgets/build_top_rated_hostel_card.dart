@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shimmer/shimmer.dart';
+
+import '../../../../../../core/constants/colors.dart';
 
 class BuildTopRatedHostelCard extends StatelessWidget {
   const BuildTopRatedHostelCard({super.key, required this.imageUrl, required this.title, required this.location, required this.rent, required this.rating, required this.distance});
@@ -42,6 +45,28 @@ class BuildTopRatedHostelCard extends StatelessWidget {
                   width: double.infinity,
                   height: 170,
                   fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) {
+                      // Image loaded → fade in
+                      return AnimatedOpacity(
+                        opacity: 1.0,
+                        duration: const Duration(milliseconds: 300),
+                        child: child,
+                      );
+                    }
+
+                    // Show shimmer while loading
+                    return Shimmer.fromColors(
+                      baseColor: secondaryColor,
+                      highlightColor: mainColor,
+                      direction: ShimmerDirection.ltr,
+                      child: Container(
+                        width: double.infinity,
+                        height: 170,
+                        color: Colors.white,
+                      ),
+                    );
+                  },
                 ),
               ),
               Positioned(

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:packinn/features/app/pages/home/domain/entity/hostel_entity.dart';
 
 import '../../../../../../../core/constants/const.dart';
 import '../../../../../../../core/widgets/custom_app_bar_widget.dart';
@@ -9,13 +10,17 @@ import '../../../home/presentation/widgets/hostel_details/hostel_facility_name_s
 import '../../../home/presentation/widgets/hostel_details/review_room_section.dart';
 
 class MyRoomDetailsScreen extends StatelessWidget {
+  const MyRoomDetailsScreen({
+    super.key,
+    required this.hostel,
+  });
 
-  const MyRoomDetailsScreen({super.key,});
+  final HostelEntity hostel;
 
   @override
   Widget build(BuildContext context) {
-
-    List<String> images= ['https://lh3.googleusercontent.com/aida-public/AB6AXuBSfG5TOl4RG5fvOcGZAewnVQFFtnPgLfAJu_lCJp4TAoRSOEmJNsgi723NM7KmZB48BRgjugJpo3hkiSIDfB4nyjX5gaf5A8LkkiDojl5mlWyNAVmF2SEBSNXjaqER6D5WObVHSDqWFbQgNjpr6simyF5VwUt5IEczDBe50J744_qTQmvBz4yn_g0ac-_OP-WzdTe8Ok7GSd919mhUWkLi3PjWtSD609gO5rw_57kj3Hknl5pj8efmvN1zyzrDJWwq_8JR5hHruouE',
+    List<String> images = [
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuBSfG5TOl4RG5fvOcGZAewnVQFFtnPgLfAJu_lCJp4TAoRSOEmJNsgi723NM7KmZB48BRgjugJpo3hkiSIDfB4nyjX5gaf5A8LkkiDojl5mlWyNAVmF2SEBSNXjaqER6D5WObVHSDqWFbQgNjpr6simyF5VwUt5IEczDBe50J744_qTQmvBz4yn_g0ac-_OP-WzdTe8Ok7GSd919mhUWkLi3PjWtSD609gO5rw_57kj3Hknl5pj8efmvN1zyzrDJWwq_8JR5hHruouE',
       'https://lh3.googleusercontent.com/aida-public/AB6AXuBSfG5TOl4RG5fvOcGZAewnVQFFtnPgLfAJu_lCJp4TAoRSOEmJNsgi723NM7KmZB48BRgjugJpo3hkiSIDfB4nyjX5gaf5A8LkkiDojl5mlWyNAVmF2SEBSNXjaqER6D5WObVHSDqWFbQgNjpr6simyF5VwUt5IEczDBe50J744_qTQmvBz4yn_g0ac-_OP-WzdTe8Ok7GSd919mhUWkLi3PjWtSD609gO5rw_57kj3Hknl5pj8efmvN1zyzrDJWwq_8JR5hHruouE',
       'https://lh3.googleusercontent.com/aida-public/AB6AXuBSfG5TOl4RG5fvOcGZAewnVQFFtnPgLfAJu_lCJp4TAoRSOEmJNsgi723NM7KmZB48BRgjugJpo3hkiSIDfB4nyjX5gaf5A8LkkiDojl5mlWyNAVmF2SEBSNXjaqER6D5WObVHSDqWFbQgNjpr6simyF5VwUt5IEczDBe50J744_qTQmvBz4yn_g0ac-_OP-WzdTe8Ok7GSd919mhUWkLi3PjWtSD609gO5rw_57kj3Hknl5pj8efmvN1zyzrDJWwq_8JR5hHruouE'
     ];
@@ -33,16 +38,28 @@ class MyRoomDetailsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HostelFacilityNameSection(
+                      hostel: hostel,
                     ),
                     DescriptionPreviewSection(
-                      description: 'Start living your best lifefrom day oneBring a box full of hopes, dreams, ambitions… and of course, your personal belongings. ',
+                      description:
+                          'Start living your best lifefrom day oneBring a box full of hopes, dreams, ambitions… and of course, your personal belongings. ',
                       ownerName: 'Summit hostel',
                       contactNumber: '1234567890',
                       smallImageUrls: images,
                     ),
-
-
                     ReviewRoomSection(
+                      rooms: [
+                        {
+                          'type': 'Ac',
+                          'count': 7,
+                          'rate': 2500.0,
+                        },
+                        {
+                          'type': 'Ac',
+                          'count': 7,
+                          'rate': 2500.0,
+                        },
+                      ],
                     ),
                     Row(
                       children: [

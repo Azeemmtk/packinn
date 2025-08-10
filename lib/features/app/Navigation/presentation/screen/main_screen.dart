@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:packinn/features/app/Navigation/cubit/bottom_nav_cubit.dart';
-import 'package:packinn/features/app/pages/account/presentation/account_screen.dart';
-import 'package:packinn/features/app/pages/search/presentation/search_screen.dart';
+import 'package:packinn/features/app/pages/account/presentation/screens/account_screen.dart';
+import 'package:packinn/features/app/pages/search/presentation/screen/search_screen.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/wallet_screen.dart';
 import '../../../pages/home/presentation/screen/home_screen.dart';
 import '../../../pages/my_room/presentation/screens/my_room_screen.dart';

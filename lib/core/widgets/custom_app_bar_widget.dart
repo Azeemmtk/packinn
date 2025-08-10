@@ -33,12 +33,12 @@ class CustomAppBarWidget extends StatelessWidget {
             enableChat
                 ? width10
                 : IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(
-                Icons.arrow_back,
-                size: 30,
-              ),
-            ),
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      size: 30,
+                    ),
+                  ),
             Text(
               title,
               style: const TextStyle(
@@ -49,9 +49,9 @@ class CustomAppBarWidget extends StatelessWidget {
             ),
             enableChat
                 ? SvgPicture.asset(
-              'assets/images/chat_icon.svg',
-              height: 45,
-            )
+                    'assets/images/chat_icon.svg',
+                    height: 45,
+                  )
                 : width10
           ],
         ),
