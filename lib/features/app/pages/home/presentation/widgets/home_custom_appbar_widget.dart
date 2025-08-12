@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:packinn/features/app/pages/chat/presentation/screens/all_chat_screen.dart';
 import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/const.dart';
 import '../../../../../auth/presentation/provider/bloc/auth_bloc.dart';
@@ -94,9 +95,14 @@ class HomeCustomAppbarWidget extends StatelessWidget {
                     );
                   },
                 ),
-                SvgPicture.asset(
-                  'assets/images/chat_icon.svg',
-                  height: 45,
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AllChatScreen(),));
+                  },
+                  child: SvgPicture.asset(
+                    'assets/images/chat_icon.svg',
+                    height: 45,
+                  ),
                 )
               ],
             ),

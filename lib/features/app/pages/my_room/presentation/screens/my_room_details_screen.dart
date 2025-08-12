@@ -41,11 +41,7 @@ class MyRoomDetailsScreen extends StatelessWidget {
                       hostel: hostel,
                     ),
                     DescriptionPreviewSection(
-                      description:
-                          'Start living your best lifefrom day oneBring a box full of hopes, dreams, ambitions… and of course, your personal belongings. ',
-                      ownerName: 'Summit hostel',
-                      contactNumber: '1234567890',
-                      smallImageUrls: images,
+                      hostel: hostel,
                     ),
                     ReviewRoomSection(
                       rooms: [

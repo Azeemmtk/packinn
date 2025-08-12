@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:packinn/features/app/pages/home/domain/entity/hostel_entity.dart';
 import '../../../../../../core/constants/const.dart';
@@ -15,7 +16,7 @@ class MyRoomScreen extends StatelessWidget {
     final data= {
       "approved": true,
       "contactNumber": "2589632548",
-      "createdAt": "2025-08-05T10:30:30+05:30",
+      "createdAt": Timestamp.fromDate(DateTime.parse("2025-08-05T10:30:30+05:30")),
       "description": "good hostel in the evening I am going to be a story",
       "facilities": [
         "ac",

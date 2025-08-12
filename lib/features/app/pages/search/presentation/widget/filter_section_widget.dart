@@ -10,20 +10,29 @@ class FilterSectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sample facilities and room types (in a real app, these would come from data)
     final List<String> availableFacilities = [
-      'WiFi',
-      'Washing Machine',
-      'Fridge',
-      'Iron Box',
+      'Wi-Fi',
+      'Air Conditioning',
       'Parking',
-      'Kitchen'
+      'Laundry',
+      'Gym',
+      'Kitchen',
+      'TV',
+      'Security',
+      'Swimming Pool',
+      'Study Room',
     ];
-    final List<String> availableRoomTypes = ['Single', 'Double', 'Triple', 'Dormitory'];
+    final List<String> availableRoomTypes = [
+      'Single',
+      '2 Share',
+      '3 Share',
+      'Shared',
+      'Dormitory',
+    ];
 
     return Container(
       padding: EdgeInsets.all(padding),
-      height: height * 0.67,
+      height: height * 0.75,
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -49,30 +58,24 @@ class FilterSectionWidget extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               height20,
-              // Distance Range Slider
               const Text('Distance (km)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               RangeSlider(
-                values: state.distanceRange,
+                values: const RangeValues(2, 20),
                 min: 2,
                 max: 20,
                 divisions: 18,
                 activeColor: mainColor,
                 inactiveColor: secondaryColor,
-                labels: RangeLabels(
-                  state.distanceRange.start.round().toString(),
-                  state.distanceRange.end.round().toString(),
-                ),
+                labels: const RangeLabels('2', '20'),
                 onChanged: (RangeValues values) {
-                  context.read<SearchFilterCubit>().updateDistanceRange(values);
+                  // No-op: Distance filter is UI-only
                 },
               ),
               height20,
               // Facilities Filter
               const Text('Facilities', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-              height10,
               Wrap(
-                spacing: 8.0,
-                runSpacing: 8.0,
+                spacing: 5.0,
                 children: availableFacilities.map((facility) {
                   return ChoiceChip(
                     label: Text(facility),
@@ -91,10 +94,8 @@ class FilterSectionWidget extends StatelessWidget {
               height20,
               // Room Types Filter
               const Text('Room Types', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-              height10,
               Wrap(
-                spacing: 8.0,
-                runSpacing: 8.0,
+                spacing: 5.0,
                 children: availableRoomTypes.map((roomType) {
                   return ChoiceChip(
                     label: Text(roomType),

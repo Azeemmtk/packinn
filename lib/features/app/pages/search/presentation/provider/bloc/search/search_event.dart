@@ -4,12 +4,7 @@ abstract class SearchEvent {}
 
 class SearchHostelsEvent extends SearchEvent {
   final String query;
-
-  SearchHostelsEvent(this.query);
-}
-
-class ApplyFiltersEvent extends SearchEvent {
   final SearchFilterState filters;
 
-  ApplyFiltersEvent(this.filters);
+  SearchHostelsEvent(this.query, this.filters);
 }

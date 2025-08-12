@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:packinn/core/utils/enums.dart';
 import 'package:packinn/features/app/pages/home/domain/entity/hostel_entity.dart';
 
+import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/const.dart';
 import '../../../../../../core/widgets/custom_app_bar_widget.dart';
 import '../../../../../../core/widgets/custom_green_button_widget.dart';
@@ -31,23 +33,25 @@ class HostelDetailsScreen extends StatelessWidget {
                   children: [
                     HostelFacilityNameSection(hostel: hostel,),
                     DescriptionPreviewSection(
-                      description: hostel.description,
-                      ownerName: hostel.ownerName,
-                      contactNumber: hostel.contactNumber,
-                      smallImageUrls: hostel.smallImageUrls,
+                      hostel: hostel,
                     ),
-
-
                     ReviewRoomSection(
                       rooms: hostel.rooms,
                     ),
                     Row(
                       children: [
                         Text(
-                          'Status: ${hostel.approved ? 'Approved' : 'Pending'}',
+                          'Status: ${hostel.status.value}',
                           style: TextStyle(
                             fontSize: 16,
-                            color: hostel.approved ? Colors.green : Colors.red,
+                            color: hostel.status == Status.approved
+                                ? mainColor
+                                : hostel.status == Status.blocked
+                                ? Colors.grey
+                                : hostel.status == Status.rejected
+                                ? Colors.red
+                                : Colors.orange
+                            ,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

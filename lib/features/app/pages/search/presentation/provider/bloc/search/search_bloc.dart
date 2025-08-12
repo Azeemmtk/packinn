@@ -12,13 +12,16 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
   Future<void> _onSearchHostels(
       SearchHostelsEvent event, Emitter<SearchState> emit) async {
-    if (event.query.isEmpty) {
+    if (event.query.isEmpty &&
+        event.filters.facilities.isEmpty &&
+        event.filters.roomTypes.isEmpty) {
       emit(SearchInitial());
       return;
     }
     emit(SearchLoading());
     try {
-      final result = await searchHostels(event.query);
+      final result =
+          await searchHostels(SearchHostelParams(event.query, event.filters));
       emit(
         result.fold(
           (failure) => SearchError(failure.message),

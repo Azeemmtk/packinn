@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../core/constants/colors.dart';
 
@@ -154,22 +155,33 @@ class BuildTopRatedHostelCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Column(
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/logos_google-maps.svg',
-                      height: 35, // optional
-                      width: 35, // optional
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Maps',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
+                InkWell(
+                  onTap: () async{
+                    // final Uri googleMapsUrl = Uri.parse(
+                    //     'https://www.google.com/maps/dir/?api=1&destination=${hostel.latitude},${hostel.longitude}');
+                    //
+                    // await launchUrl(
+                    // googleMapsUrl,
+                    // mode: LaunchMode.externalApplication,
+                    // );
+                  },
+                  child: Column(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/logos_google-maps.svg',
+                        height: 35, // optional
+                        width: 35, // optional
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        'Maps',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

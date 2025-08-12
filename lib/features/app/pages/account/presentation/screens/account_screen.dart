@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
+import 'package:packinn/features/app/pages/account/presentation/screens/profile_screen.dart';
 
 import '../../../../../auth/presentation/provider/bloc/auth_bloc.dart';
 import '../../../../../auth/presentation/provider/bloc/email/email_auth_state.dart';
@@ -24,9 +25,7 @@ class AccountScreen extends StatelessWidget {
       'Terms & Policy',
     ];
     return BlocListener<AuthBloc, dynamic>(
-      listener: (context, state) {
-
-      },
+      listener: (context, state) {},
       child: Scaffold(
         body: Column(
           children: [

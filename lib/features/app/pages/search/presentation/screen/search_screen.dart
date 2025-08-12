@@ -26,7 +26,7 @@ class SearchScreen extends StatelessWidget {
         BlocProvider(create: (context) => SearchFilterCubit()),
         BlocProvider(
             create: (context) =>
-                LocationCubit(GeolocationService())..getCurrentLocation()),
+            LocationCubit(GeolocationService())..getCurrentLocation()),
         BlocProvider(create: (context) => getIt<SearchBloc>()),
       ],
       child: Scaffold(
@@ -59,8 +59,12 @@ class SearchScreen extends StatelessWidget {
                     height5,
                     MapSearchWidget(),
                     BlocBuilder<SearchFilterCubit, SearchFilterState>(
-                      builder: (context, state) {
-                        return SearchFieldWidget();
+                      builder: (context, filterState) {
+                        return BlocBuilder<SearchBloc, SearchState>(
+                          builder: (context, searchState) {
+                            return SearchFieldWidget();
+                          },
+                        );
                       },
                     ),
                     height10,
@@ -70,13 +74,10 @@ class SearchScreen extends StatelessWidget {
                           return Center(
                             child: Column(
                               children: [
-                                SizedBox(
-                                  height: 100,
-                                ),
+                                SizedBox(height: 100),
                                 Text(
                                   'Search hostel',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.grey),
+                                  style: TextStyle(fontSize: 16, color: Colors.grey),
                                 ),
                               ],
                             ),
@@ -88,13 +89,10 @@ class SearchScreen extends StatelessWidget {
                             return Center(
                               child: Column(
                                 children: [
-                                  SizedBox(
-                                    height: 100,
-                                  ),
+                                  SizedBox(height: 100),
                                   Text(
                                     'No hostels found',
-                                    style: TextStyle(
-                                        fontSize: 16, color: Colors.grey),
+                                    style: TextStyle(fontSize: 16, color: Colors.grey),
                                   ),
                                 ],
                               ),
@@ -103,6 +101,7 @@ class SearchScreen extends StatelessWidget {
                           return SizedBox(
                             height: height * 0.75,
                             child: ListView.separated(
+                              padding: EdgeInsets.zero,
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
@@ -111,8 +110,8 @@ class SearchScreen extends StatelessWidget {
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             HostelDetailsScreen(
-                                          hostel: state.hostels[index],
-                                        ),
+                                              hostel: state.hostels[index],
+                                            ),
                                       ),
                                     );
                                   },
