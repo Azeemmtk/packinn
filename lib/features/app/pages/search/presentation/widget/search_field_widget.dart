@@ -1,0 +1,73 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../../core/constants/colors.dart';
+import '../../../../../../core/constants/const.dart';
+import '../../../../../../../../core/utils/debounser.dart';
+import '../provider/bloc/search/search_bloc.dart';
+import '../provider/bloc/search/search_event.dart';
+import '../provider/cubit/search_filter/search_filter_cubit.dart';
+import '../provider/cubit/search_filter/search_filter_state.dart';
+import 'filter_section_widget.dart';
+
+class SearchFieldWidget extends StatefulWidget {
+  const SearchFieldWidget({super.key});
+
+  @override
+  State<SearchFieldWidget> createState() => _SearchFieldWidgetState();
+}
+
+class _SearchFieldWidgetState extends State<SearchFieldWidget> {
+  final Debouncer _debouncer = Debouncer(delay: const Duration(milliseconds: 500));
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SearchFilterCubit, SearchFilterState>(
+      builder: (context, filterState) {
+        return TextFormField(
+          onChanged: (value) {
+            _debouncer.run(() => context.read<SearchBloc>().add(SearchHostelsEvent(value, filterState)));
+          },
+          decoration: InputDecoration(
+            hintText: 'Search hostel',
+            filled: true,
+            fillColor: secondaryColor,
+            suffixIcon: Builder(
+              builder: (BuildContext newContext) {
+                return IconButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: newContext,
+                      isScrollControlled: true,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      builder: (context) => BlocProvider.value(
+                        value: BlocProvider.of<SearchFilterCubit>(newContext),
+                        child: FilterSectionWidget(),
+                      ),
+                    );
+                  },
+                  icon: Icon(
+                    Icons.filter_list_sharp,
+                    size: width * 0.06,
+                    color: customGrey,
+                  ),
+                );
+              },
+            ),
+            prefixIcon: Icon(CupertinoIcons.search),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.transparent),
+              borderRadius: BorderRadius.circular(width * 0.02),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: secondaryColor),
+              borderRadius: BorderRadius.circular(width * 0.02),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

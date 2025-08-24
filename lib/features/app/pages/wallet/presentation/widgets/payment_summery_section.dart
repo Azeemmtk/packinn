@@ -1,0 +1,72 @@
+import 'package:flutter/material.dart';
+import 'package:packinn/features/app/pages/wallet/presentation/widgets/payment_summery_widget.dart';
+import '../../../../../../core/constants/colors.dart';
+import '../../../../../../core/constants/const.dart';
+import '../../../../../../core/widgets/custom_green_button_widget.dart';
+import '../../../../main_screen/presentation/screen/main_screen.dart';
+
+class PaymentSummerySection extends StatelessWidget {
+  const PaymentSummerySection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height * 0.55,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(
+          padding,
+        ),
+        child: Column(
+          children: [
+            height10,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Summit hostel',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                    color: headingTextColor,
+                  ),
+                ),
+                Text(
+                  'Sun, 15 Jan',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: height * 0.07,
+            ),
+            PaymentSummeryWidget(),
+            SizedBox(
+              height: height * 0.1,
+            ),
+            CustomGreenButtonWidget(
+              name: 'Go back to home',
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MainScreen(),
+                  ),
+                      (route) => false,
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

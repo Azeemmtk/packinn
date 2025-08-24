@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "152988047457",
+    "project_id": "packinn-d136c",
+    "storage_bucket": "packinn-d136c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:152988047457:android:5a075169aa09498f33f220",
+        "android_client_info": {
+          "package_name": "com.example.packinn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKi-nmeOnNvRgAuCCRFi8TU2_RrpsdOf0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

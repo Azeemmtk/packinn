@@ -1,0 +1,206 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:packinn/core/constants/colors.dart';
+import 'package:packinn/core/constants/const.dart';
+import 'package:packinn/features/app/pages/home/presentation/provider/bloc/hostel/hostel_bloc.dart';
+import 'package:packinn/features/app/pages/home/presentation/screen/hostel_details_screen.dart';
+import '../widgets/home/build_small_hostel_card.dart';
+import '../widgets/home/build_top_rated_hostel_card.dart';
+import '../widgets/home/home_custom_appbar_widget.dart';
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[100],
+      body: Column(
+        children: [
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () {
+                context.read<HostelBloc>().add(FetchHostelsData());
+                return Future.delayed(Duration(seconds: 1));
+              },
+              child: Column(
+                children: [
+                  const HomeCustomAppbarWidget(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.all(padding),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Top Rated',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Icon(
+                                      Icons.star,
+                                      color: Colors.yellow[600],
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  'See more...',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: mainColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            height10,
+                            BlocBuilder<HostelBloc, HostelState>(
+                              builder: (context, state) {
+                                if (state is HostelLoading) {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      color: mainColor,
+                                    ),
+                                  );
+                                } else if (state is HostelLoaded) {
+                                  if (state.hostels.isEmpty) {
+                                    return Center(
+                                      child: Text('Hostels Not Available'),
+                                    );
+                                  }
+                                  return SizedBox(
+                                      height: height * 0.36,
+                                      child: ListView.separated(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: state.hostels.length,
+                                        itemBuilder: (context, index) {
+                                          final hostel= state.hostels[index];
+                                          return InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        HostelDetailsScreen(hostel: hostel,),
+                                                  ));
+                                            },
+                                            child: BuildTopRatedHostelCard(
+                                              imageUrl: hostel.mainImageUrl ?? imagePlaceHolder,
+                                              title: hostel.name,
+                                              location:
+                                              hostel.placeName,
+                                              rent: (hostel.rooms[0]['rate'] as double).toInt(),
+                                              rating: 4.0,
+                                              distance: 5,
+                                            ),
+                                          );
+                                        },
+                                        separatorBuilder: (context, index) => width10,
+                                      ));
+                                } else if (state is HostelError) {
+                                  return Center(
+                                    child: Text(state.message),
+                                  );
+                                }
+                                return const Center(
+                                  child: Text('Hostel Not Available'),
+                                );
+                              },
+                            ),
+                            height20,
+                            Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Hostels',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  'See more...',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: mainColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            height10,
+                            BlocBuilder<HostelBloc, HostelState>(
+                              builder: (context, state) {
+              
+                                if (state is HostelLoading) {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      color: mainColor,
+                                    ),
+                                  );
+                                } else if (state is HostelLoaded) {
+                                  if (state.hostels.isEmpty) {
+                                    return Center(
+                                      child: Text('Hostels Not Available'),
+                                    );
+                                  }
+                                  return SizedBox(
+                                      height: 170,
+                                      child: ListView.separated(
+                                        itemCount: state.hostels.length,
+                                        scrollDirection: Axis.horizontal,
+                                        itemBuilder: (context, index) {
+                                          final hostel= state.hostels[index];
+                                          return InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        HostelDetailsScreen(hostel: hostel,),
+                                                  ));
+                                            },
+                                            child: BuildSmallHostelCard(
+                                              imageUrl: hostel.mainImageUrl ?? imagePlaceHolder,
+                                              title: hostel.name,
+                                              distance: '2 Km',
+                                              rent: hostel.rooms[0]['rate'],
+                                            ),
+                                          );
+                                        },
+                                        separatorBuilder: (context, index) => width5,
+                                      )
+                                  );
+                                } else if (state is HostelError) {
+                                  return Center(
+                                    child: Text(state.message),
+                                  );
+                                }
+                                return const Center(
+                                  child: Text('Hostel Not Available'),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
