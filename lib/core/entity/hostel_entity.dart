@@ -10,6 +10,7 @@ class HostelEntity extends Equatable {
   final String contactNumber;
   final String description;
   final List<String> facilities;
+  final List<String>? occupantsId;
   final List<Map<String, dynamic>> rooms;
   final String ownerId;
   final String ownerName;
@@ -29,6 +30,7 @@ class HostelEntity extends Equatable {
     required this.contactNumber,
     required this.description,
     required this.facilities,
+    this.occupantsId,
     required this.rooms,
     required this.ownerId,
     required this.ownerName,

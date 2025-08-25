@@ -19,6 +19,9 @@ class OccupantEditRemoteDataSourceImpl extends OccupantEditRemoteDataSource{
         'hostelId': hostelId,
         'roomId': roomId,
       });
+      await firestore.collection('hostels').doc(hostelId).update({
+        'occupantsId': FieldValue.arrayUnion([occupantId]),
+      });
     } catch (e) {
       throw ServerException('Failed to update occupant: $e');
     }
