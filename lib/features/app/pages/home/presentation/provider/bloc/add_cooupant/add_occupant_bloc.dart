@@ -108,9 +108,29 @@ class AddOccupantBloc extends Bloc<AddOccupantEvent, AddOccupantState> {
         );
 
         final result = await saveOccupant(occupant);
-        result.fold(
-              (failure) => emit(AddOccupantError(failure.message)),
-              (_) => emit(AddOccupantSuccess(occupant, event.room)),
+        await result.fold(
+              (failure) async => emit(AddOccupantError(failure.message)),
+              (_) async {
+            // Fetch updated occupants list
+            final fetchResult = await fetchOccupants(CurrentUser().uId!);
+            await fetchResult.fold(
+                  (failure) async => emit(AddOccupantError(failure.message)),
+                  (occupants) async => emit(AddOccupantLoaded(
+                name: '',
+                phone: '',
+                age: null,
+                guardianName: '',
+                guardianPhone: '',
+                guardianRelation: '',
+                idProof: null,
+                addressProof: null,
+                idProofUrl: null,
+                addressProofUrl: null,
+                occupants: occupants,
+                showForm: false, // Ensure form is hidden to show selection section
+              )),
+            );
+          },
         );
       } catch (e) {
         emit(AddOccupantError('Failed to save occupant: $e'));

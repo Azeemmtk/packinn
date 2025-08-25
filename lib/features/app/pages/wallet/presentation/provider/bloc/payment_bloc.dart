@@ -28,6 +28,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
             occupantId: event.occupantId,
             hostelId: event.hostelId,
             roomId: event.roomId,
+            roomType: event.roomType
           ),
         );
         result.fold(

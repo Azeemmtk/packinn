@@ -6,6 +6,7 @@ import '../../../../../../../core/services/current_user.dart';
 import '../../../../../../../core/widgets/custom_green_button_widget.dart';
 import '../../../../../../../core/widgets/title_text_widget.dart';
 import '../../provider/bloc/add_cooupant/add_occupant_bloc.dart';
+import '../../screen/confirm_booking_screen.dart';
 import '../../screen/edit_occupant_screen.dart';
 
 class SelectOccupantSection extends StatelessWidget {
@@ -57,10 +58,20 @@ class SelectOccupantSection extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        addOccupantBloc.add(
-                          SelectOccupantEvent(
-                            occupant,
-                            room,
+                        // addOccupantBloc.add(
+                        //   SelectOccupantEvent(
+                        //     occupant,
+                        //     room,
+                        //   ),
+                        // );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ConfirmBookingScreen(
+                              room: room,
+                              occupant: occupant,
+
+                            ),
                           ),
                         );
                       },

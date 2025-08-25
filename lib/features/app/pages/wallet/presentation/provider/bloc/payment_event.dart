@@ -12,11 +12,13 @@ class MakePaymentEvent extends PaymentEvent {
   final String occupantId;
   final String hostelId;
   final String roomId;
+  final String roomType;
 
   const MakePaymentEvent({
     required this.amount,
     required this.occupantId,
     required this.hostelId,
+    required this.roomType,
     required this.roomId,
   });
 

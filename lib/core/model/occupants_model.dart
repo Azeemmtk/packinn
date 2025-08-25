@@ -11,6 +11,7 @@ class OccupantModel {
   final String userId;
   final String? hostelId;
   final String? roomId;
+  final String? roomType;
   final bool rentPaid;
 
   OccupantModel({
@@ -24,6 +25,7 @@ class OccupantModel {
     required this.userId,
     this.hostelId,
     this.roomId,
+    this.roomType,
     this.rentPaid= false,
   });
 
@@ -39,6 +41,7 @@ class OccupantModel {
       'userId': userId,
       'hostelId': hostelId,
       'roomId': roomId,
+      'roomType':roomType,
       'rentPaid': rentPaid,
     };
   }
@@ -62,6 +65,7 @@ class OccupantModel {
       hostelId: hostelId,
       roomId: roomId,
       rentPaid: rentPaid,
+      roomType: roomType,
     );
   }
 
@@ -83,6 +87,7 @@ class OccupantModel {
       userId: occupant.userId,
       hostelId: occupant.hostelId,
       roomId: occupant.roomId,
+        roomType: occupant.roomType,
       rentPaid: occupant.rentPaid
     );
   }
@@ -99,6 +104,7 @@ class OccupantModel {
       userId: json['userId'],
       hostelId: json['hostelId'],
       roomId: json['roomId'],
+      roomType: json['roomType'],
       rentPaid: json['rentPaid']
     );
   }

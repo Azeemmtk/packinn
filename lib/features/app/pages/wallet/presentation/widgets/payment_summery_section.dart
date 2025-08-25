@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/widgets/payment_summery_widget.dart';
 import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/const.dart';
 import '../../../../../../core/widgets/custom_green_button_widget.dart';
 import '../../../../main_screen/presentation/screen/main_screen.dart';
+import '../../../home/presentation/provider/bloc/hostel/hostel_bloc.dart';
 
 class PaymentSummerySection extends StatelessWidget {
   const PaymentSummerySection({super.key});
@@ -55,12 +57,13 @@ class PaymentSummerySection extends StatelessWidget {
             CustomGreenButtonWidget(
               name: 'Go back to home',
               onPressed: () {
+                context.read<HostelBloc>().add(FetchHostelsData());
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
                     builder: (context) => MainScreen(),
                   ),
-                      (route) => false,
+                  (route) => false,
                 );
               },
             ),

@@ -12,9 +12,9 @@ class PaymentRepositoryImpl implements PaymentRepository {
 
 
   @override
-  Future<Either<Failure, void>> updateOccupant(String occupantId, String hostelId, String roomId) async {
+  Future<Either<Failure, void>> updateOccupant(String occupantId, String hostelId, String roomId, String roomType) async {
     try {
-      await remoteDataSource.updateOccupant(occupantId, hostelId, roomId);
+      await remoteDataSource.updateOccupant(occupantId, hostelId, roomId, roomType);
       return const Right(null);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));

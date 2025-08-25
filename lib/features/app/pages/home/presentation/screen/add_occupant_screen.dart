@@ -5,7 +5,6 @@ import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/services/current_user.dart';
 import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/cubit/occupant_field_cubit.dart';
-import 'package:packinn/features/app/pages/home/presentation/screen/confirm_booking_screen.dart';
 import '../provider/bloc/add_cooupant/add_occupant_bloc.dart';
 import '../widgets/add_occupant/AddNewOccupantSection.dart';
 import '../widgets/add_occupant/select_occupant_section.dart';
@@ -34,17 +33,12 @@ class AddOccupantScreen extends StatelessWidget {
       child: BlocConsumer<AddOccupantBloc, AddOccupantState>(
         listener: (context, state) {
           if (state is AddOccupantSuccess) {
-            print(state.room);
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ConfirmBookingScreen(
-                  room: state.room,
-                  occupant: state.occupant,
-
-                ),
-              ),
+            // Show a SnackBar to indicate successful addition
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Occupant added successfully')),
             );
+            // Toggle the form to show the occupant selection list
+            context.read<AddOccupantBloc>().add(ToggleFormEvent(false));
           } else if (state is AddOccupantError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
@@ -57,7 +51,7 @@ class AddOccupantScreen extends StatelessWidget {
               final addOccupantBloc = context.read<AddOccupantBloc>();
               final textFieldCubit = context.read<OccupantFieldCubit>();
               final currentState =
-                  state is AddOccupantLoaded ? state : AddOccupantLoaded();
+              state is AddOccupantLoaded ? state : AddOccupantLoaded();
 
               _nameController.text = currentState.name;
               _phoneController.text = currentState.phone;

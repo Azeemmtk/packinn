@@ -21,6 +21,7 @@ class PaymentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final String hostelId = room?['hostelId'] ?? '';
     final String roomId = room?['roomId'] ?? '';
+    final String roomType = room?['type'] ?? '';
 
     return BlocProvider(
       create: (context) => getIt<PaymentBloc>(),
@@ -105,6 +106,7 @@ class PaymentScreen extends StatelessWidget {
                             MakePaymentEvent(
                               amount: isBooking ? 100 : 3000,
                               occupantId: occupantId,
+                              roomType: roomType,
                               hostelId: hostelId,
                               roomId: roomId,
                             ),
