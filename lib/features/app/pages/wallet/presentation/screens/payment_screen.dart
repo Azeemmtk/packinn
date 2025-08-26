@@ -12,16 +12,32 @@ import '../../../../../../core/widgets/title_text_widget.dart';
 import '../widgets/payment_summery_widget.dart';
 
 class PaymentScreen extends StatelessWidget {
-  const PaymentScreen({super.key, this.isBooking = false, this.room, required this.occupantId});
+  const PaymentScreen({
+    super.key,
+    this.isBooking = false,
+    this.room,
+    required this.occupantId,
+    required this.occupantName,
+    this.extraMessage,
+    this.extraAmount,
+    this.discount,
+  });
+
   final Map<String, dynamic>? room;
   final bool isBooking;
   final String occupantId;
+  final String occupantName;
+  final String? extraMessage;
+  final double? extraAmount;
+  final double? discount;
 
   @override
   Widget build(BuildContext context) {
     final String hostelId = room?['hostelId'] ?? '';
+    final String hostelName = room?['hostelName'] ?? '';
     final String roomId = room?['roomId'] ?? '';
     final String roomType = room?['type'] ?? '';
+    final double roomRate = (room?['rate'] as num?)?.toDouble() ?? 3000.0;
 
     return BlocProvider(
       create: (context) => getIt<PaymentBloc>(),
@@ -70,6 +86,9 @@ class PaymentScreen extends StatelessWidget {
                   ),
                   PaymentSummeryWidget(
                     isBooking: isBooking,
+                    extraMessage: extraMessage,
+                    extraAmount: extraAmount,
+                    discount: discount,
                   ),
                   SizedBox(
                     height: height * 0.15,
@@ -98,17 +117,23 @@ class PaymentScreen extends StatelessWidget {
                         onPressed: state is PaymentLoading
                             ? null
                             : () {
-
                           print(String.fromEnvironment('STRIPE_PUBLISHABLE_KEY'));
                           print(String.fromEnvironment('STRIPE_SECRET_KEY'));
 
                           context.read<PaymentBloc>().add(
                             MakePaymentEvent(
-                              amount: isBooking ? 100 : 3000,
+                              amount: isBooking ? 100 : roomRate,
                               occupantId: occupantId,
                               roomType: roomType,
                               hostelId: hostelId,
                               roomId: roomId,
+                              isBooking: isBooking,
+                              roomRate: roomRate,
+                              extraMessage: extraMessage,
+                              extraAmount: extraAmount,
+                              discount: discount,
+                              occupantName: occupantName,
+                              hostelName: hostelName,
                             ),
                           );
                         },

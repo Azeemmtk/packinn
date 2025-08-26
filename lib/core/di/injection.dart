@@ -25,6 +25,7 @@ import 'package:packinn/features/app/pages/search/presentation/provider/cubit/se
 import 'package:packinn/features/app/pages/wallet/data/datasourse/occupant_edit_remote_data_source.dart';
 import 'package:packinn/features/app/pages/wallet/data/repository/payment_repository_impl.dart';
 import 'package:packinn/features/app/pages/wallet/domain/repository/payment_repository.dart';
+import 'package:packinn/features/app/pages/wallet/domain/usecases/save_payment_use_case.dart';
 import 'package:packinn/features/app/pages/wallet/domain/usecases/update_occupant_usecase.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/payment_bloc.dart';
 import 'package:packinn/features/auth/domain/usecase/reset_password.dart';
@@ -149,6 +150,7 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton(() => DeleteOccupant(getIt<OccupantsRepository>()));
   getIt.registerLazySingleton(() => UpdateOccupantUseCase(getIt<PaymentRepository>()));
   getIt.registerLazySingleton(() => GetMyBookingsUseCase(getIt<BookingRepository>()));
+  getIt.registerLazySingleton(() => SavePaymentUseCase(getIt<PaymentRepository>()));
 
   // BLoCs
   getIt.registerFactory(
@@ -196,8 +198,8 @@ Future<void> initializeDependencies() async {
         saveOccupant: getIt<SaveOccupant>(),
         fetchOccupants: getIt<FetchOccupants>()),
   );
-  
-  getIt.registerFactory(() => PaymentBloc(getIt<StripeService>()),);
+
+  getIt.registerFactory(() => PaymentBloc(getIt<StripeService>(), getIt<SavePaymentUseCase>(), getIt<UpdateOccupantUseCase>()),);
   getIt.registerFactory(() => MyBookingsBloc(getMyBookingsUseCase: getIt<GetMyBookingsUseCase>()));
 
   // Cubits

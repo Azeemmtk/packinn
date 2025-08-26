@@ -35,7 +35,7 @@ class HomeScreen extends StatelessWidget {
                 return;
               },
               child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(), // Ensure scrollability
+                physics: const AlwaysScrollableScrollPhysics(),
                 child: Padding(
                   padding: EdgeInsets.all(padding),
                   child: Column(

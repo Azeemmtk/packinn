@@ -44,7 +44,8 @@ class HostelDetailsScreen extends StatelessWidget {
                           .map((room) => {
                                 ...room,
                                 'img': hostel.mainImageUrl,
-                                'hostelId': hostel.id
+                                'hostelId': hostel.id,
+                        'hostelName': hostel.name,
                               })
                           .toList(),
                     ),

@@ -14,7 +14,8 @@ class ConfirmBookingScreen extends StatelessWidget {
   final Map<String, dynamic> room;
   final OccupantEntity occupant;
 
-  const ConfirmBookingScreen({super.key, required this.room, required this.occupant});
+  const ConfirmBookingScreen(
+      {super.key, required this.room, required this.occupant});
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +56,7 @@ class ConfirmBookingScreen extends StatelessWidget {
                             builder: (context) => PaymentScreen(
                               occupantId: occupant.id!,
                               room: room,
+                              occupantName: occupant.name,
                               isBooking: true,
                             ),
                           ),

@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:packinn/core/constants/colors.dart';
+import 'package:packinn/core/constants/const.dart';
+import 'package:packinn/core/widgets/custom_green_button_widget.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/widgets/payment_summery_widget.dart';
-import '../../../../../../core/constants/colors.dart';
-import '../../../../../../core/constants/const.dart';
-import '../../../../../../core/widgets/custom_green_button_widget.dart';
 import '../../../../main_screen/presentation/screen/main_screen.dart';
 import '../../../home/presentation/provider/bloc/hostel/hostel_bloc.dart';
 
 class PaymentSummerySection extends StatelessWidget {
-  const PaymentSummerySection({super.key});
+  const PaymentSummerySection({super.key, this.extraMessage, this.extraAmount, this.discount});
+
+  final String? extraMessage;
+  final double? extraAmount;
+  final double? discount;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +54,11 @@ class PaymentSummerySection extends StatelessWidget {
             SizedBox(
               height: height * 0.07,
             ),
-            PaymentSummeryWidget(),
+            PaymentSummeryWidget(
+              extraMessage: extraMessage,
+              extraAmount: extraAmount,
+              discount: discount,
+            ),
             SizedBox(
               height: height * 0.1,
             ),
@@ -63,7 +71,7 @@ class PaymentSummerySection extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => MainScreen(),
                   ),
-                  (route) => false,
+                      (route) => false,
                 );
               },
             ),

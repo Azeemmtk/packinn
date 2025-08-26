@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -98,13 +99,14 @@ class HomeCustomAppbarWidget extends StatelessWidget {
                   },
                 ),
                 InkWell(
-                  onTap: () {
+                  onTap: () async{
                     print(CurrentUser().uId);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AllChatScreen(),
-                        ));
+                    await FirebaseFirestore.instance.collection('payments').doc('test').set({'test': 'data'});
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) => AllChatScreen(),
+                    //     ));
                   },
                   child: SvgPicture.asset(
                     'assets/images/chat_icon.svg',

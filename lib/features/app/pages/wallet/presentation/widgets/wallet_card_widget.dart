@@ -11,7 +11,7 @@ class WalletCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(occupantId: '',),));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(occupantId: '',occupantName: '',),));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -66,7 +66,7 @@ class WalletCardWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Vadakara, calicut, kerala',
+                    'Occupant name',
                     style: TextStyle(
                       color: Colors.grey[500],
                       fontSize: 14,
@@ -74,7 +74,7 @@ class WalletCardWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'RENT - 500 /MONTH',
+                    'RENT - 500 - paid/due',
                     style: const TextStyle(
                       color: mainColor,
                       fontWeight: FontWeight.w600,
