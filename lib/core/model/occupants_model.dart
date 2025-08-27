@@ -8,6 +8,7 @@ class OccupantModel {
   final Map<String, dynamic>? guardian;
   final String? idProofUrl;
   final String? addressProofUrl;
+  final String? profileImageUrl;
   final String userId;
   final String? hostelId;
   final String? roomId;
@@ -22,6 +23,7 @@ class OccupantModel {
     this.guardian,
     this.idProofUrl,
     this.addressProofUrl,
+    this.profileImageUrl,
     required this.userId,
     this.hostelId,
     this.roomId,
@@ -38,6 +40,7 @@ class OccupantModel {
       'guardian': guardian,
       'idProofUrl': idProofUrl,
       'addressProofUrl': addressProofUrl,
+      'profileImageUrl': profileImageUrl,
       'userId': userId,
       'hostelId': hostelId,
       'roomId': roomId,
@@ -61,6 +64,7 @@ class OccupantModel {
           : null,
       idProofUrl: idProofUrl,
       addressProofUrl: addressProofUrl,
+      profileImageUrl: profileImageUrl,
       userId: userId,
       hostelId: hostelId,
       roomId: roomId,
@@ -84,6 +88,7 @@ class OccupantModel {
           : null,
       idProofUrl: occupant.idProofUrl,
       addressProofUrl: occupant.addressProofUrl,
+      profileImageUrl: occupant.profileImageUrl,
       userId: occupant.userId,
       hostelId: occupant.hostelId,
       roomId: occupant.roomId,
@@ -101,6 +106,7 @@ class OccupantModel {
       guardian: json['guardian'],
       idProofUrl: json['idProofUrl'],
       addressProofUrl: json['addressProofUrl'],
+      profileImageUrl: json['profileImageUrl'],
       userId: json['userId'],
       hostelId: json['hostelId'],
       roomId: json['roomId'],

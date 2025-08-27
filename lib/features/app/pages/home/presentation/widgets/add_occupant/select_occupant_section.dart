@@ -33,6 +33,7 @@ class SelectOccupantSection extends StatelessWidget {
           itemCount: currentState.occupants.length,
           itemBuilder: (context, index) {
             final occupant = currentState.occupants[index];
+            print('========image url=======${occupant.profileImageUrl}');
             return InkWell(
               onTap: () async {
                 final result = await Navigator.push(

@@ -5,10 +5,10 @@ import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
 import 'package:packinn/core/widgets/custom_green_button_widget.dart';
-import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/payment_bloc.dart';
-import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/payment_state.dart';
+import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/payment/payment_bloc.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/screens/payment_successful_screen.dart';
 import '../../../../../../core/widgets/title_text_widget.dart';
+import '../provider/bloc/payment/payment_state.dart';
 import '../widgets/payment_summery_widget.dart';
 
 class PaymentScreen extends StatelessWidget {

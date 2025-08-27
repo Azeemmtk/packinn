@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:packinn/core/services/current_user.dart';
 
 import '../../features/app/pages/chat/presentation/screens/all_chat_screen.dart';
 import '../constants/colors.dart';
@@ -50,14 +51,19 @@ class CustomAppBarWidget extends StatelessWidget {
             ),
             enableChat
                 ? InkWell(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => AllChatScreen(),));
-              },
-                  child: SvgPicture.asset(
+                    onTap: () {
+                      print('userId====================${CurrentUser().uId}');
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AllChatScreen(),
+                          ));
+                    },
+                    child: SvgPicture.asset(
                       'assets/images/chat_icon.svg',
                       height: 45,
                     ),
-                )
+                  )
                 : width10
           ],
         ),

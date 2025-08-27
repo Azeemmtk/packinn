@@ -31,6 +31,60 @@ class EditImageSection extends StatelessWidget {
                   onPressed: () async {
                     final image = await getIt<ImagePickerService>().showImageSourceDialog(context);
                     if (image != null) {
+                      textFieldCubit.updateField(profileImage: image);
+                      addOccupantBloc.add(
+                        UpdateOccupantEvent(
+                          name: textFieldState.name,
+                          phone: textFieldState.phone,
+                          age: int.tryParse(textFieldState.age),
+                          guardianName: textFieldState.guardianName,
+                          guardianPhone: textFieldState.guardianPhone,
+                          guardianRelation: textFieldState.guardianRelation,
+                          profileImage: image,
+                          addressProof: currentState.addressProof,
+                          profileImageUrl: null,
+                          addressProofUrl: currentState.addressProofUrl,
+                        ),
+                      );
+                      textFieldCubit.validateFields(isSubmitted: false);
+                    }
+                  },
+                  child: Text('Occupant Image'),
+                ),
+                if (currentState.profileImage != null || currentState.profileImageUrl != null) ...[
+                  width10,
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => ImageViewDialog(
+                          image: currentState.profileImage,
+                          imageUrl: currentState.profileImageUrl,
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: currentState.profileImage != null
+                              ? FileImage(currentState.profileImage!)
+                              : NetworkImage(currentState.profileImageUrl!) as ImageProvider,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    final image = await getIt<ImagePickerService>().showImageSourceDialog(context);
+                    if (image != null) {
                       textFieldCubit.updateField(idProof: image);
                       addOccupantBloc.add(
                         UpdateOccupantEvent(

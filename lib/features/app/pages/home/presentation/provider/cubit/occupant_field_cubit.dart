@@ -16,7 +16,9 @@ class OccupantFieldCubit extends Cubit<OccupantFieldState> {
     String? guardianRelation,
     File? idProof,
     File? addressProof,
+    File? profileImage,
     String? idProofUrl,
+    String? profileImageUrl,
     String? addressProofUrl,
   }) {
     emit(OccupantFieldState(
@@ -28,8 +30,10 @@ class OccupantFieldCubit extends Cubit<OccupantFieldState> {
       guardianRelation: guardianRelation ?? state.guardianRelation,
       idProof: idProof ?? state.idProof,
       addressProof: addressProof ?? state.addressProof,
+      profileImage: profileImage ?? state.profileImage,
       idProofUrl: idProofUrl ?? state.idProofUrl,
       addressProofUrl: addressProofUrl ?? state.addressProofUrl,
+      profileImageUrl: profileImageUrl ?? state.profileImageUrl,
       nameError: state.nameError,
       phoneError: state.phoneError,
       ageError: state.ageError,
@@ -50,6 +54,7 @@ class OccupantFieldCubit extends Cubit<OccupantFieldState> {
     String? guardianRelationError;
     String? idProofError;
     String? addressProofError;
+    String? profileImageError;
 
     if (isSubmitted) {
       if (state.name.isEmpty) {
@@ -57,6 +62,9 @@ class OccupantFieldCubit extends Cubit<OccupantFieldState> {
       }
       if (state.phone.isEmpty) {
         phoneError = 'Phone is required';
+      }
+      if (state.profileImage == null && state.profileImageUrl == null) {
+        profileImageError = 'Occupant image is required';
       }
       if (state.age.isEmpty) {
         ageError = 'Age is required';
@@ -100,8 +108,10 @@ class OccupantFieldCubit extends Cubit<OccupantFieldState> {
       guardianRelation: state.guardianRelation,
       idProof: state.idProof,
       addressProof: state.addressProof,
+      profileImage: state.profileImage,
       idProofUrl: state.idProofUrl,
       addressProofUrl: state.addressProofUrl,
+      profileImageUrl: state.profileImageUrl,
       nameError: nameError,
       phoneError: phoneError,
       ageError: ageError,
@@ -110,6 +120,7 @@ class OccupantFieldCubit extends Cubit<OccupantFieldState> {
       guardianRelationError: guardianRelationError,
       idProofError: idProofError,
       addressProofError: addressProofError,
+      profileImageError: profileImageError
     ));
 
     return nameError == null &&
@@ -119,7 +130,8 @@ class OccupantFieldCubit extends Cubit<OccupantFieldState> {
         guardianPhoneError == null &&
         guardianRelationError == null &&
         idProofError == null &&
-        addressProofError == null;
+        addressProofError == null &&
+        profileImageError == null;
   }
 
   String? validateAndGetError() {
@@ -128,6 +140,9 @@ class OccupantFieldCubit extends Cubit<OccupantFieldState> {
     }
     if (state.phone.isEmpty) {
       return 'Please fill all required occupant fields';
+    }
+    if (state.profileImage == null && state.profileImageUrl == null) {
+      return 'Please add occupant image';
     }
     if (state.age.isEmpty) {
       return 'Please fill all required occupant fields';
@@ -155,6 +170,7 @@ class OccupantFieldCubit extends Cubit<OccupantFieldState> {
       if (state.addressProof == null && state.addressProofUrl == null) {
         return 'Please upload address proof for occupant';
       }
+
     }
     return null;
   }

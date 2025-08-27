@@ -59,8 +59,10 @@ class AddOccupantBloc extends Bloc<AddOccupantEvent, AddOccupantState> {
       guardianRelation: event.guardianRelation ?? currentState.guardianRelation,
       idProof: event.idProof ?? currentState.idProof,
       addressProof: event.addressProof ?? currentState.addressProof,
+      profileImage: event.profileImage ?? currentState.profileImage,
       idProofUrl: event.idProofUrl ?? currentState.idProofUrl,
       addressProofUrl: event.addressProofUrl ?? currentState.addressProofUrl,
+      profileImageUrl: event.profileImageUrl ?? currentState.profileImageUrl,
       occupants: currentState.occupants,
       showForm: currentState.showForm,
     ));
@@ -87,6 +89,9 @@ class AddOccupantBloc extends Bloc<AddOccupantEvent, AddOccupantState> {
         final String? newAddressProofUrl = currentState.addressProof != null
             ? imageUrls.length > 1 ? imageUrls[1]['secureUrl'] : imageUrls.isNotEmpty ? imageUrls[0]['secureUrl'] : null
             : currentState.addressProofUrl;
+        final String? newProfileImageUrl = currentState.profileImage != null
+            ? imageUrls.length > 1 ? imageUrls[1]['secureUrl'] : imageUrls.isNotEmpty ? imageUrls[0]['secureUrl'] : null
+            : currentState.profileImageUrl;
 
         final occupant = OccupantEntity(
           id: event.occupantId,
@@ -102,6 +107,7 @@ class AddOccupantBloc extends Bloc<AddOccupantEvent, AddOccupantState> {
               : null,
           idProofUrl: newIdProofUrl,
           addressProofUrl: newAddressProofUrl,
+          profileImageUrl: newProfileImageUrl,
           userId: CurrentUser().uId!,
           hostelId: null,
           roomId: null,
@@ -124,8 +130,10 @@ class AddOccupantBloc extends Bloc<AddOccupantEvent, AddOccupantState> {
                 guardianRelation: '',
                 idProof: null,
                 addressProof: null,
+                profileImage: null,
                 idProofUrl: null,
                 addressProofUrl: null,
+                profileImageUrl: null,
                 occupants: occupants,
                 showForm: false, // Ensure form is hidden to show selection section
               )),
@@ -159,8 +167,10 @@ class AddOccupantBloc extends Bloc<AddOccupantEvent, AddOccupantState> {
               guardianRelation: '',
               idProof: null,
               addressProof: null,
+              profileImage: null,
               idProofUrl: null,
               addressProofUrl: null,
+              profileImageUrl: null,
               occupants: occupants,
               showForm: occupants.isEmpty,
             )),
@@ -188,8 +198,10 @@ class AddOccupantBloc extends Bloc<AddOccupantEvent, AddOccupantState> {
       guardianRelation: currentState.guardianRelation,
       idProof: currentState.idProof,
       addressProof: currentState.addressProof,
+      profileImage: currentState.profileImage,
       idProofUrl: currentState.idProofUrl,
       addressProofUrl: currentState.addressProofUrl,
+      profileImageUrl: currentState.profileImageUrl,
       occupants: currentState.occupants,
       showForm: event.showForm,
     ));

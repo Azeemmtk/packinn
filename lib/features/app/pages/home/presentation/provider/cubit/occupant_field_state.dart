@@ -9,8 +9,10 @@ class OccupantFieldState extends Equatable {
   final String guardianRelation;
   final File? idProof;
   final File? addressProof;
+  final File? profileImage;
   final String? idProofUrl;
   final String? addressProofUrl;
+  final String? profileImageUrl;
   final String? nameError;
   final String? phoneError;
   final String? ageError;
@@ -19,6 +21,7 @@ class OccupantFieldState extends Equatable {
   final String? guardianRelationError;
   final String? idProofError;
   final String? addressProofError;
+  final String? profileImageError;
 
   OccupantFieldState({
     this.name = '',
@@ -29,8 +32,10 @@ class OccupantFieldState extends Equatable {
     this.guardianRelation = '',
     this.idProof,
     this.addressProof,
+    this.profileImage,
     this.idProofUrl,
     this.addressProofUrl,
+    this.profileImageUrl,
     this.nameError,
     this.phoneError,
     this.ageError,
@@ -39,6 +44,7 @@ class OccupantFieldState extends Equatable {
     this.guardianRelationError,
     this.idProofError,
     this.addressProofError,
+    this.profileImageError,
   });
 
   @override
@@ -51,8 +57,10 @@ class OccupantFieldState extends Equatable {
     guardianRelation,
     idProof,
     addressProof,
+    profileImage,
     idProofUrl,
     addressProofUrl,
+    profileImageUrl,
     nameError,
     phoneError,
     ageError,
@@ -61,5 +69,6 @@ class OccupantFieldState extends Equatable {
     guardianRelationError,
     idProofError,
     addressProofError,
+    profileImageError,
   ];
 }

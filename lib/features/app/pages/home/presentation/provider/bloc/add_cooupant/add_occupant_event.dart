@@ -25,8 +25,10 @@ class UpdateOccupantEvent extends AddOccupantEvent {
   final String? guardianRelation;
   final File? idProof;
   final File? addressProof;
-  final String? idProofUrl; // Added for existing image URL
-  final String? addressProofUrl; // Added for existing image URL
+  final File? profileImage;
+  final String? idProofUrl;
+  final String? addressProofUrl;
+  final String? profileImageUrl;
 
   UpdateOccupantEvent({
     this.name,
@@ -37,8 +39,10 @@ class UpdateOccupantEvent extends AddOccupantEvent {
     this.guardianRelation,
     this.idProof,
     this.addressProof,
+    this.profileImage,
     this.idProofUrl,
     this.addressProofUrl,
+    this.profileImageUrl,
   });
 
   @override
@@ -50,9 +54,11 @@ class UpdateOccupantEvent extends AddOccupantEvent {
     guardianPhone,
     guardianRelation,
     idProof,
+    profileImage,
     addressProof,
     idProofUrl,
     addressProofUrl,
+    profileImageUrl,
   ];
 }
 

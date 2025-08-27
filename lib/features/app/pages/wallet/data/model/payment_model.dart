@@ -45,6 +45,7 @@ class PaymentModel {
       'extraAmount': extraAmount,
       'discount': discount,
       'occupantName': occupantName,
+      'hostelName': hostelName,
       'paymentStatus': paymentStatus,
       'dueDate': Timestamp.fromDate(dueDate),
     };

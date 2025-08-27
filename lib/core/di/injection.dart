@@ -23,11 +23,14 @@ import 'package:packinn/features/app/pages/search/domain/usecases/search_hostel.
 import 'package:packinn/features/app/pages/search/presentation/provider/bloc/search/search_bloc.dart';
 import 'package:packinn/features/app/pages/search/presentation/provider/cubit/search_filter/search_filter_cubit.dart';
 import 'package:packinn/features/app/pages/wallet/data/datasourse/occupant_edit_remote_data_source.dart';
-import 'package:packinn/features/app/pages/wallet/data/repository/payment_repository_impl.dart';
-import 'package:packinn/features/app/pages/wallet/domain/repository/payment_repository.dart';
+import 'package:packinn/features/app/pages/wallet/data/datasourse/payment_remote_data_source.dart';
+import 'package:packinn/features/app/pages/wallet/data/repository/wallet_repository_impl.dart';
+import 'package:packinn/features/app/pages/wallet/domain/repository/wallet_repository.dart';
+import 'package:packinn/features/app/pages/wallet/domain/usecases/get_payment_usecase.dart';
 import 'package:packinn/features/app/pages/wallet/domain/usecases/save_payment_use_case.dart';
 import 'package:packinn/features/app/pages/wallet/domain/usecases/update_occupant_usecase.dart';
-import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/payment_bloc.dart';
+import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/payment/payment_bloc.dart';
+import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/wallet/wallet_bloc.dart';
 import 'package:packinn/features/auth/domain/usecase/reset_password.dart';
 import 'package:packinn/features/auth/domain/usecase/verify_otp.dart';
 import 'package:packinn/features/auth/presentation/provider/cubit/otp_cubit.dart';
@@ -101,8 +104,13 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton<OccupantEditRemoteDataSource>(
         () => OccupantEditRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
   );
+
   getIt.registerLazySingleton<BookingRemoteDataSource>(
         () => BookingRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+  );
+
+  getIt.registerLazySingleton<PaymentRemoteDataSource>(
+        () => PaymentRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
   );
 
   // Repositories
@@ -124,8 +132,8 @@ Future<void> initializeDependencies() async {
     () => OccupantRepositoryImpl(getIt<OccupantRemoteDataSource>()),
   );
 
-  getIt.registerLazySingleton<PaymentRepository>(
-        () => PaymentRepositoryImpl(getIt<OccupantEditRemoteDataSource>()),
+  getIt.registerLazySingleton<WalletRepository>(
+        () => WalletRepositoryImpl(getIt<OccupantEditRemoteDataSource>(), getIt<PaymentRemoteDataSource>() ),
   );
 
   getIt.registerLazySingleton<BookingRepository>(
@@ -148,9 +156,10 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton(() => SaveOccupant(getIt<OccupantsRepository>()));
   getIt.registerLazySingleton(() => FetchOccupants(getIt<OccupantsRepository>()));
   getIt.registerLazySingleton(() => DeleteOccupant(getIt<OccupantsRepository>()));
-  getIt.registerLazySingleton(() => UpdateOccupantUseCase(getIt<PaymentRepository>()));
+  getIt.registerLazySingleton(() => UpdateOccupantUseCase(getIt<WalletRepository>()));
   getIt.registerLazySingleton(() => GetMyBookingsUseCase(getIt<BookingRepository>()));
-  getIt.registerLazySingleton(() => SavePaymentUseCase(getIt<PaymentRepository>()));
+  getIt.registerLazySingleton(() => SavePaymentUseCase(getIt<WalletRepository>()));
+  getIt.registerLazySingleton(() => GetPaymentsUseCase(getIt<WalletRepository>()));
 
   // BLoCs
   getIt.registerFactory(
@@ -201,6 +210,7 @@ Future<void> initializeDependencies() async {
 
   getIt.registerFactory(() => PaymentBloc(getIt<StripeService>(), getIt<SavePaymentUseCase>(), getIt<UpdateOccupantUseCase>()),);
   getIt.registerFactory(() => MyBookingsBloc(getMyBookingsUseCase: getIt<GetMyBookingsUseCase>()));
+  getIt.registerFactory(() => WalletBloc(getIt<GetPaymentsUseCase>()));
 
   // Cubits
   getIt.registerFactory(() => OtpCubit());

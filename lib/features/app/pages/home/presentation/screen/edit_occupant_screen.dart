@@ -67,6 +67,7 @@ class _EditOccupantScreenState extends State<EditOccupantScreen> {
               guardianRelation: widget.occupant.guardian?.relation ?? '',
               idProofUrl: widget.occupant.idProofUrl,
               addressProofUrl: widget.occupant.addressProofUrl,
+              profileImageUrl: widget.occupant.profileImageUrl,
             )),
         ),
         BlocProvider(

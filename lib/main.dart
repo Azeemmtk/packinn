@@ -20,12 +20,10 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(fileName: '.env'); // Load .env file
+  await dotenv.load(fileName: '.env');
 
   //Stripe
-  Stripe.publishableKey= dotenv.env['STRIPE_PUBLISHABLE_KEY']!;
-  print('Publishable Key: ${dotenv.env['STRIPE_PUBLISHABLE_KEY']}'); // Debug
-  print('Secret Key: ${dotenv.env['STRIPE_SECRET_KEY']}'); // Debug
+  Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY']!;
 
   // Initialize Firebase
   await Firebase.initializeApp(
@@ -51,9 +49,15 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => getIt<EmailAuthBloc>()),
         BlocProvider(create: (context) => getIt<GoogleAuthBloc>()),
         BlocProvider(create: (context) => getIt<OtpAuthBloc>()),
-        BlocProvider(create: (context) => getIt<SignUpCubit>(),),
-        BlocProvider(create: (context) => getIt<SignInCubit>(),),
-        BlocProvider(create: (context) => getIt<HostelBloc>()..add(FetchHostelsData()),)
+        BlocProvider(
+          create: (context) => getIt<SignUpCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<SignInCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<HostelBloc>()..add(FetchHostelsData()),
+        )
       ],
       child: MaterialApp(
         title: 'PackInn',

@@ -4,10 +4,10 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:packinn/core/services/stripe_services.dart';
 import 'package:packinn/features/app/pages/wallet/domain/usecases/update_occupant_usecase.dart';
-import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/payment_state.dart';
+import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/payment/payment_state.dart';
 
-import '../../../data/model/payment_model.dart';
-import '../../../domain/usecases/save_payment_use_case.dart';
+import '../../../../data/model/payment_model.dart';
+import '../../../../domain/usecases/save_payment_use_case.dart';
 
 part 'payment_event.dart';
 
@@ -17,18 +17,20 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   final UpdateOccupantUseCase updateOccupantUseCase;
 
   PaymentBloc(
-      this.stripeService,
-      this.savePaymentUseCase,
-      this.updateOccupantUseCase,
-      ) : super(PaymentInitial()) {
+    this.stripeService,
+    this.savePaymentUseCase,
+    this.updateOccupantUseCase,
+  ) : super(PaymentInitial()) {
     on<MakePaymentEvent>(_onMakePayment);
     on<SavePaymentEvent>(_onSavePayment);
   }
 
-  Future<void> _onMakePayment(MakePaymentEvent event, Emitter<PaymentState> emit) async {
+  Future<void> _onMakePayment(
+      MakePaymentEvent event, Emitter<PaymentState> emit) async {
     emit(PaymentLoading());
     try {
-      print('Starting payment process for occupantId: ${event.occupantId}, isBooking: ${event.isBooking}');
+      print(
+          'Starting payment process for occupantId: ${event.occupantId}, isBooking: ${event.isBooking}');
 
       // Process payment via Stripe
       final success = await stripeService.makePayment(amount: event.amount);
@@ -51,7 +53,8 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       // Handle payment logic
       final now = DateTime.now();
       final oneMonthLater = DateTime(now.year, now.month + 1, now.day);
-      final rentAmount = event.isBooking ? (event.roomRate ?? 3000.0) : event.amount;
+      final rentAmount =
+          event.isBooking ? (event.roomRate ?? 3000.0) : event.amount;
 
       // Create payment record for the current payment
       final paymentModel = PaymentModel(
@@ -75,11 +78,11 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       // Save the current payment
       final saveResult = await savePaymentUseCase(paymentModel);
       await saveResult.fold(
-            (failure) async {
+        (failure) async {
           print('Failed to save current payment: ${failure.message}');
           emit(PaymentError(failure.message));
         },
-            (_) async {
+        (_) async {
           print('Current payment saved successfully');
 
           // If it's a booking, create a second payment record for the rent
@@ -104,16 +107,17 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
 
             final rentSaveResult = await savePaymentUseCase(rentPaymentModel);
             rentSaveResult.fold(
-                  (failure) {
+              (failure) {
                 print('Failed to save rent payment: ${failure.message}');
                 emit(PaymentError(failure.message));
               },
-                  (_) => print('Rent payment saved successfully'),
+              (_) => print('Rent payment saved successfully'),
             );
           }
 
           // Update occupant details
-          print('Updating occupant with params: occupantId=${event.occupantId}, hostelId=${event.hostelId}, roomId=${event.roomId}, roomType=${event.roomType}');
+          print(
+              'Updating occupant with params: occupantId=${event.occupantId}, hostelId=${event.hostelId}, roomId=${event.roomId}, roomType=${event.roomType}');
           final updateResult = await updateOccupantUseCase(UpdateOccupantParams(
             occupantId: event.occupantId,
             roomId: event.roomId,
@@ -121,11 +125,11 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
             hostelId: event.hostelId,
           ));
           updateResult.fold(
-                (failure) {
+            (failure) {
               print('Failed to update occupant: ${failure.message}');
               emit(PaymentError(failure.message));
             },
-                (_) {
+            (_) {
               print('Occupant updated successfully');
               emit(PaymentSuccess());
             },
@@ -138,16 +142,18 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     }
   }
 
-  Future<void> _onSavePayment(SavePaymentEvent event, Emitter<PaymentState> emit) async {
+  Future<void> _onSavePayment(
+      SavePaymentEvent event, Emitter<PaymentState> emit) async {
     emit(PaymentLoading());
-    print('Saving payment via SavePaymentEvent: ${event.paymentModel.toJson()}');
+    print(
+        'Saving payment via SavePaymentEvent: ${event.paymentModel.toJson()}');
     final result = await savePaymentUseCase(event.paymentModel);
     result.fold(
-          (failure) {
+      (failure) {
         print('Failed to save payment: ${failure.message}');
         emit(PaymentError(failure.message));
       },
-          (_) {
+      (_) {
         print('Payment saved successfully via SavePaymentEvent');
         emit(PaymentSuccess());
       },

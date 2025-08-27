@@ -1,19 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../../../../../../core/error/exceptions.dart';
 
 abstract class OccupantEditRemoteDataSource {
-  Future<void> updateOccupant(String occupantId, String hostelId, String roomId, String roomType);
+  Future<void> updateOccupant(
+      String occupantId, String hostelId, String roomId, String roomType);
 }
 
-class OccupantEditRemoteDataSourceImpl extends OccupantEditRemoteDataSource{
-
+class OccupantEditRemoteDataSourceImpl extends OccupantEditRemoteDataSource {
   final FirebaseFirestore firestore;
 
   OccupantEditRemoteDataSourceImpl(this.firestore);
 
   @override
-  Future<void> updateOccupant(String occupantId, String hostelId, String roomId, String roomType) async {
+  Future<void> updateOccupant(String occupantId, String hostelId, String roomId,
+      String roomType) async {
     try {
       // Step 1: Update occupant data
       await firestore.collection('occupants').doc(occupantId).update({
@@ -28,7 +28,8 @@ class OccupantEditRemoteDataSourceImpl extends OccupantEditRemoteDataSource{
       });
 
       // Step 3: Fetch hostel document
-      final hostelDoc = await firestore.collection('hostels').doc(hostelId).get();
+      final hostelDoc =
+          await firestore.collection('hostels').doc(hostelId).get();
 
       if (!hostelDoc.exists) {
         throw Exception('Hostel not found');
@@ -52,11 +53,8 @@ class OccupantEditRemoteDataSourceImpl extends OccupantEditRemoteDataSource{
       await firestore.collection('hostels').doc(hostelId).update({
         'rooms': updatedRooms,
       });
-
     } catch (e) {
       throw ServerException('Failed to update occupant: $e');
     }
   }
-
-
 }

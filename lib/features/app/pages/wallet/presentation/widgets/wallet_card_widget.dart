@@ -1,17 +1,46 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:packinn/core/constants/colors.dart';
-import '../../../../../../core/constants/const.dart';
-import '../screens/payment_screen.dart';
+import 'package:packinn/core/constants/const.dart';
+import 'package:packinn/features/app/pages/wallet/data/model/payment_model.dart';
+import 'package:packinn/features/app/pages/wallet/presentation/screens/payment_screen.dart';
 
 class WalletCardWidget extends StatelessWidget {
+  final PaymentModel payment;
 
-  const WalletCardWidget({super.key, });
+  const WalletCardWidget({super.key, required this.payment});
+
+  Future<String> _fetchHostelName(String hostelId) async {
+    try {
+      final doc = await FirebaseFirestore.instance.collection('hostels').doc(hostelId).get();
+      return doc.data()?['name'] ?? 'Unknown Hostel';
+    } catch (e) {
+      return 'Unknown Hostel';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentScreen(occupantId: '',occupantName: '',),));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PaymentScreen(
+              occupantId: payment.occupantId,
+              occupantName: payment.occupantName,
+              extraMessage: payment.extraMessage,
+              extraAmount: payment.extraAmount,
+              discount: payment.discount,
+              room: {
+                'hostelId': payment.hostelId,
+                'roomId': payment.id,
+                'rate': payment.rent,
+              },
+              isBooking: false,
+            ),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(
@@ -53,20 +82,25 @@ class WalletCardWidget extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        'Summit hostel',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                      FutureBuilder<String>(
+                        future: _fetchHostelName(payment.hostelId),
+                        builder: (context, snapshot) {
+                          return Text(
+                            snapshot.data ?? 'Loading...',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          );
+                        },
                       ),
                       width5,
-                      Container()
+                      Container(),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Occupant name',
+                    payment.occupantName,
                     style: TextStyle(
                       color: Colors.grey[500],
                       fontSize: 14,
@@ -74,27 +108,18 @@ class WalletCardWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'RENT - 500 - paid/due',
+                    'RENT - ${payment.rent.toStringAsFixed(2)} - ${payment.paymentStatus ? 'Paid' : 'Due'}',
                     style: const TextStyle(
                       color: mainColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '4.5',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Due: ${payment.dueDate.toString().substring(0, 10)}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
                   ),
                 ],
               ),

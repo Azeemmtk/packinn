@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import '../../../../../../core/error/failures.dart';
 import '../../../../../../core/usecases/usecase.dart';
-import '../repository/payment_repository.dart';
+import '../repository/wallet_repository.dart';
 
 class UpdateOccupantUseCase implements UseCase<void, UpdateOccupantParams> {
-  final PaymentRepository repository;
+  final WalletRepository repository;
 
   UpdateOccupantUseCase(this.repository);
 

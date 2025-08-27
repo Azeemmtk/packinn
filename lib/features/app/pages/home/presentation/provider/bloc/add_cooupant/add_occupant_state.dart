@@ -20,8 +20,10 @@ class AddOccupantLoaded extends AddOccupantState {
   final String guardianRelation;
   final File? idProof;
   final File? addressProof;
-  final String? idProofUrl; // Added for existing image URL
-  final String? addressProofUrl; // Added for existing image URL
+  final File? profileImage;
+  final String? idProofUrl;
+  final String? addressProofUrl;
+  final String? profileImageUrl;
   final List<OccupantEntity> occupants;
   final bool showForm;
 
@@ -34,8 +36,10 @@ class AddOccupantLoaded extends AddOccupantState {
     this.guardianRelation = '',
     this.idProof,
     this.addressProof,
+    this.profileImage,
     this.idProofUrl,
     this.addressProofUrl,
+    this.profileImageUrl,
     this.occupants = const [],
     this.showForm = true,
   });
@@ -54,6 +58,8 @@ class AddOccupantLoaded extends AddOccupantState {
     addressProofUrl,
     occupants,
     showForm,
+    profileImageUrl,
+    profileImage,
   ];
 }
 

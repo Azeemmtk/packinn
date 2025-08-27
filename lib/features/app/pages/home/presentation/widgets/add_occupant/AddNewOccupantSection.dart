@@ -159,6 +159,43 @@ class AddNewOccupantSection extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () async {
+                    final image = await getIt<ImagePickerService>().showImageSourceDialog(context);
+                    if (image != null) {
+                      textFieldCubit.updateField(profileImage: image);
+                      addOccupantBloc.add(UpdateOccupantEvent(profileImage: image));
+                      textFieldCubit.validateFields(isSubmitted: false);
+                    }
+                  },
+                  child: Text(
+                      'Occupant image'),
+                ),
+                if (currentState.profileImage != null) ...[
+                  width10,
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => ImageViewDialog(image: currentState.profileImage!),
+                      );
+                    },
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: FileImage(currentState.profileImage!),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
                     final image =
                     await getIt<ImagePickerService>().showImageSourceDialog(context);
                     if (image != null) {
