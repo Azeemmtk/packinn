@@ -21,7 +21,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     this.savePaymentUseCase,
     this.updateOccupantUseCase,
   ) : super(PaymentInitial()) {
-    on<MakePaymentEvent>(_onMakePayment);
+      on<MakePaymentEvent>(_onMakePayment);
     on<SavePaymentEvent>(_onSavePayment);
   }
 
@@ -52,48 +52,49 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
 
       // Handle payment logic
       final now = DateTime.now();
-      final oneMonthLater = DateTime(now.year, now.month + 1, now.day);
+      // final oneMonthLater = DateTime(now.year, now.month + 1, now.day);
       final rentAmount =
           event.isBooking ? (event.roomRate ?? 3000.0) : event.amount;
 
-      // Create payment record for the current payment
-      final paymentModel = PaymentModel(
-        id: FirebaseFirestore.instance.collection('payments').doc().id,
-        userId: userId,
-        occupantId: event.occupantId,
-        hostelId: event.hostelId,
-        isBooking: event.isBooking,
-        amount: event.isBooking ? 100.0 : event.amount,
-        rent: rentAmount,
-        extraMessage: event.extraMessage,
-        extraAmount: event.extraAmount,
-        discount: event.discount,
-        occupantName: event.occupantName,
-        occupantImage: event.occupantImage,
-        hostelName: event.hostelName,
-        paymentStatus: true,
-        dueDate: now,
-      );
+      if(event.isBooking){
+        // Create payment record for the booking payment
+        final paymentModel = PaymentModel(
+          id: FirebaseFirestore.instance.collection('payments').doc().id,
+          userId: userId,
+          occupantId: event.occupantId,
+          hostelId: event.hostelId,
+          isBooking: true,
+          amount: 100.0,
+          rent: rentAmount,
+          extraMessage: event.extraMessage,
+          extraAmount: event.extraAmount,
+          discount: event.discount,
+          occupantName: event.occupantName,
+          occupantImage: event.occupantImage,
+          hostelName: event.hostelName,
+          paymentStatus: true,
+          dueDate: now,
+          registrationDate: now,
+        );
 
-      print('Saving payment: ${paymentModel.toJson()}');
+        print('Saving booking payment: ${paymentModel.toJson()}');
 
-      // Save the current payment
-      final saveResult = await savePaymentUseCase(paymentModel);
-      await saveResult.fold(
-        (failure) async {
-          print('Failed to save current payment: ${failure.message}');
-          emit(PaymentError(failure.message));
-        },
-        (_) async {
-          print('Current payment saved successfully');
+        // Save the booking payment
+        final saveResult = await savePaymentUseCase(paymentModel);
+        await saveResult.fold(
+              (failure) async {
+            print('Failed to save booking payment: ${failure.message}');
+            emit(PaymentError(failure.message));
+          },
+              (_) async {
+            print('Booking payment saved successfully');
 
-          // If it's a booking, create a second payment record for the rent
-          if (event.isBooking) {
+            // Create a second payment record for the rent
             final rentPaymentModel = PaymentModel(
               id: FirebaseFirestore.instance.collection('payments').doc().id,
               userId: userId,
               occupantId: event.occupantId,
-              isBooking: event.isBooking,
+              isBooking: false,
               hostelId: event.hostelId,
               amount: rentAmount,
               rent: rentAmount,
@@ -104,42 +105,84 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
               occupantImage: event.occupantImage,
               hostelName: event.hostelName,
               paymentStatus: false,
-              dueDate: oneMonthLater,
+              dueDate: now.add(Duration(days: 5)),
+              registrationDate: now,
             );
 
             print('Saving rent payment: ${rentPaymentModel.toJson()}');
 
             final rentSaveResult = await savePaymentUseCase(rentPaymentModel);
             rentSaveResult.fold(
-              (failure) {
+                  (failure) {
                 print('Failed to save rent payment: ${failure.message}');
                 emit(PaymentError(failure.message));
               },
-              (_) => print('Rent payment saved successfully'),
+                  (_) => print('Rent payment saved successfully'),
             );
-          }
 
-          // Update occupant details
-          print(
-              'Updating occupant with params: occupantId=${event.occupantId}, hostelId=${event.hostelId}, roomId=${event.roomId}, roomType=${event.roomType}');
-          final updateResult = await updateOccupantUseCase(UpdateOccupantParams(
-            occupantId: event.occupantId,
-            roomId: event.roomId,
-            roomType: event.roomType,
-            hostelId: event.hostelId,
-          ));
-          updateResult.fold(
-            (failure) {
-              print('Failed to update occupant: ${failure.message}');
-              emit(PaymentError(failure.message));
-            },
-            (_) {
-              print('Occupant updated successfully');
-              emit(PaymentSuccess());
-            },
-          );
-        },
-      );
+            // Update occupant details
+            print(
+                'Updating occupant with params: occupantId=${event.occupantId}, hostelId=${event.hostelId}, roomId=${event.roomId}, roomType=${event.roomType}');
+            final updateResult = await updateOccupantUseCase(UpdateOccupantParams(
+              occupantId: event.occupantId,
+              roomId: event.roomId,
+              roomType: event.roomType,
+              hostelId: event.hostelId,
+            ));
+            updateResult.fold(
+                  (failure) {
+                print('Failed to update occupant: ${failure.message}');
+                emit(PaymentError(failure.message));
+              },
+                  (_) {
+                print('Occupant updated successfully');
+                emit(PaymentSuccess());
+              },
+            );
+          },
+        );
+      } else {
+        // For non-booking payment, update the existing payment record
+        if (event.id == null) {
+          print('No payment ID provided for non-booking payment');
+          emit(const PaymentError('No payment ID provided'));
+          return;
+        }
+
+        final paymentModel = PaymentModel(
+          id: event.id,
+          userId: userId,
+          occupantId: event.occupantId,
+          hostelId: event.hostelId,
+          isBooking: false,
+          amount: event.amount,
+          rent: rentAmount,
+          extraMessage: event.extraMessage,
+          extraAmount: event.extraAmount,
+          discount: event.discount,
+          occupantName: event.occupantName,
+          occupantImage: event.occupantImage,
+          hostelName: event.hostelName,
+          paymentStatus: true,
+          dueDate: event.dueDate!,
+          registrationDate: event.registrationDate!,
+        );
+
+        print('Updating payment: ${paymentModel.toJson()}');
+
+        // Save (update) the payment
+        final saveResult = await savePaymentUseCase(paymentModel);
+        saveResult.fold(
+              (failure) {
+            print('Failed to update payment: ${failure.message}');
+            emit(PaymentError(failure.message));
+          },
+              (_) {
+            print('Payment updated successfully');
+            emit(PaymentSuccess());
+          },
+        );
+      }
     } catch (e) {
       print('Unexpected error during payment: ${e.toString()}');
       emit(PaymentError('Payment failed: ${e.toString()}'));

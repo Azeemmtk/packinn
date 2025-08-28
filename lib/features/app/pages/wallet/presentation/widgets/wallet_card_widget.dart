@@ -22,18 +22,25 @@ class WalletCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+        print(' wallet screen${payment.id}');
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => PaymentScreen(
+              status: payment.paymentStatus,
+              id: payment.id,
               occupantId: payment.occupantId,
               occupantName: payment.occupantName,
               occupantImage: payment.occupantImage,
               extraMessage: payment.extraMessage,
               extraAmount: payment.extraAmount,
               discount: payment.discount,
+              dueDate: payment.dueDate,
+              registrationDate: payment.registrationDate,
+
               room: {
                 'hostelId': payment.hostelId,
+                'hostelName':payment.hostelName,
                 'roomId': payment.id,
                 'rate': payment.rent,
               },

@@ -16,14 +16,20 @@ class PaymentScreen extends StatelessWidget {
     super.key,
     this.isBooking = false,
     this.room,
+    this.id,
     required this.occupantId,
     required this.occupantName,
     required this.occupantImage,
     this.extraMessage,
     this.extraAmount,
     this.discount,
+    this.registrationDate,
+    this.dueDate,
+    this.status= false,
   });
 
+  final String? id;
+  final bool status;
   final Map<String, dynamic>? room;
   final bool isBooking;
   final String occupantId;
@@ -32,6 +38,8 @@ class PaymentScreen extends StatelessWidget {
   final String? extraMessage;
   final double? extraAmount;
   final double? discount;
+  final DateTime? dueDate;
+  final DateTime? registrationDate;
 
   @override
   Widget build(BuildContext context) {
@@ -116,8 +124,12 @@ class PaymentScreen extends StatelessWidget {
                     },
                     builder: (context, state) {
                       return CustomGreenButtonWidget(
-                        name: state is PaymentLoading ? 'Processing...' : 'Pay now',
-                        onPressed: state is PaymentLoading
+                        name: status ? 'Go back' : state is PaymentLoading ? 'Processing...' : 'Pay now',
+                        onPressed: status
+                            ? (){
+                          Navigator.pop(context);
+                        }
+                            : state is PaymentLoading
                             ? null
                             : () {
                           print(String.fromEnvironment('STRIPE_PUBLISHABLE_KEY'));
@@ -125,6 +137,9 @@ class PaymentScreen extends StatelessWidget {
 
                           context.read<PaymentBloc>().add(
                             MakePaymentEvent(
+                              id: isBooking ? null : id,
+                              dueDate: isBooking ? null : dueDate,
+                              registrationDate: isBooking ? null : registrationDate,
                               amount: isBooking ? 100 : roomRate,
                               occupantId: occupantId,
                               roomType: roomType,

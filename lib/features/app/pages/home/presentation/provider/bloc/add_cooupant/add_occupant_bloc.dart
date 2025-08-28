@@ -79,6 +79,7 @@ class AddOccupantBloc extends Bloc<AddOccupantEvent, AddOccupantState> {
         final List<File?> imagesToUpload = [];
         if (currentState.idProof != null) imagesToUpload.add(currentState.idProof);
         if (currentState.addressProof != null) imagesToUpload.add(currentState.addressProof);
+        if (currentState.profileImage != null) imagesToUpload.add(currentState.profileImage);
 
         final imageUrls = await cloudinaryService.uploadImage(imagesToUpload);
 
@@ -90,7 +91,7 @@ class AddOccupantBloc extends Bloc<AddOccupantEvent, AddOccupantState> {
             ? imageUrls.length > 1 ? imageUrls[1]['secureUrl'] : imageUrls.isNotEmpty ? imageUrls[0]['secureUrl'] : null
             : currentState.addressProofUrl;
         final String? newProfileImageUrl = currentState.profileImage != null
-            ? imageUrls.length > 1 ? imageUrls[1]['secureUrl'] : imageUrls.isNotEmpty ? imageUrls[0]['secureUrl'] : null
+            ? imageUrls.length > 2 ? imageUrls[2]['secureUrl'] : imageUrls.isNotEmpty ? imageUrls[0]['secureUrl'] : null
             : currentState.profileImageUrl;
 
         final occupant = OccupantEntity(

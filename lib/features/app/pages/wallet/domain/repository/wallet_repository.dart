@@ -6,6 +6,7 @@ abstract class WalletRepository {
   Future<Either<Failure, void>> updateOccupant(String occupantId, String hostelId, String roomId, String roomType);
   Future<Either<Failure, void>> savePayment(PaymentModel payment);
   Future<Either<Failure, List<PaymentModel>>> getPayments(String userId);
+  Future<Either<Failure, void>> updatePayment(String paymentId);
 }
 
 

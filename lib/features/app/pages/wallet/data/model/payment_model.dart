@@ -18,6 +18,7 @@ class PaymentModel {
   final bool paymentStatus;
   final bool isBooking;
   final DateTime dueDate;
+  final DateTime registrationDate;
 
   PaymentModel({
     this.id,
@@ -35,6 +36,7 @@ class PaymentModel {
     required this.hostelName,
     required this.paymentStatus,
     required this.dueDate,
+    required this.registrationDate,
   });
 
   Map<String, dynamic> toJson() {
@@ -54,6 +56,7 @@ class PaymentModel {
       'isBooking': isBooking,
       'paymentStatus': paymentStatus,
       'dueDate': Timestamp.fromDate(dueDate),
+      'registrationDate': Timestamp.fromDate(registrationDate),
     };
   }
 
@@ -74,6 +77,7 @@ class PaymentModel {
       hostelName: json['hostelName'],
       paymentStatus: json['paymentStatus'] ?? false,
       dueDate: (json['dueDate'] as Timestamp).toDate(),
+      registrationDate: (json['registrationDate'] as Timestamp).toDate(),
     );
   }
 
@@ -94,6 +98,7 @@ class PaymentModel {
       hostelName :hostelName,
       paymentStatus: paymentStatus,
       dueDate: dueDate,
+      registrationDate: registrationDate,
     );
   }
 
@@ -114,6 +119,7 @@ class PaymentModel {
       hostelName: entity.hostelName,
       paymentStatus: entity.paymentStatus,
       dueDate: entity.dueDate,
+      registrationDate: entity.registrationDate,
     );
   }
 }

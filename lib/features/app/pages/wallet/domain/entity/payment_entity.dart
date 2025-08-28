@@ -16,6 +16,7 @@ class PaymentEntity extends Equatable {
   final bool paymentStatus;
   final bool isBooking;
   final DateTime dueDate;
+  final DateTime registrationDate;
 
   const PaymentEntity({
     this.id,
@@ -33,6 +34,7 @@ class PaymentEntity extends Equatable {
     this.isBooking= false,
     required this.paymentStatus,
     required this.dueDate,
+    required this.registrationDate,
   });
 
   @override
@@ -51,5 +53,6 @@ class PaymentEntity extends Equatable {
     dueDate,
     occupantImage,
     isBooking,
+    registrationDate,
   ];
 }

@@ -11,11 +11,10 @@ class WalletRepositoryImpl implements WalletRepository {
   final OccupantEditRemoteDataSource remoteDataSource;
   final PaymentRemoteDataSource paymentRemoteDataSource;
 
-
-
   final FirebaseFirestore firestore;
 
-  WalletRepositoryImpl(this.remoteDataSource, this.paymentRemoteDataSource, {FirebaseFirestore? firestore})
+  WalletRepositoryImpl(this.remoteDataSource, this.paymentRemoteDataSource,
+      {FirebaseFirestore? firestore})
       : firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
@@ -33,7 +32,6 @@ class WalletRepositoryImpl implements WalletRepository {
   @override
   Future<Either<Failure, void>> savePayment(PaymentModel payment) async {
     try {
-
       print('===============${payment.hostelName}');
       await FirebaseFirestore.instance
           .collection('payments')
@@ -47,12 +45,22 @@ class WalletRepositoryImpl implements WalletRepository {
 
   @override
   Future<Either<Failure, List<PaymentModel>>> getPayments(String userId) async {
-    try{
+    try {
       print('implimentation===========$userId}');
-      final payments= await paymentRemoteDataSource.getPayment(userId);
+      final payments = await paymentRemoteDataSource.getPayment(userId);
       return Right(payments);
-    } on ServerException catch (e){
+    } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updatePayment(String paymentId) async {
+    try {
+      await paymentRemoteDataSource.updatePayment(paymentId);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure ('Failed to update payment ${e.toString()}'));
     }
   }
 }

@@ -156,10 +156,10 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton(() => SaveOccupant(getIt<OccupantsRepository>()));
   getIt.registerLazySingleton(() => FetchOccupants(getIt<OccupantsRepository>()));
   getIt.registerLazySingleton(() => DeleteOccupant(getIt<OccupantsRepository>()));
-  getIt.registerLazySingleton(() => UpdateOccupantUseCase(getIt<WalletRepository>()));
   getIt.registerLazySingleton(() => GetMyBookingsUseCase(getIt<BookingRepository>()));
   getIt.registerLazySingleton(() => SavePaymentUseCase(getIt<WalletRepository>()));
   getIt.registerLazySingleton(() => GetPaymentsUseCase(getIt<WalletRepository>()));
+  getIt.registerLazySingleton(() => UpdateOccupantUseCase(getIt<WalletRepository>()));
 
   // BLoCs
   getIt.registerFactory(
