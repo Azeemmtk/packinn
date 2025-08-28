@@ -57,6 +57,7 @@ class ConfirmBookingScreen extends StatelessWidget {
                               occupantId: occupant.id!,
                               room: room,
                               occupantName: occupant.name,
+                              occupantImage: occupant.profileImageUrl!,
                               isBooking: true,
                             ),
                           ),

@@ -13,8 +13,10 @@ class PaymentModel {
   final double? extraAmount;
   final double? discount;
   final String occupantName;
+  final String occupantImage;
   final String hostelName;
   final bool paymentStatus;
+  final bool isBooking;
   final DateTime dueDate;
 
   PaymentModel({
@@ -27,7 +29,9 @@ class PaymentModel {
     this.extraMessage,
     this.extraAmount,
     this.discount,
+    this.isBooking =false,
     required this.occupantName,
+    required this.occupantImage,
     required this.hostelName,
     required this.paymentStatus,
     required this.dueDate,
@@ -45,7 +49,9 @@ class PaymentModel {
       'extraAmount': extraAmount,
       'discount': discount,
       'occupantName': occupantName,
+      'occupantImage': occupantImage,
       'hostelName': hostelName,
+      'isBooking': isBooking,
       'paymentStatus': paymentStatus,
       'dueDate': Timestamp.fromDate(dueDate),
     };
@@ -63,6 +69,8 @@ class PaymentModel {
       extraAmount: json['extraAmount'] != null ? (json['extraAmount'] as num).toDouble() : null,
       discount: json['discount'] != null ? (json['discount'] as num).toDouble() : null,
       occupantName: json['occupantName'],
+      occupantImage: json['occupantImage'],
+      isBooking: json['isBooking'],
       hostelName: json['hostelName'],
       paymentStatus: json['paymentStatus'] ?? false,
       dueDate: (json['dueDate'] as Timestamp).toDate(),
@@ -81,6 +89,8 @@ class PaymentModel {
       extraAmount: extraAmount,
       discount: discount,
       occupantName: occupantName,
+      isBooking: isBooking,
+      occupantImage: occupantImage,
       hostelName :hostelName,
       paymentStatus: paymentStatus,
       dueDate: dueDate,
@@ -98,7 +108,9 @@ class PaymentModel {
       extraMessage: entity.extraMessage,
       extraAmount: entity.extraAmount,
       discount: entity.discount,
+      isBooking: entity.isBooking,
       occupantName: entity.occupantName,
+      occupantImage: entity.occupantImage,
       hostelName: entity.hostelName,
       paymentStatus: entity.paymentStatus,
       dueDate: entity.dueDate,

@@ -18,6 +18,7 @@ class PaymentScreen extends StatelessWidget {
     this.room,
     required this.occupantId,
     required this.occupantName,
+    required this.occupantImage,
     this.extraMessage,
     this.extraAmount,
     this.discount,
@@ -27,6 +28,7 @@ class PaymentScreen extends StatelessWidget {
   final bool isBooking;
   final String occupantId;
   final String occupantName;
+  final String occupantImage;
   final String? extraMessage;
   final double? extraAmount;
   final double? discount;
@@ -89,6 +91,7 @@ class PaymentScreen extends StatelessWidget {
                     extraMessage: extraMessage,
                     extraAmount: extraAmount,
                     discount: discount,
+                    rent: roomRate,
                   ),
                   SizedBox(
                     height: height * 0.15,
@@ -99,7 +102,7 @@ class PaymentScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PaymentSuccessfulScreen(),
+                            builder: (context) => PaymentSuccessfulScreen(rent: roomRate,),
                           ),
                         );
                       } else if (state is PaymentError) {
@@ -133,6 +136,7 @@ class PaymentScreen extends StatelessWidget {
                               extraAmount: extraAmount,
                               discount: discount,
                               occupantName: occupantName,
+                              occupantImage: occupantImage,
                               hostelName: hostelName,
                             ),
                           );

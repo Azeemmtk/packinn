@@ -8,9 +8,10 @@ import '../../../../main_screen/presentation/screen/main_screen.dart';
 import '../../../home/presentation/provider/bloc/hostel/hostel_bloc.dart';
 
 class PaymentSummerySection extends StatelessWidget {
-  const PaymentSummerySection({super.key, this.extraMessage, this.extraAmount, this.discount});
+  const PaymentSummerySection({super.key, this.extraMessage, this.extraAmount, this.discount, required this.rent});
 
   final String? extraMessage;
+  final double rent;
   final double? extraAmount;
   final double? discount;
 
@@ -58,6 +59,8 @@ class PaymentSummerySection extends StatelessWidget {
               extraMessage: extraMessage,
               extraAmount: extraAmount,
               discount: discount,
+              isBooking: true,
+              rent: rent,
             ),
             SizedBox(
               height: height * 0.1,

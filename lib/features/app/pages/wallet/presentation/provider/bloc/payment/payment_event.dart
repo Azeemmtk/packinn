@@ -18,6 +18,7 @@ class MakePaymentEvent extends PaymentEvent {
   final String? extraMessage;
   final double? extraAmount;
   final double? discount;
+  final String occupantImage;
   final String occupantName;
   final String hostelName;
 
@@ -33,6 +34,7 @@ class MakePaymentEvent extends PaymentEvent {
     this.extraAmount,
     this.discount,
     required this.occupantName,
+    required this.occupantImage,
     required this.hostelName,
   });
 

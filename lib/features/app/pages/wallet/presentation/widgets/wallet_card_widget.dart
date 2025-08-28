@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
@@ -10,14 +9,14 @@ class WalletCardWidget extends StatelessWidget {
 
   const WalletCardWidget({super.key, required this.payment});
 
-  Future<String> _fetchHostelName(String hostelId) async {
-    try {
-      final doc = await FirebaseFirestore.instance.collection('hostels').doc(hostelId).get();
-      return doc.data()?['name'] ?? 'Unknown Hostel';
-    } catch (e) {
-      return 'Unknown Hostel';
-    }
-  }
+  // Future<String> _fetchHostelName(String hostelId) async {
+  //   try {
+  //     final doc = await FirebaseFirestore.instance.collection('hostels').doc(hostelId).get();
+  //     return doc.data()?['name'] ?? 'Unknown Hostel';
+  //   } catch (e) {
+  //     return 'Unknown Hostel';
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +28,7 @@ class WalletCardWidget extends StatelessWidget {
             builder: (context) => PaymentScreen(
               occupantId: payment.occupantId,
               occupantName: payment.occupantName,
+              occupantImage: payment.occupantImage,
               extraMessage: payment.extraMessage,
               extraAmount: payment.extraAmount,
               discount: payment.discount,
@@ -63,7 +63,7 @@ class WalletCardWidget extends StatelessWidget {
                 bottomLeft: Radius.circular(12),
               ),
               child: Image.network(
-                imagePlaceHolder,
+                payment.occupantImage,
                 width: width * 0.35,
                 height: height * 0.14,
                 fit: BoxFit.cover,
@@ -80,24 +80,13 @@ class WalletCardWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      FutureBuilder<String>(
-                        future: _fetchHostelName(payment.hostelId),
-                        builder: (context, snapshot) {
-                          return Text(
-                            snapshot.data ?? 'Loading...',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          );
-                        },
-                      ),
-                      width5,
-                      Container(),
-                    ],
-                  ),
+              Text(
+              payment.hostelName ,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
                   const SizedBox(height: 4),
                   Text(
                     payment.occupantName,
@@ -107,12 +96,23 @@ class WalletCardWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    'RENT - ${payment.rent.toStringAsFixed(2)} - ${payment.paymentStatus ? 'Paid' : 'Due'}',
-                    style: const TextStyle(
-                      color: mainColor,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        'RENT - ${ payment.isBooking ? 100.00 : payment.rent.toStringAsFixed(2) }',
+                        style: const TextStyle(
+                          color: mainColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        ' - ${payment.paymentStatus ? 'Paid' : 'Due'}',
+                        style: TextStyle(
+                          color: payment.paymentStatus ? mainColor :Colors.red,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                   Text(
                     'Due: ${payment.dueDate.toString().substring(0, 10)}',

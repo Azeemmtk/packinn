@@ -70,6 +70,7 @@ class _EditOccupantScreenState extends State<EditOccupantScreen> {
               profileImageUrl: widget.occupant.profileImageUrl,
             )),
         ),
+
         BlocProvider(
           create: (context) => getIt<OccupantFieldCubit>()
             ..updateField(

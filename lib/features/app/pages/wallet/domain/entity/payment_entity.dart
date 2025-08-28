@@ -11,8 +11,10 @@ class PaymentEntity extends Equatable {
   final double? extraAmount;
   final double? discount;
   final String occupantName;
+  final String occupantImage;
   final String hostelName;
   final bool paymentStatus;
+  final bool isBooking;
   final DateTime dueDate;
 
   const PaymentEntity({
@@ -26,7 +28,9 @@ class PaymentEntity extends Equatable {
     this.extraAmount,
     this.discount,
     required this.occupantName,
+    required this.occupantImage,
     required this.hostelName,
+    this.isBooking= false,
     required this.paymentStatus,
     required this.dueDate,
   });
@@ -45,5 +49,7 @@ class PaymentEntity extends Equatable {
     occupantName,
     paymentStatus,
     dueDate,
+    occupantImage,
+    isBooking,
   ];
 }
