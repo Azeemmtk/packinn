@@ -137,6 +137,7 @@ class PaymentScreen extends StatelessWidget {
 
                           context.read<PaymentBloc>().add(
                             MakePaymentEvent(
+                              amountToPay: (roomRate + (extraAmount ?? 0) - (discount ?? 0)),
                               id: isBooking ? null : id,
                               dueDate: isBooking ? null : dueDate,
                               registrationDate: isBooking ? null : registrationDate,

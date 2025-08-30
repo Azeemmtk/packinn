@@ -9,15 +9,6 @@ class WalletCardWidget extends StatelessWidget {
 
   const WalletCardWidget({super.key, required this.payment});
 
-  // Future<String> _fetchHostelName(String hostelId) async {
-  //   try {
-  //     final doc = await FirebaseFirestore.instance.collection('hostels').doc(hostelId).get();
-  //     return doc.data()?['name'] ?? 'Unknown Hostel';
-  //   } catch (e) {
-  //     return 'Unknown Hostel';
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -42,7 +33,7 @@ class WalletCardWidget extends StatelessWidget {
                 'hostelId': payment.hostelId,
                 'hostelName':payment.hostelName,
                 'roomId': payment.id,
-                'rate': payment.rent,
+                'rate': payment.amount,
               },
               isBooking: false,
             ),
@@ -106,7 +97,7 @@ class WalletCardWidget extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'RENT - ${ payment.isBooking ? 100.00 : payment.rent.toStringAsFixed(2) }',
+                        'RENT - ${payment.amount + (payment.extraAmount ?? 0) - (payment.discount ?? 0)}',
                         style: const TextStyle(
                           color: mainColor,
                           fontWeight: FontWeight.w600,

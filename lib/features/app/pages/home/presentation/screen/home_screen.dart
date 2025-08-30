@@ -19,7 +19,7 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Colors.grey[100],
       body: Column(
         children: [
-          const HomeCustomAppbarWidget(), // Move app bar outside RefreshIndicator
+          const HomeCustomAppbarWidget(),
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {

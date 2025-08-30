@@ -9,6 +9,7 @@ abstract class PaymentEvent extends Equatable {
 
 class MakePaymentEvent extends PaymentEvent {
   final double amount;
+  final double amountToPay;
   final String? id;
   final String occupantId;
   final String? paymentId;
@@ -28,7 +29,9 @@ class MakePaymentEvent extends PaymentEvent {
 
 
   const MakePaymentEvent({
+
     required this.amount,
+    required this.amountToPay,
     this.id,
     required this.occupantId,
     required this.roomType,

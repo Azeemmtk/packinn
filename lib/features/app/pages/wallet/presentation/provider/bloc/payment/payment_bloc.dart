@@ -33,7 +33,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
           'Starting payment process for occupantId: ${event.occupantId}, isBooking: ${event.isBooking}');
 
       // Process payment via Stripe
-      final success = await stripeService.makePayment(amount: event.amount);
+      final success = await stripeService.makePayment(amount: event.amountToPay);
       if (!success) {
         print('Stripe payment failed or was canceled');
         emit(const PaymentError('Payment failed or canceled'));
