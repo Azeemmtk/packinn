@@ -52,7 +52,6 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
 
       // Handle payment logic
       final now = DateTime.now();
-      // final oneMonthLater = DateTime(now.year, now.month + 1, now.day);
       final rentAmount =
           event.isBooking ? (event.roomRate ?? 3000.0) : event.amount;
 

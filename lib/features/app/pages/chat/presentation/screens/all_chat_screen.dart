@@ -15,19 +15,23 @@ class AllChatScreen extends StatelessWidget {
           CustomAppBarWidget(title: 'Chat'),
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.zero,
+                padding: EdgeInsets.zero,
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => IndividualChatScreen(),));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => IndividualChatScreen(),
+                          ));
                     },
                     child: Padding(
-                      padding:  EdgeInsets.all(padding),
+                      padding: EdgeInsets.all(padding),
                       child: Row(
                         children: [
                           CircleAvatar(
                             radius: 23,
-                            backgroundImage:NetworkImage(
+                            backgroundImage: NetworkImage(
                               'https://lh3.googleusercontent.com/aida-public/AB6AXuCV2BT4s-9VHuSPY0hF-wXQMqcHzjl76lbXSVv_vE0XLm1gsNZI5oNbo0-8QH4PKU91PHAolqn_CcwBb389vu7vQYqqBUOUMhXqsShZWO31BlMz7CvnOCaXCFFWbJdzpAY7t-LuAua5C7QdIlE4szqdRZHLk0eRRegTfrRdcPTQ0zwMT7Qg_H9qDgH_1LkagoKJh-jg0IZdNFyEXFbbMHhdMebFNrRl4c6kvzqEbHXX0LCWv695yNAC_PLfzrnCiImB4jU7LZ0d_FLg',
                             ),
                           ),
@@ -36,8 +40,15 @@ class AllChatScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Azeem ali',style: TextStyle(fontSize: 18,color: headingTextColor),),
-                              Text('okeeeey....',style: TextStyle(fontSize: 15),),
+                              Text(
+                                'Azeem ali',
+                                style: TextStyle(
+                                    fontSize: 18, color: headingTextColor),
+                              ),
+                              Text(
+                                'okeeeey....',
+                                style: TextStyle(fontSize: 15),
+                              ),
                             ],
                           ),
                           Spacer(),
@@ -45,8 +56,12 @@ class AllChatScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Just',),
-                              Text('Now',),
+                              Text(
+                                'Just',
+                              ),
+                              Text(
+                                'Now',
+                              ),
                             ],
                           ),
                         ],
@@ -54,7 +69,6 @@ class AllChatScreen extends StatelessWidget {
                     ),
                   );
                 },
-
                 itemCount: 10),
           )
         ],
