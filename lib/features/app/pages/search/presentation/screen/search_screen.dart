@@ -16,8 +16,34 @@ import '../widget/hostel_search_result_card.dart';
 import '../widget/map_search_widget.dart';
 import '../widget/search_field_widget.dart';
 
-class SearchScreen extends StatelessWidget {
+class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
+
+  @override
+  State<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  final FocusNode _searchFocusNode = FocusNode();
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchFocusNode.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,114 +56,127 @@ class SearchScreen extends StatelessWidget {
         BlocProvider(create: (context) => getIt<SearchBloc>()),
       ],
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              CustomAppBarWidget(
-                title: 'Search',
-                enableChat: true,
-              ),
-              height20,
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: padding),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    BlocBuilder<LocationCubit, LocationState>(
-                      builder: (context, state) {
-                        String locationText = 'Location';
-                        if (state is LocationLoading) {
-                          locationText = 'Loading location...';
-                        } else if (state is LocationLoaded) {
-                          locationText = state.placeName;
-                        } else if (state is LocationError) {
-                          locationText = 'Location unavailable';
-                        }
-                        return Text(locationText);
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight), // Standard app bar height
+          child: CustomAppBarWidget(
+            title: 'Search',
+            enableChat: true,
+          ),
+        ),
+        body: SizedBox(
+          height: height * 0.86,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: padding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                height10,
+                BlocBuilder<LocationCubit, LocationState>(
+                  builder: (context, state) {
+                    String locationText = 'Location';
+                    if (state is LocationLoading) {
+                      locationText = 'Loading location...';
+                    } else if (state is LocationLoaded) {
+                      locationText = state.placeName;
+                    } else if (state is LocationError) {
+                      locationText = 'Location unavailable';
+                    }
+                    return Text(
+                      locationText,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 5),
+                BlocBuilder<SearchFilterCubit, SearchFilterState>(
+                  builder: (context, filterState) {
+                    return SearchFieldWidget(
+                      focusNode: _searchFocusNode,
+                      controller: _searchController,
+                      onChanged: (value) {
+                        setState(() {
+                          _searchQuery = value;
+                        });
                       },
-                    ),
-                    height5,
-                    MapSearchWidget(),
-                    BlocBuilder<SearchFilterCubit, SearchFilterState>(
-                      builder: (context, filterState) {
-                        return BlocBuilder<SearchBloc, SearchState>(
-                          builder: (context, searchState) {
-                            return SearchFieldWidget();
-                          },
-                        );
-                      },
-                    ),
-                    height10,
-                    BlocBuilder<SearchBloc, SearchState>(
-                      builder: (context, state) {
+                    );
+                  },
+                ),
+                height20,
+                Expanded(
+                  child: BlocBuilder<SearchBloc, SearchState>(
+                    builder: (context, state) {
+                      if (_searchQuery.isNotEmpty) {
                         if (state is SearchInitial) {
-                          return Center(
-                            child: Column(
-                              children: [
-                                SizedBox(height: 100),
-                                Text(
-                                  'Search hostel',
-                                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                                ),
-                              ],
+                          return const Center(
+                            child: Text(
+                              'Search hostel',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
                             ),
                           );
                         } else if (state is SearchLoading) {
-                          return Center(child: CircularProgressIndicator());
+                          return const Center(
+                              child: CircularProgressIndicator());
                         } else if (state is SearchLoaded) {
                           if (state.hostels.isEmpty) {
-                            return Center(
-                              child: Column(
-                                children: [
-                                  SizedBox(height: 100),
-                                  Text(
-                                    'No hostels found',
-                                    style: TextStyle(fontSize: 16, color: Colors.grey),
-                                  ),
-                                ],
+                            return const Center(
+                              child: Text(
+                                'No hostels found',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
                               ),
                             );
                           }
-                          return SizedBox(
-                            height: height * 0.75,
-                            child: ListView.separated(
-                              padding: EdgeInsets.zero,
-                              itemBuilder: (context, index) {
-                                return InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            HostelDetailsScreen(
-                                              hostel: state.hostels[index],
-                                            ),
-                                      ),
-                                    );
-                                  },
-                                  child: HostelSearchResultCard(
-                                      hostel: state.hostels[index]),
-                                );
-                              },
-                              separatorBuilder: (context, index) => height10,
-                              itemCount: state.hostels.length,
-                            ),
+                          return ListView.separated(
+                            padding: EdgeInsets.zero,
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          HostelDetailsScreen(
+                                            hostel: state.hostels[index],
+                                          ),
+                                    ),
+                                  );
+                                },
+                                child: HostelSearchResultCard(
+                                    hostel: state.hostels[index]),
+                              );
+                            },
+                            separatorBuilder: (context, index) =>
+                            const SizedBox(height: 10),
+                            itemCount: state.hostels.length,
                           );
                         } else if (state is SearchError) {
                           return Center(
                             child: Text(
                               state.message,
-                              style: TextStyle(fontSize: 16, color: Colors.red),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.red,
+                              ),
                             ),
                           );
                         }
-                        return SizedBox();
-                      },
-                    ),
-                  ],
+                        return const SizedBox();
+                      } else {
+                        return MapSearchWidget();
+                      }
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

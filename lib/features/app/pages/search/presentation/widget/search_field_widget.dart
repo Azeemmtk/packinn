@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/const.dart';
-import '../../../../../../../../core/utils/debounser.dart';
+import '../../../../../../core/utils/debounser.dart';
 import '../provider/bloc/search/search_bloc.dart';
 import '../provider/bloc/search/search_event.dart';
 import '../provider/cubit/search_filter/search_filter_cubit.dart';
@@ -11,7 +11,11 @@ import '../provider/cubit/search_filter/search_filter_state.dart';
 import 'filter_section_widget.dart';
 
 class SearchFieldWidget extends StatefulWidget {
-  const SearchFieldWidget({super.key});
+  final FocusNode? focusNode;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+
+  const SearchFieldWidget({super.key, this.focusNode, this.controller, this.onChanged});
 
   @override
   State<SearchFieldWidget> createState() => _SearchFieldWidgetState();
@@ -25,25 +29,42 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
     return BlocBuilder<SearchFilterCubit, SearchFilterState>(
       builder: (context, filterState) {
         return TextFormField(
+          focusNode: widget.focusNode,
+          controller: widget.controller,
           onChanged: (value) {
+            widget.onChanged?.call(value);
             _debouncer.run(() => context.read<SearchBloc>().add(SearchHostelsEvent(value, filterState)));
           },
           decoration: InputDecoration(
             hintText: 'Search hostel',
             filled: true,
             fillColor: secondaryColor,
-            suffixIcon: Builder(
-              builder: (BuildContext newContext) {
-                return IconButton(
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.controller?.text.isNotEmpty ?? false)
+                  IconButton(
+                    onPressed: () {
+                      widget.controller?.clear();
+                      widget.onChanged?.call('');
+                      context.read<SearchBloc>().add(SearchHostelsEvent('', filterState));
+                    },
+                    icon: Icon(
+                      Icons.clear,
+                      size: width * 0.06,
+                      color: customGrey,
+                    ),
+                  ),
+                IconButton(
                   onPressed: () {
                     showModalBottomSheet(
-                      context: newContext,
+                      context: context,
                       isScrollControlled: true,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                       ),
                       builder: (context) => BlocProvider.value(
-                        value: BlocProvider.of<SearchFilterCubit>(newContext),
+                        value: BlocProvider.of<SearchFilterCubit>(context),
                         child: FilterSectionWidget(),
                       ),
                     );
@@ -53,8 +74,8 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
                     size: width * 0.06,
                     color: customGrey,
                   ),
-                );
-              },
+                ),
+              ],
             ),
             prefixIcon: Icon(CupertinoIcons.search),
             border: OutlineInputBorder(

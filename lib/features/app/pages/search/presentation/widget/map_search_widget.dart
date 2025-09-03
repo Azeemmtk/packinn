@@ -1,46 +1,53 @@
 import 'package:flutter/material.dart';
-
-import '../../../../../../core/constants/colors.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../../../../../../core/constants/const.dart';
+import 'map_search_hostel_card_widget.dart';
 
 class MapSearchWidget extends StatelessWidget {
-  const MapSearchWidget({super.key});
+  MapSearchWidget({super.key});
 
+  final MapController _mapController = MapController();
   @override
   Widget build(BuildContext context) {
+
     return Column(
       children: [
-        Container(
-          height: height * 0.3,
-          color: textFieldColor,
-          child: Center(child: Text('Map')),
-        ),
-        height5,
-        Align(
-          alignment: Alignment.centerRight,
-          child: Container(
-            height: 40,
-            width: 150,
-            decoration: BoxDecoration(
-              color: mainColor,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15),
-                bottomRight: Radius.circular(15),
+        SizedBox(
+          height: height * 0.45,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: LatLng(9.9312, 76.2673),
+                initialZoom: 13.0,
+                // onTap: (tapPosition, point) {
+                //   context.read<LocationCubit>().selectLocation(point);
+                // },
               ),
-            ),
-            child: Center(
-              child: Text(
-                'Find On Map',
-                style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName:
+                      'PackInhApp/1.0 (contact: aseemmtk@example.com)',
                 ),
-              ),
+              ],
             ),
           ),
         ),
-        height20,
+        height10,
+        SizedBox(
+          height: height * 0.2,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                return MapSearchHostelCardWidget();
+              },
+              separatorBuilder: (context, index) =>  width5,
+              itemCount: 5,
+          ),
+        )
       ],
     );
   }
