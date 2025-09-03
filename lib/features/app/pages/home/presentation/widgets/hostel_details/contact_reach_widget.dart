@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:packinn/core/di/injection.dart';
+import 'package:packinn/features/app/pages/chat/domain/usecases/create_chat_use_case.dart';
+import 'package:packinn/features/app/pages/chat/domain/usecases/get_owner_details_use_case.dart';
 import 'package:packinn/features/app/pages/chat/presentation/screens/individual_chat_screen.dart';
 import 'package:packinn/core/entity/hostel_entity.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -22,12 +25,34 @@ class ContactReachWidget extends StatelessWidget {
         _buildContainer(
           text: 'Message',
           icon: Icons.message,
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => IndividualChatScreen(),
-                ));
+          onPressed: () async {
+            final createChatUseCase = getIt<CreateChatUseCase>();
+            final getOwnerDetailUseCase = getIt<GetOwnerDetailsUseCase>();
+
+            //owner details
+            final ownerResult = await getOwnerDetailUseCase(hostel.ownerId);
+            await ownerResult.fold(
+              (failure) async {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(failure.message)),
+                );
+              },
+              (ownerDetails) async{
+                final chatResult = await createChatUseCase(hostel.ownerId);
+                chatResult.fold(
+                  (failure) =>ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(failure.message)),
+                  ) ,
+                  (chatId) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => IndividualChatScreen(
+                        chatId: chatId,
+                        otherName: ownerDetails['displayName']!,
+                        otherPhoto: ownerDetails['photoURL']!,
+                    ),));
+                  },
+                );
+              },
+            );
           },
         ),
         _buildContainer(

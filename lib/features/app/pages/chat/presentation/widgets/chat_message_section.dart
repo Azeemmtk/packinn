@@ -2,30 +2,28 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
-
-import '../screens/individual_chat_screen.dart';
+import 'package:packinn/features/app/pages/chat/domain/entity/message_entity.dart';
 
 class ChatMessageSection extends StatelessWidget {
-  final Message message;
+  final MessageEntity message;
+  final bool isMe;
 
   const ChatMessageSection({
     super.key,
     required this.message,
+    required this.isMe,
   });
 
   @override
   Widget build(BuildContext context) {
-    // final screenWidth = MediaQuery.of(context).size.width;
-    // final maxWidth = screenWidth * 0.8;
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment:
-        message.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          if (!message.isMe) ...[
+          if (!isMe) ...[
             Column(
               children: [
                 CircleAvatar(
@@ -50,7 +48,7 @@ class ChatMessageSection extends StatelessWidget {
               maxWidth: width * 0.75,
             ),
             child: Column(
-              crossAxisAlignment: message.isMe
+              crossAxisAlignment: isMe
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
@@ -60,14 +58,14 @@ class ChatMessageSection extends StatelessWidget {
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: message.isMe
+                    color: isMe
                         ? mainColor
                         : Colors.white,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
                       topRight: const Radius.circular(16),
-                      bottomLeft: Radius.circular(message.isMe ? 16 : 4),
-                      bottomRight: Radius.circular(message.isMe ? 4 : 16),
+                      bottomLeft: Radius.circular(isMe ? 16 : 4),
+                      bottomRight: Radius.circular(isMe ? 4 : 16),
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -81,7 +79,7 @@ class ChatMessageSection extends StatelessWidget {
                   child: Text(
                     message.text,
                     style: TextStyle(
-                      color: message.isMe ? Colors.white : Colors.black87,
+                      color: isMe ? Colors.white : Colors.black87,
                       fontSize: 16,
                     ),
                   ),
@@ -97,7 +95,7 @@ class ChatMessageSection extends StatelessWidget {
               ],
             ),
           ),
-          if (message.isMe) ...[
+          if (isMe) ...[
             const SizedBox(width: 8),
             Column(
               children: [

@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:packinn/core/services/current_user.dart';
-
 import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/const.dart';
-import '../screens/all_chat_screen.dart';
 
 class ChatAppBarWidget extends StatelessWidget {
   const ChatAppBarWidget({
     super.key,
     required this.title,
+    required this.photoUrl,
     this.enableChat = false,
   });
 
   final String title;
+  final String photoUrl;
   final bool enableChat;
 
   @override
@@ -41,7 +39,7 @@ class ChatAppBarWidget extends StatelessWidget {
             CircleAvatar(
               radius: 23,
               backgroundImage: NetworkImage(
-                'https://lh3.googleusercontent.com/aida-public/AB6AXuCV2BT4s-9VHuSPY0hF-wXQMqcHzjl76lbXSVv_vE0XLm1gsNZI5oNbo0-8QH4PKU91PHAolqn_CcwBb389vu7vQYqqBUOUMhXqsShZWO31BlMz7CvnOCaXCFFWbJdzpAY7t-LuAua5C7QdIlE4szqdRZHLk0eRRegTfrRdcPTQ0zwMT7Qg_H9qDgH_1LkagoKJh-jg0IZdNFyEXFbbMHhdMebFNrRl4c6kvzqEbHXX0LCWv695yNAC_PLfzrnCiImB4jU7LZ0d_FLg',
+                photoUrl,
               ),
             ),
             width10,

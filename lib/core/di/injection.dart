@@ -4,6 +4,19 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart' as google_sign_in_package;
 import 'package:packinn/core/services/cloudinary_services.dart';
 import 'package:packinn/core/services/stripe_services.dart';
+import 'package:packinn/features/app/pages/chat/data/datasource/chat_remote_data_source.dart';
+import 'package:packinn/features/app/pages/chat/data/datasource/owner_remote_data_source.dart';
+import 'package:packinn/features/app/pages/chat/data/repository/chat_repository_impl.dart';
+import 'package:packinn/features/app/pages/chat/data/repository/owner_repository_impl.dart';
+import 'package:packinn/features/app/pages/chat/domain/repository/chat_repository.dart';
+import 'package:packinn/features/app/pages/chat/domain/repository/owner_repository.dart';
+import 'package:packinn/features/app/pages/chat/domain/usecases/create_chat_use_case.dart';
+import 'package:packinn/features/app/pages/chat/domain/usecases/get_chats_use_case.dart';
+import 'package:packinn/features/app/pages/chat/domain/usecases/get_messages_use_case.dart';
+import 'package:packinn/features/app/pages/chat/domain/usecases/get_owner_details_use_case.dart';
+import 'package:packinn/features/app/pages/chat/domain/usecases/send_message_use_case.dart';
+import 'package:packinn/features/app/pages/chat/presentation/providers/bloc/allchats/all_chat_bloc.dart';
+import 'package:packinn/features/app/pages/chat/presentation/providers/bloc/chat/chat_bloc.dart';
 import 'package:packinn/features/app/pages/home/data/datasource/occupant_remote_data_sourse.dart';
 import 'package:packinn/features/app/pages/home/data/repository/occupant_repository_impl.dart';
 import 'package:packinn/features/app/pages/home/domain/repository/occupants_repository.dart';
@@ -113,6 +126,14 @@ Future<void> initializeDependencies() async {
         () => PaymentRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
   );
 
+  getIt.registerLazySingleton<ChatRemoteDataSource>(
+        () => ChatRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+  );
+
+  getIt.registerLazySingleton<OwnerRemoteDataSource>(
+        () => OwnerRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+  );
+
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
@@ -140,6 +161,14 @@ Future<void> initializeDependencies() async {
         () => BookingRepositoryImpl(getIt<BookingRemoteDataSource>()),
   );
 
+  getIt.registerLazySingleton<ChatRepository>(
+        () => ChatRepositoryImpl(getIt<ChatRemoteDataSource>()),
+  );
+
+  getIt.registerLazySingleton<OwnerRepository>(
+        () => OwnerRepositoryImpl(getIt<OwnerRemoteDataSource>()),
+  );
+
   // Use Cases
   getIt.registerLazySingleton(() => CheckAuthStatus(getIt<AuthRepository>()));
   getIt.registerLazySingleton(
@@ -160,6 +189,13 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton(() => SavePaymentUseCase(getIt<WalletRepository>()));
   getIt.registerLazySingleton(() => GetPaymentsUseCase(getIt<WalletRepository>()));
   getIt.registerLazySingleton(() => UpdateOccupantUseCase(getIt<WalletRepository>()));
+
+  getIt.registerLazySingleton(() => CreateChatUseCase(getIt<ChatRepository>()));
+  getIt.registerLazySingleton(() => GetChatsUseCase(getIt<ChatRepository>()));
+  getIt.registerLazySingleton(() => GetMessagesUseCase(getIt<ChatRepository>()));
+  getIt.registerLazySingleton(() => SendMessageUseCase(getIt<ChatRepository>()));
+
+  getIt.registerLazySingleton(() => GetOwnerDetailsUseCase(getIt<OwnerRepository>()));
 
   // BLoCs
   getIt.registerFactory(
@@ -211,6 +247,15 @@ Future<void> initializeDependencies() async {
   getIt.registerFactory(() => PaymentBloc(getIt<StripeService>(), getIt<SavePaymentUseCase>(), getIt<UpdateOccupantUseCase>()),);
   getIt.registerFactory(() => MyBookingsBloc(getMyBookingsUseCase: getIt<GetMyBookingsUseCase>()));
   getIt.registerFactory(() => WalletBloc(getIt<GetPaymentsUseCase>()));
+
+  getIt.registerFactory(() => AllChatBloc(getIt<GetChatsUseCase>()));
+  getIt.registerFactoryParam<ChatBloc, String, void>(
+        (chatId, _) => ChatBloc(
+      getMessagesUseCase: getIt<GetMessagesUseCase>(),
+      sendMessageUseCase: getIt<SendMessageUseCase>(),
+      chatId: chatId,
+    ),
+  );
 
   // Cubits
   getIt.registerFactory(() => OtpCubit());
