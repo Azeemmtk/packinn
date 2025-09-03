@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart' as google_sign_in_package;
@@ -30,9 +31,14 @@ import 'package:packinn/features/app/pages/my_booking/domain/repository/booking_
 import 'package:packinn/features/app/pages/my_booking/domain/usecases/get_my_bookings.dart';
 import 'package:packinn/features/app/pages/my_booking/presentation/provider/bloc/my_booking/my_booking_bloc.dart';
 import 'package:packinn/features/app/pages/search/data/datasource/hostel_search_remote_data_source.dart';
+import 'package:packinn/features/app/pages/search/data/datasource/overpass_remote_data_source.dart';
+import 'package:packinn/features/app/pages/search/data/repository/hostel_map_search_repository_impl.dart';
 import 'package:packinn/features/app/pages/search/data/repository/hostel_search_repository_impl.dart';
+import 'package:packinn/features/app/pages/search/domain/repository/hostel_map_search_repository.dart';
 import 'package:packinn/features/app/pages/search/domain/repository/hostel_search_repository.dart';
 import 'package:packinn/features/app/pages/search/domain/usecases/search_hostel.dart';
+import 'package:packinn/features/app/pages/search/domain/usecases/search_hostels_nearby.dart';
+import 'package:packinn/features/app/pages/search/presentation/provider/bloc/map_search/map_search_bloc.dart';
 import 'package:packinn/features/app/pages/search/presentation/provider/bloc/search/search_bloc.dart';
 import 'package:packinn/features/app/pages/search/presentation/provider/cubit/search_filter/search_filter_cubit.dart';
 import 'package:packinn/features/app/pages/wallet/data/datasourse/occupant_edit_remote_data_source.dart';
@@ -77,15 +83,22 @@ import '../services/image_picker_service.dart';
 final getIt = GetIt.instance;
 
 Future<void> initializeDependencies() async {
+
   // External Dependencies
   getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
+
   getIt.registerLazySingleton<FirebaseFirestore>(
       () => FirebaseFirestore.instance);
+
   getIt.registerLazySingleton<google_sign_in_package.GoogleSignIn>(
     () => google_sign_in_package.GoogleSignIn(
       scopes: ['email', 'profile'],
     ),
   );
+
+  getIt.registerLazySingleton<Dio>(() => Dio(),);
+
+
 
   // Services
   getIt.registerLazySingleton<GeolocationService>(() => GeolocationService());
@@ -134,6 +147,8 @@ Future<void> initializeDependencies() async {
         () => OwnerRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
   );
 
+  getIt.registerLazySingleton<OverpassRemoteDataSource>(() => OverpassRemoteDataSource(getIt<Dio>()),);
+
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
@@ -169,6 +184,14 @@ Future<void> initializeDependencies() async {
         () => OwnerRepositoryImpl(getIt<OwnerRemoteDataSource>()),
   );
 
+  getIt.registerLazySingleton<HostelMapSearchRepository>(
+        () => HostelMapSearchRepositoryImpl(getIt<OverpassRemoteDataSource>()),
+  );
+
+
+
+
+
   // Use Cases
   getIt.registerLazySingleton(() => CheckAuthStatus(getIt<AuthRepository>()));
   getIt.registerLazySingleton(
@@ -196,6 +219,10 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton(() => SendMessageUseCase(getIt<ChatRepository>()));
 
   getIt.registerLazySingleton(() => GetOwnerDetailsUseCase(getIt<OwnerRepository>()));
+
+  getIt.registerLazySingleton(() => SearchHostelsNearby(getIt<HostelMapSearchRepository>()));
+
+
 
   // BLoCs
   getIt.registerFactory(
@@ -256,6 +283,10 @@ Future<void> initializeDependencies() async {
       chatId: chatId,
     ),
   );
+
+  getIt.registerFactory(() => MapSearchBloc(getIt<SearchHostelsNearby>()));
+
+
 
   // Cubits
   getIt.registerFactory(() => OtpCubit());
