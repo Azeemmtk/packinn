@@ -58,7 +58,23 @@ class GeolocationService {
       }
       return 'Unknown location';
     } catch (e) {
-      print(e.toString());
+      return 'Unknown location';
+    }
+  }
+
+  Future<String> getPlaceNameFromCoordinates(double latitude, double longitude) async {
+    try {
+      final placemarks = await placemarkFromCoordinates(latitude, longitude);
+      if (placemarks.isNotEmpty) {
+        final placemark = placemarks.first;
+        return [
+          placemark.locality,
+          placemark.administrativeArea,
+          placemark.country
+        ].where((e) => e != null && e.isNotEmpty).join(', ');
+      }
+      return 'Unknown location';
+    } catch (e) {
       return 'Unknown location';
     }
   }
