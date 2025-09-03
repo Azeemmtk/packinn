@@ -101,12 +101,11 @@ class HomeCustomAppbarWidget extends StatelessWidget {
                 InkWell(
                   onTap: () async{
                     print(CurrentUser().uId);
-                    await FirebaseFirestore.instance.collection('payments').doc('test').set({'test': 'data'});
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //       builder: (context) => AllChatScreen(),
-                    //     ));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AllChatScreen(),
+                        ));
                   },
                   child: SvgPicture.asset(
                     'assets/images/chat_icon.svg',
