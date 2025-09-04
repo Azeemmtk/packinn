@@ -19,12 +19,18 @@ import 'package:packinn/features/app/pages/chat/domain/usecases/send_message_use
 import 'package:packinn/features/app/pages/chat/presentation/providers/bloc/allchats/all_chat_bloc.dart';
 import 'package:packinn/features/app/pages/chat/presentation/providers/bloc/chat/chat_bloc.dart';
 import 'package:packinn/features/app/pages/home/data/datasource/occupant_remote_data_sourse.dart';
+import 'package:packinn/features/app/pages/home/data/datasource/review_remote_data_source.dart';
 import 'package:packinn/features/app/pages/home/data/repository/occupant_repository_impl.dart';
+import 'package:packinn/features/app/pages/home/data/repository/review_repository_impl.dart';
 import 'package:packinn/features/app/pages/home/domain/repository/occupants_repository.dart';
+import 'package:packinn/features/app/pages/home/domain/repository/review_repository.dart';
+import 'package:packinn/features/app/pages/home/domain/usecases/add_review_use_case.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/delete_occupant.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/fetch_occupants.dart';
+import 'package:packinn/features/app/pages/home/domain/usecases/get_review_use_case.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/save_occupant.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/bloc/add_cooupant/add_occupant_bloc.dart';
+import 'package:packinn/features/app/pages/home/presentation/provider/bloc/review/review_bloc.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/cubit/occupant_field_cubit.dart';
 import 'package:packinn/features/app/pages/my_booking/data/datasourse/booking_remote_data_source.dart';
 import 'package:packinn/features/app/pages/my_booking/domain/repository/booking_repository.dart';
@@ -83,7 +89,6 @@ import '../services/image_picker_service.dart';
 final getIt = GetIt.instance;
 
 Future<void> initializeDependencies() async {
-
   // External Dependencies
   getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
 
@@ -96,9 +101,9 @@ Future<void> initializeDependencies() async {
     ),
   );
 
-  getIt.registerLazySingleton<Dio>(() => Dio(),);
-
-
+  getIt.registerLazySingleton<Dio>(
+    () => Dio(),
+  );
 
   // Services
   getIt.registerLazySingleton<GeolocationService>(() => GeolocationService());
@@ -128,26 +133,31 @@ Future<void> initializeDependencies() async {
   );
 
   getIt.registerLazySingleton<OccupantEditRemoteDataSource>(
-        () => OccupantEditRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+    () => OccupantEditRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
   );
 
   getIt.registerLazySingleton<BookingRemoteDataSource>(
-        () => BookingRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+    () => BookingRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
   );
 
   getIt.registerLazySingleton<PaymentRemoteDataSource>(
-        () => PaymentRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+    () => PaymentRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
   );
 
   getIt.registerLazySingleton<ChatRemoteDataSource>(
-        () => ChatRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+    () => ChatRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
   );
 
   getIt.registerLazySingleton<OwnerRemoteDataSource>(
-        () => OwnerRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+    () => OwnerRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
   );
 
-  getIt.registerLazySingleton<OverpassRemoteDataSource>(() => OverpassRemoteDataSource(getIt<Dio>()),);
+  getIt.registerLazySingleton<OverpassRemoteDataSource>(
+    () => OverpassRemoteDataSource(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<ReviewRemoteDataSource>(
+    () => ReviewRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+  );
 
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(
@@ -169,28 +179,29 @@ Future<void> initializeDependencies() async {
   );
 
   getIt.registerLazySingleton<WalletRepository>(
-        () => WalletRepositoryImpl(getIt<OccupantEditRemoteDataSource>(), getIt<PaymentRemoteDataSource>() ),
+    () => WalletRepositoryImpl(getIt<OccupantEditRemoteDataSource>(),
+        getIt<PaymentRemoteDataSource>()),
   );
 
   getIt.registerLazySingleton<BookingRepository>(
-        () => BookingRepositoryImpl(getIt<BookingRemoteDataSource>()),
+    () => BookingRepositoryImpl(getIt<BookingRemoteDataSource>()),
   );
 
   getIt.registerLazySingleton<ChatRepository>(
-        () => ChatRepositoryImpl(getIt<ChatRemoteDataSource>()),
+    () => ChatRepositoryImpl(getIt<ChatRemoteDataSource>()),
   );
 
   getIt.registerLazySingleton<OwnerRepository>(
-        () => OwnerRepositoryImpl(getIt<OwnerRemoteDataSource>()),
+    () => OwnerRepositoryImpl(getIt<OwnerRemoteDataSource>()),
   );
 
   getIt.registerLazySingleton<HostelMapSearchRepository>(
-        () => HostelMapSearchRepositoryImpl(getIt<OverpassRemoteDataSource>()),
+    () => HostelMapSearchRepositoryImpl(getIt<OverpassRemoteDataSource>()),
   );
 
-
-
-
+  getIt.registerLazySingleton<ReviewRepository>(
+        () => ReviewRepositoryImpl(getIt<ReviewRemoteDataSource>()),
+  );
 
   // Use Cases
   getIt.registerLazySingleton(() => CheckAuthStatus(getIt<AuthRepository>()));
@@ -206,21 +217,36 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton(
       () => SearchHostels(getIt<HostelSearchRepository>()));
   getIt.registerLazySingleton(() => SaveOccupant(getIt<OccupantsRepository>()));
-  getIt.registerLazySingleton(() => FetchOccupants(getIt<OccupantsRepository>()));
-  getIt.registerLazySingleton(() => DeleteOccupant(getIt<OccupantsRepository>()));
-  getIt.registerLazySingleton(() => GetMyBookingsUseCase(getIt<BookingRepository>()));
-  getIt.registerLazySingleton(() => SavePaymentUseCase(getIt<WalletRepository>()));
-  getIt.registerLazySingleton(() => GetPaymentsUseCase(getIt<WalletRepository>()));
-  getIt.registerLazySingleton(() => UpdateOccupantUseCase(getIt<WalletRepository>()));
+  getIt.registerLazySingleton(
+      () => FetchOccupants(getIt<OccupantsRepository>()));
+  getIt.registerLazySingleton(
+      () => DeleteOccupant(getIt<OccupantsRepository>()));
+  getIt.registerLazySingleton(
+      () => GetMyBookingsUseCase(getIt<BookingRepository>()));
+  getIt.registerLazySingleton(
+      () => SavePaymentUseCase(getIt<WalletRepository>()));
+  getIt.registerLazySingleton(
+      () => GetPaymentsUseCase(getIt<WalletRepository>()));
+  getIt.registerLazySingleton(
+      () => UpdateOccupantUseCase(getIt<WalletRepository>()));
 
   getIt.registerLazySingleton(() => CreateChatUseCase(getIt<ChatRepository>()));
   getIt.registerLazySingleton(() => GetChatsUseCase(getIt<ChatRepository>()));
-  getIt.registerLazySingleton(() => GetMessagesUseCase(getIt<ChatRepository>()));
-  getIt.registerLazySingleton(() => SendMessageUseCase(getIt<ChatRepository>()));
+  getIt
+      .registerLazySingleton(() => GetMessagesUseCase(getIt<ChatRepository>()));
+  getIt
+      .registerLazySingleton(() => SendMessageUseCase(getIt<ChatRepository>()));
 
-  getIt.registerLazySingleton(() => GetOwnerDetailsUseCase(getIt<OwnerRepository>()));
+  getIt.registerLazySingleton(
+      () => GetOwnerDetailsUseCase(getIt<OwnerRepository>()));
 
-  getIt.registerLazySingleton(() => SearchHostelsNearby(getIt<HostelMapSearchRepository>()));
+  getIt.registerLazySingleton(
+      () => SearchHostelsNearby(getIt<HostelMapSearchRepository>()));
+
+  getIt.registerLazySingleton(
+          () => AddReviewUseCase(getIt<ReviewRepository>()));
+  getIt.registerLazySingleton(
+          () => GetReviewsUseCase(getIt<ReviewRepository>()));
 
 
 
@@ -271,13 +297,17 @@ Future<void> initializeDependencies() async {
         fetchOccupants: getIt<FetchOccupants>()),
   );
 
-  getIt.registerFactory(() => PaymentBloc(getIt<StripeService>(), getIt<SavePaymentUseCase>(), getIt<UpdateOccupantUseCase>()),);
-  getIt.registerFactory(() => MyBookingsBloc(getMyBookingsUseCase: getIt<GetMyBookingsUseCase>()));
+  getIt.registerFactory(
+    () => PaymentBloc(getIt<StripeService>(), getIt<SavePaymentUseCase>(),
+        getIt<UpdateOccupantUseCase>()),
+  );
+  getIt.registerFactory(() =>
+      MyBookingsBloc(getMyBookingsUseCase: getIt<GetMyBookingsUseCase>()));
   getIt.registerFactory(() => WalletBloc(getIt<GetPaymentsUseCase>()));
 
   getIt.registerFactory(() => AllChatBloc(getIt<GetChatsUseCase>()));
   getIt.registerFactoryParam<ChatBloc, String, void>(
-        (chatId, _) => ChatBloc(
+    (chatId, _) => ChatBloc(
       getMessagesUseCase: getIt<GetMessagesUseCase>(),
       sendMessageUseCase: getIt<SendMessageUseCase>(),
       chatId: chatId,
@@ -285,6 +315,9 @@ Future<void> initializeDependencies() async {
   );
 
   getIt.registerFactory(() => MapSearchBloc(getIt<SearchHostelsNearby>()));
+
+  getIt.registerFactory(() => ReviewBloc(addReviewUseCase: getIt<AddReviewUseCase>(),getReviewsUseCase: getIt<GetReviewsUseCase>()));
+
 
 
 

@@ -20,6 +20,7 @@ class HostelEntity extends Equatable {
   final List<String> smallImagePublicIds;
   final DateTime createdAt;
   final Status status;
+  final double? rating;
 
   const HostelEntity({
     required this.id,
@@ -40,6 +41,7 @@ class HostelEntity extends Equatable {
     required this.smallImagePublicIds,
     required this.createdAt,
     required this.status,
+    this.rating,
   });
 
   @override
@@ -61,5 +63,6 @@ class HostelEntity extends Equatable {
     smallImagePublicIds,
     createdAt,
     status,
+    rating,
   ];
 }

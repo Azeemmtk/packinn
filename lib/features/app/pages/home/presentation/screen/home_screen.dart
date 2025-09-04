@@ -105,7 +105,7 @@ class HomeScreen extends StatelessWidget {
                                       title: hostel.name,
                                       location: hostel.placeName,
                                       rent: (hostel.rooms[0]['rate'] as double).toInt(),
-                                      rating: 4.0,
+                                      rating: hostel.rating ?? 0.0,
                                       distance: 5,
                                     ),
                                   );

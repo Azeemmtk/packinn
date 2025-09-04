@@ -1,4 +1,4 @@
-enum Status { pending, approved, blocked, rejected }
+enum Status { pending, approved, blocked, rejected, active }
 
 extension StatusExtension on Status {
   String get value {
@@ -11,6 +11,8 @@ extension StatusExtension on Status {
         return 'blocked';
       case Status.rejected:
         return 'rejected';
+      case Status.active:
+        return 'active';
     }
   }
 
@@ -22,6 +24,8 @@ extension StatusExtension on Status {
         return Status.blocked;
       case 'rejected':
         return Status.rejected;
+      case 'active':
+        return Status.active;
       case 'pending':
       default:
         return Status.pending;
