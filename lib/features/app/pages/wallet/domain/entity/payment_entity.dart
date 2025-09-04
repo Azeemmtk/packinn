@@ -17,6 +17,7 @@ class PaymentEntity extends Equatable {
   final bool isBooking;
   final DateTime dueDate;
   final DateTime registrationDate;
+  final String? paidVia; // New field: "wallet" or "stripe"
 
   const PaymentEntity({
     this.id,
@@ -31,10 +32,11 @@ class PaymentEntity extends Equatable {
     required this.occupantName,
     required this.occupantImage,
     required this.hostelName,
-    this.isBooking= false,
+    this.isBooking = false,
     required this.paymentStatus,
     required this.dueDate,
     required this.registrationDate,
+    this.paidVia,
   });
 
   @override
@@ -54,5 +56,6 @@ class PaymentEntity extends Equatable {
     occupantImage,
     isBooking,
     registrationDate,
+    paidVia,
   ];
 }

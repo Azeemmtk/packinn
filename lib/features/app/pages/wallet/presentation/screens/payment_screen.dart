@@ -7,11 +7,13 @@ import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
 import 'package:packinn/core/widgets/custom_green_button_widget.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/payment/payment_bloc.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/screens/payment_successful_screen.dart';
+import '../../../../../../core/services/current_user.dart';
 import '../../../../../../core/widgets/title_text_widget.dart';
 import '../provider/bloc/payment/payment_state.dart';
+import '../provider/bloc/wallet/wallet_bloc.dart';
 import '../widgets/payment_summery_widget.dart';
 
-class PaymentScreen extends StatelessWidget {
+class PaymentScreen extends StatefulWidget {
   const PaymentScreen({
     super.key,
     this.isBooking = false,
@@ -25,7 +27,7 @@ class PaymentScreen extends StatelessWidget {
     this.discount,
     this.registrationDate,
     this.dueDate,
-    this.status= false,
+    this.status = false,
   });
 
   final String? id;
@@ -42,15 +44,26 @@ class PaymentScreen extends StatelessWidget {
   final DateTime? registrationDate;
 
   @override
-  Widget build(BuildContext context) {
-    final String hostelId = room?['hostelId'] ?? '';
-    final String hostelName = room?['hostelName'] ?? '';
-    final String roomId = room?['roomId'] ?? '';
-    final String roomType = room?['type'] ?? '';
-    final double roomRate = (room?['rate'] as num?)?.toDouble() ?? 3000.0;
+  _PaymentScreenState createState() => _PaymentScreenState();
+}
 
-    return BlocProvider(
-      create: (context) => getIt<PaymentBloc>(),
+class _PaymentScreenState extends State<PaymentScreen> {
+  String _paymentMethod = 'stripe'; // Default to Stripe
+
+  @override
+  Widget build(BuildContext context) {
+    final String hostelId = widget.room?['hostelId'] ?? '';
+    final String hostelName = widget.room?['hostelName'] ?? '';
+    final String roomId = widget.room?['roomId'] ?? '';
+    final String roomType = widget.room?['type'] ?? '';
+    final double roomRate = (widget.room?['rate'] as num?)?.toDouble() ?? 3000.0;
+    final double totalAmount = (widget.isBooking ? 100 : roomRate + (widget.extraAmount ?? 0) - (widget.discount ?? 0));
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => getIt<PaymentBloc>()),
+        BlocProvider(create: (context) => getIt<WalletBloc>()..add(GetWalletBalance())),
+      ],
       child: Scaffold(
         body: Column(
           children: [
@@ -69,48 +82,56 @@ class PaymentScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(
-                    height: height * 0.07,
-                  ),
+                  SizedBox(height: height * 0.07),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TitleTextWidget(title: 'Due date'),
-                          Text('Sun, 15 Jan')
+                          TitleTextWidget(title: 'Payment Method'),
+                          Row(
+                            children: [
+                              Radio<String>(
+                                value: 'stripe',
+                                groupValue: _paymentMethod,
+                                onChanged: (value) => setState(() => _paymentMethod = value!),
+                              ),
+                              const Text('Stripe'),
+                              Radio<String>(
+                                value: 'wallet',
+                                groupValue: _paymentMethod,
+                                onChanged: (value) => setState(() => _paymentMethod = value!),
+                              ),
+                              BlocBuilder<WalletBloc, WalletState>(
+                                builder: (context, state) {
+                                  double balance = 0.0;
+                                  if (state is WalletBalanceLoaded) balance = state.balance;
+                                  return Text('Wallet (\$${balance.toStringAsFixed(2)})');
+                                },
+                              ),
+                            ],
+                          ),
                         ],
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          TitleTextWidget(title: 'Current date'),
-                          Text('Sun, 15 Jan')
-                        ],
-                      )
                     ],
                   ),
-                  SizedBox(
-                    height: height * 0.07,
-                  ),
                   PaymentSummeryWidget(
-                    isBooking: isBooking,
-                    extraMessage: extraMessage,
-                    extraAmount: extraAmount,
-                    discount: discount,
+                    isBooking: widget.isBooking,
+                    extraMessage: widget.extraMessage,
+                    extraAmount: widget.extraAmount,
+                    discount: widget.discount,
                     rent: roomRate,
                   ),
-                  SizedBox(
-                    height: height * 0.15,
-                  ),
+                  SizedBox(height: height * 0.1),
                   BlocConsumer<PaymentBloc, PaymentState>(
                     listener: (context, state) {
                       if (state is PaymentSuccess) {
+                        context.read<WalletBloc>().add(GetPayments(CurrentUser().uId!));
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PaymentSuccessfulScreen(rent: roomRate,),
+                            builder: (context) => PaymentSuccessfulScreen(rent: roomRate),
                           ),
                         );
                       } else if (state is PaymentError) {
@@ -124,36 +145,47 @@ class PaymentScreen extends StatelessWidget {
                     },
                     builder: (context, state) {
                       return CustomGreenButtonWidget(
-                        name: status ? 'Go back' : state is PaymentLoading ? 'Processing...' : 'Pay now',
-                        onPressed: status
-                            ? (){
-                          Navigator.pop(context);
-                        }
+                        name: widget.status
+                            ? 'Go back'
+                            : state is PaymentLoading
+                            ? 'Processing...'
+                            : 'Pay now',
+                        onPressed: widget.status
+                            ? () => Navigator.pop(context)
                             : state is PaymentLoading
                             ? null
                             : () {
-                          print(String.fromEnvironment('STRIPE_PUBLISHABLE_KEY'));
-                          print(String.fromEnvironment('STRIPE_SECRET_KEY'));
-
+                          if (_paymentMethod == 'wallet') {
+                            final balance = context.read<WalletBloc>().state is WalletBalanceLoaded
+                                ? (context.read<WalletBloc>().state as WalletBalanceLoaded).balance
+                                : 0.0;
+                            if (balance < totalAmount) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Insufficient wallet balance')),
+                              );
+                              return;
+                            }
+                          }
                           context.read<PaymentBloc>().add(
                             MakePaymentEvent(
-                              amountToPay: (roomRate + (extraAmount ?? 0) - (discount ?? 0)),
-                              id: isBooking ? null : id,
-                              dueDate: isBooking ? null : dueDate,
-                              registrationDate: isBooking ? null : registrationDate,
-                              amount: isBooking ? 100 : roomRate,
-                              occupantId: occupantId,
+                              amountToPay: totalAmount,
+                              id: widget.isBooking ? null : widget.id,
+                              dueDate: widget.isBooking ? null : widget.dueDate,
+                              registrationDate: widget.isBooking ? null : widget.registrationDate,
+                              amount: widget.isBooking ? 100 : roomRate,
+                              occupantId: widget.occupantId,
                               roomType: roomType,
                               hostelId: hostelId,
                               roomId: roomId,
-                              isBooking: isBooking,
+                              isBooking: widget.isBooking,
                               roomRate: roomRate,
-                              extraMessage: extraMessage,
-                              extraAmount: extraAmount,
-                              discount: discount,
-                              occupantName: occupantName,
-                              occupantImage: occupantImage,
+                              extraMessage: widget.extraMessage,
+                              extraAmount: widget.extraAmount,
+                              discount: widget.discount,
+                              occupantName: widget.occupantName,
+                              occupantImage: widget.occupantImage,
                               hostelName: hostelName,
+                              paymentMethod: _paymentMethod,
                             ),
                           );
                         },
@@ -162,7 +194,7 @@ class PaymentScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

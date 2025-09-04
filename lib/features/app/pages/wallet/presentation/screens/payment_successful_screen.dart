@@ -17,9 +17,7 @@ class PaymentSuccessfulScreen extends StatelessWidget {
             width: double.infinity,
             decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage(
-                    'assets/images/Background.jpg',
-                  ),
+                  image: AssetImage('assets/images/Background.jpg'),
                   fit: BoxFit.cover),
             ),
           ),
@@ -33,7 +31,7 @@ class PaymentSuccessfulScreen extends StatelessWidget {
             bottom: 0,
             left: 0,
             right: 0,
-            child: PaymentSummerySection(rent: rent,),
+            child: PaymentSummerySection(rent: rent),
           )
         ],
       ),
