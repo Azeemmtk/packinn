@@ -23,12 +23,18 @@ class HostelRemoteDataSourceImpl implements HostelRemoteDataSource {
 
       final hostels = querySnapshot.docs
           .map((doc) => HostelModel.fromJson(doc.data()).toEntity())
-          .toList();
+          .toList()
+        ..sort((a, b) {
+          // Handle null ratings by placing them at the end
+          if (a.rating == null && b.rating == null) return 0;
+          if (a.rating == null) return 1;
+          if (b.rating == null) return -1;
+          return b.rating!.compareTo(a.rating!);
+        });
 
       return Right(hostels);
     } catch (e) {
       return Left(ServerFailure('Failed to fetch hostels: $e'));
     }
   }
-
 }

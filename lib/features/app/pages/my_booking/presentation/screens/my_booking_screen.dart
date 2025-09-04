@@ -56,7 +56,7 @@ class MyBookingScreen extends StatelessWidget {
                               location: booking.hostel.placeName,
                               occupantName: booking.occupant.name,
                               rent: booking.room['rate'] as double,
-                              rating: 5.0, // Hardcoded, no data
+                              rating: booking.hostel.rating ?? 0.0,
                               distance: 0, // Hardcoded
                             ),
                           );
