@@ -11,6 +11,7 @@ class WalletCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isOverdue = !payment.paymentStatus && payment.dueDate.isBefore(DateTime.now());
     return InkWell(
       onTap: () {
         print(' wallet screen${payment.id}');
@@ -28,12 +29,11 @@ class WalletCardWidget extends StatelessWidget {
               discount: payment.discount,
               dueDate: payment.dueDate,
               registrationDate: payment.registrationDate,
-
               room: {
                 'hostelId': payment.hostelId,
-                'hostelName':payment.hostelName,
+                'hostelName': payment.hostelName,
                 'roomId': payment.id,
-                'rate': payment.amount,
+                'rate': payment.rent,
               },
               isBooking: false,
             ),
@@ -51,6 +51,7 @@ class WalletCardWidget extends StatelessWidget {
               offset: const Offset(0, 2),
             ),
           ],
+          border: isOverdue ? Border.all(color: Colors.red, width: 2) : null,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,13 +79,13 @@ class WalletCardWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-              Text(
-              payment.hostelName ,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
+                  Text(
+                    payment.hostelName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     payment.occupantName,
@@ -106,7 +107,7 @@ class WalletCardWidget extends StatelessWidget {
                       Text(
                         ' - ${payment.paymentStatus ? 'Paid' : 'Due'}',
                         style: TextStyle(
-                          color: payment.paymentStatus ? mainColor :Colors.red,
+                          color: payment.paymentStatus ? mainColor : Colors.red,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -114,11 +115,19 @@ class WalletCardWidget extends StatelessWidget {
                   ),
                   Text(
                     'Due: ${payment.dueDate.toString().substring(0, 10)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey,
+                      color: isOverdue ? Colors.red : Colors.grey,
                     ),
                   ),
+                  if (payment.paidVia != null)
+                    Text(
+                      'Paid via: ${payment.paidVia}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
                 ],
               ),
             ),

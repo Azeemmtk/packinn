@@ -15,6 +15,8 @@ class PaymentSummeryWidget extends StatelessWidget {
     required this.rent,
   });
 
+  ///
+
   final bool isBooking;
   final String? extraMessage;
   final double? extraAmount;

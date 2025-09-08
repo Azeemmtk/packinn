@@ -8,12 +8,13 @@ import '../../../../main_screen/presentation/screen/main_screen.dart';
 import '../../../home/presentation/provider/bloc/hostel/hostel_bloc.dart';
 
 class PaymentSummerySection extends StatelessWidget {
-  const PaymentSummerySection({super.key, this.extraMessage, this.extraAmount, this.discount, required this.rent});
+  const PaymentSummerySection({super.key, required this.rent, required this.isBooking, required this.extraMessage, required this.extraAmount, required this.discount,});
 
-  final String? extraMessage;
   final double rent;
-  final double? extraAmount;
-  final double? discount;
+  final bool isBooking;
+  final String extraMessage;
+  final double extraAmount;
+  final double discount;
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +60,11 @@ class PaymentSummerySection extends StatelessWidget {
               extraMessage: extraMessage,
               extraAmount: extraAmount,
               discount: discount,
-              isBooking: true,
+              isBooking: isBooking,
               rent: rent,
             ),
             SizedBox(
-              height: height * 0.1,
+              height: height * 0.05,
             ),
             CustomGreenButtonWidget(
               name: 'Go back to home',

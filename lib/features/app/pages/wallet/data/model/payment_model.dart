@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../../domain/entity/payment_entity.dart';
 
 class PaymentModel {
@@ -19,6 +18,7 @@ class PaymentModel {
   final bool isBooking;
   final DateTime dueDate;
   final DateTime registrationDate;
+  final String? paidVia; // New field
 
   PaymentModel({
     this.id,
@@ -30,13 +30,14 @@ class PaymentModel {
     this.extraMessage,
     this.extraAmount,
     this.discount,
-    this.isBooking =false,
+    this.isBooking = false,
     required this.occupantName,
     required this.occupantImage,
     required this.hostelName,
     required this.paymentStatus,
     required this.dueDate,
     required this.registrationDate,
+    this.paidVia,
   });
 
   Map<String, dynamic> toJson() {
@@ -57,6 +58,7 @@ class PaymentModel {
       'paymentStatus': paymentStatus,
       'dueDate': Timestamp.fromDate(dueDate),
       'registrationDate': Timestamp.fromDate(registrationDate),
+      'paidVia': paidVia,
     };
   }
 
@@ -78,6 +80,7 @@ class PaymentModel {
       paymentStatus: json['paymentStatus'] ?? false,
       dueDate: (json['dueDate'] as Timestamp).toDate(),
       registrationDate: (json['registrationDate'] as Timestamp).toDate(),
+      paidVia: json['paidVia'],
     );
   }
 
@@ -93,12 +96,13 @@ class PaymentModel {
       extraAmount: extraAmount,
       discount: discount,
       occupantName: occupantName,
-      isBooking: isBooking,
       occupantImage: occupantImage,
-      hostelName :hostelName,
+      hostelName: hostelName,
       paymentStatus: paymentStatus,
       dueDate: dueDate,
       registrationDate: registrationDate,
+      isBooking: isBooking,
+      paidVia: paidVia,
     );
   }
 
@@ -120,6 +124,7 @@ class PaymentModel {
       paymentStatus: entity.paymentStatus,
       dueDate: entity.dueDate,
       registrationDate: entity.registrationDate,
+      paidVia: entity.paidVia,
     );
   }
 }

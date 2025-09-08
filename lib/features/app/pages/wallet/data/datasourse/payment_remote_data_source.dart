@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dartz/dartz.dart';
-import 'package:packinn/core/error/exceptions.dart';
-import '../../../../../../core/error/failures.dart';
+import '../../../../../../core/error/exceptions.dart';
 import '../model/payment_model.dart';
 
 abstract class PaymentRemoteDataSource {
   Future<List<PaymentModel>> getPayment(String uId);
-  Future<Either<Failure, void>> updatePayment(String paymentId);
+  Future<void> updatePayment(String paymentId, String? paidVia); // Updated to return Future<void>
 }
 
 class PaymentRemoteDataSourceImpl extends PaymentRemoteDataSource {
@@ -17,7 +15,7 @@ class PaymentRemoteDataSourceImpl extends PaymentRemoteDataSource {
   @override
   Future<List<PaymentModel>> getPayment(String uId) async {
     try {
-      print('datasource===========$uId}');
+      print('datasource===========$uId');
       final querySnapshot = await firestore
           .collection('payments')
           .where('userId', isEqualTo: uId)
@@ -33,16 +31,17 @@ class PaymentRemoteDataSourceImpl extends PaymentRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, void>> updatePayment(String paymentId) async{
-    try{
-      await firestore.collection('payments').doc(paymentId).update(
-          {
-            'paymentStatus': true,
-          }
-      );
-      return Right(null);
-    } catch (e){
-      return Left(ServerFailure('Failed to update Payment: ${e.toString()}'));
+  Future<void> updatePayment(String paymentId, String? paidVia) async {
+    try {
+      final updateData = <String, dynamic>{
+        'paymentStatus': true,
+      };
+      if (paidVia != null) {
+        updateData['paidVia'] = paidVia;
+      }
+      await firestore.collection('payments').doc(paymentId).update(updateData);
+    } catch (e) {
+      throw ServerException('Failed to update payment: ${e.toString()}');
     }
   }
 }

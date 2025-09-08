@@ -99,24 +99,40 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserModel?> getCurrentUser() async {
     try {
-      final User? user = firebaseAuth.currentUser;
-      if (user == null) return null;
+      final User? firebaseUser = firebaseAuth.currentUser;
+      if (firebaseUser == null) return null;
 
-      final userFromFirestore = await getUserFromFirestore(user.uid);
+      // Get user data from Firestore first
+      final userFromFirestore = await getUserFromFirestore(firebaseUser.uid);
 
-      return userFromFirestore ??
-          UserModel(
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            emailVerified: user.emailVerified,
-            role: 'user',
-          );
+      if (userFromFirestore != null) {
+        // Fill in any null values with Firebase Auth data
+        return UserModel(
+          uid: userFromFirestore.uid,
+          email: userFromFirestore.email ?? firebaseUser.email,
+          displayName: userFromFirestore.displayName ?? firebaseUser.displayName,
+          photoURL: userFromFirestore.photoURL ?? firebaseUser.photoURL,
+          address: userFromFirestore.address ?? 'Address',
+          emailVerified: userFromFirestore.emailVerified ?? firebaseUser.emailVerified,
+          role: userFromFirestore.role ?? 'user',
+        );
+      }
+
+      // If no Firestore data exists, create UserModel from Firebase Auth
+      return UserModel(
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL,
+        address: 'Address',
+        emailVerified: firebaseUser.emailVerified,
+        role: 'user',
+      );
     } catch (e) {
       throw AuthException('Failed to get current user: ${e.toString()}');
     }
   }
+
 
   @override
   Future<bool> isUserSignedIn() async {

@@ -5,6 +5,13 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart' as google_sign_in_package;
 import 'package:packinn/core/services/cloudinary_services.dart';
 import 'package:packinn/core/services/stripe_services.dart';
+import 'package:packinn/features/app/pages/account/data/datasource/user_profile_remote_data_source.dart';
+import 'package:packinn/features/app/pages/account/data/repository/user_profile_repository_impl.dart';
+import 'package:packinn/features/app/pages/account/domain/repository/user_profile_repository.dart';
+import 'package:packinn/features/app/pages/account/domain/usecases/get_user_use_case.dart';
+import 'package:packinn/features/app/pages/account/domain/usecases/update_user_use_case.dart';
+import 'package:packinn/features/app/pages/account/presentation/provider/bloc/edit_profile/edit_profile_bloc.dart';
+import 'package:packinn/features/app/pages/account/presentation/provider/bloc/profile/profile_bloc.dart';
 import 'package:packinn/features/app/pages/chat/data/datasource/chat_remote_data_source.dart';
 import 'package:packinn/features/app/pages/chat/data/datasource/owner_remote_data_source.dart';
 import 'package:packinn/features/app/pages/chat/data/repository/chat_repository_impl.dart';
@@ -49,9 +56,14 @@ import 'package:packinn/features/app/pages/search/presentation/provider/bloc/sea
 import 'package:packinn/features/app/pages/search/presentation/provider/cubit/search_filter/search_filter_cubit.dart';
 import 'package:packinn/features/app/pages/wallet/data/datasourse/occupant_edit_remote_data_source.dart';
 import 'package:packinn/features/app/pages/wallet/data/datasourse/payment_remote_data_source.dart';
+import 'package:packinn/features/app/pages/wallet/data/datasourse/wallet_remote_data_source.dart';
 import 'package:packinn/features/app/pages/wallet/data/repository/wallet_repository_impl.dart';
 import 'package:packinn/features/app/pages/wallet/domain/repository/wallet_repository.dart';
+import 'package:packinn/features/app/pages/wallet/domain/usecases/add_to_wallet_usecase.dart';
+import 'package:packinn/features/app/pages/wallet/domain/usecases/deduct_from_wallet_usecase.dart';
 import 'package:packinn/features/app/pages/wallet/domain/usecases/get_payment_usecase.dart';
+import 'package:packinn/features/app/pages/wallet/domain/usecases/get_transaction_usecase.dart';
+import 'package:packinn/features/app/pages/wallet/domain/usecases/get_wallet_balance_usecase.dart';
 import 'package:packinn/features/app/pages/wallet/domain/usecases/save_payment_use_case.dart';
 import 'package:packinn/features/app/pages/wallet/domain/usecases/update_occupant_usecase.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/payment/payment_bloc.dart';
@@ -109,7 +121,7 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton<GeolocationService>(() => GeolocationService());
   getIt.registerLazySingleton<CloudinaryService>(() => CloudinaryService());
   getIt.registerLazySingleton<ImagePickerService>(() => ImagePickerService());
-  getIt.registerLazySingleton<StripeService>(() => StripeService.instance);
+  getIt.registerLazySingleton<StripeService>(() => StripeService());
 
   // Data Sources
   getIt.registerLazySingleton<AuthRemoteDataSource>(
@@ -155,9 +167,20 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton<OverpassRemoteDataSource>(
     () => OverpassRemoteDataSource(getIt<Dio>()),
   );
+
   getIt.registerLazySingleton<ReviewRemoteDataSource>(
     () => ReviewRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
   );
+
+  getIt.registerLazySingleton<WalletRemoteDataSource>(
+        () => WalletRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+  );
+  getIt.registerLazySingleton<UserProfileRemoteDataSource>(
+        () => UserProfileRemoteDataSourceImpl(firestore:  getIt<FirebaseFirestore>()),
+  );
+
+
+
 
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(
@@ -180,7 +203,9 @@ Future<void> initializeDependencies() async {
 
   getIt.registerLazySingleton<WalletRepository>(
     () => WalletRepositoryImpl(getIt<OccupantEditRemoteDataSource>(),
-        getIt<PaymentRemoteDataSource>()),
+        getIt<PaymentRemoteDataSource>(),
+        getIt<WalletRemoteDataSource>(),
+    ),
   );
 
   getIt.registerLazySingleton<BookingRepository>(
@@ -201,6 +226,10 @@ Future<void> initializeDependencies() async {
 
   getIt.registerLazySingleton<ReviewRepository>(
         () => ReviewRepositoryImpl(getIt<ReviewRemoteDataSource>()),
+  );
+
+  getIt.registerLazySingleton<UserProfileRepository>(
+        () => UserProfileRepositoryImpl(remoteDataSource: getIt<UserProfileRemoteDataSource>()),
   );
 
   // Use Cases
@@ -245,8 +274,17 @@ Future<void> initializeDependencies() async {
 
   getIt.registerLazySingleton(
           () => AddReviewUseCase(getIt<ReviewRepository>()));
-  getIt.registerLazySingleton(
-          () => GetReviewsUseCase(getIt<ReviewRepository>()));
+
+  getIt.registerLazySingleton(() => GetReviewsUseCase(getIt<ReviewRepository>()));
+
+  getIt.registerLazySingleton(() => AddToWalletUseCase(getIt<WalletRepository>()));
+  getIt.registerLazySingleton(() => DeductFromWalletUseCase(getIt<WalletRepository>()));
+  getIt.registerLazySingleton(() => GetTransactionsUseCase(getIt<WalletRepository>()));
+  getIt.registerLazySingleton(() => GetWalletBalanceUseCase(getIt<WalletRepository>()));
+
+
+  getIt.registerLazySingleton(() => GetUserUseCase(getIt<UserProfileRepository>()));
+  getIt.registerLazySingleton(() => UpdateUserUseCase(getIt<UserProfileRepository>()));
 
 
 
@@ -298,12 +336,23 @@ Future<void> initializeDependencies() async {
   );
 
   getIt.registerFactory(
-    () => PaymentBloc(getIt<StripeService>(), getIt<SavePaymentUseCase>(),
-        getIt<UpdateOccupantUseCase>()),
+    () => PaymentBloc(
+        getIt<StripeService>(),
+        getIt<SavePaymentUseCase>(),
+        getIt<UpdateOccupantUseCase>(),
+        getIt<DeductFromWalletUseCase>(),
+      getIt<WalletRepository>(),
+    ),
   );
   getIt.registerFactory(() =>
       MyBookingsBloc(getMyBookingsUseCase: getIt<GetMyBookingsUseCase>()));
-  getIt.registerFactory(() => WalletBloc(getIt<GetPaymentsUseCase>()));
+  getIt.registerFactory(() => WalletBloc(
+      getIt<GetPaymentsUseCase>(),
+    getIt<GetWalletBalanceUseCase>(),
+    getIt<AddToWalletUseCase>(),
+    getIt<GetTransactionsUseCase>(),
+    getIt<StripeService>(),
+  ));
 
   getIt.registerFactory(() => AllChatBloc(getIt<GetChatsUseCase>()));
   getIt.registerFactoryParam<ChatBloc, String, void>(
@@ -317,6 +366,15 @@ Future<void> initializeDependencies() async {
   getIt.registerFactory(() => MapSearchBloc(getIt<SearchHostelsNearby>()));
 
   getIt.registerFactory(() => ReviewBloc(addReviewUseCase: getIt<AddReviewUseCase>(),getReviewsUseCase: getIt<GetReviewsUseCase>()));
+
+
+  getIt.registerFactory(() => ProfileBloc(
+      getUserUseCase: getIt<GetUserUseCase>(),
+  ));
+
+  getIt.registerFactory(() => EditProfileBloc(
+    updateUserUseCase: getIt<UpdateUserUseCase>(),
+  ));
 
 
 

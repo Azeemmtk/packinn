@@ -7,11 +7,13 @@ import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
 import 'package:packinn/core/widgets/custom_green_button_widget.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/payment/payment_bloc.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/screens/payment_successful_screen.dart';
+import '../../../../../../core/services/current_user.dart';
 import '../../../../../../core/widgets/title_text_widget.dart';
 import '../provider/bloc/payment/payment_state.dart';
+import '../provider/bloc/wallet/wallet_bloc.dart';
 import '../widgets/payment_summery_widget.dart';
 
-class PaymentScreen extends StatelessWidget {
+class PaymentScreen extends StatefulWidget {
   const PaymentScreen({
     super.key,
     this.isBooking = false,
@@ -25,7 +27,7 @@ class PaymentScreen extends StatelessWidget {
     this.discount,
     this.registrationDate,
     this.dueDate,
-    this.status= false,
+    this.status = false,
   });
 
   final String? id;
@@ -42,128 +44,207 @@ class PaymentScreen extends StatelessWidget {
   final DateTime? registrationDate;
 
   @override
+  _PaymentScreenState createState() => _PaymentScreenState();
+}
+
+class _PaymentScreenState extends State<PaymentScreen> {
+  String _paymentMethod = 'stripe';
+
+  @override
   Widget build(BuildContext context) {
-    final String hostelId = room?['hostelId'] ?? '';
-    final String hostelName = room?['hostelName'] ?? '';
-    final String roomId = room?['roomId'] ?? '';
-    final String roomType = room?['type'] ?? '';
-    final double roomRate = (room?['rate'] as num?)?.toDouble() ?? 3000.0;
+    final String userId = CurrentUser().uId ?? '';
+    if (userId.isEmpty) {
+      return Scaffold(
+        body: Center(child: Text('Error: User not authenticated')),
+      );
+    }
 
-    return BlocProvider(
-      create: (context) => getIt<PaymentBloc>(),
+    final String hostelId = widget.room?['hostelId'] ?? '';
+    final String hostelName = widget.room?['hostelName'] ?? '';
+    final String roomId = widget.room?['roomId'] ?? '';
+    final String roomType = widget.room?['type'] ?? '';
+    final double roomRate = (widget.room?['rate'] as num?)?.toDouble() ?? 3000.0;
+    final double totalAmount = (widget.isBooking ? 100 : roomRate + (widget.extraAmount ?? 0) - (widget.discount ?? 0));
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => getIt<PaymentBloc>()),
+        BlocProvider(
+          create: (context) => getIt<WalletBloc>()
+            ..add(GetWalletBalance(userId: userId))
+            ..add(GetPayments(userId)),
+        ),
+      ],
       child: Scaffold(
-        body: Column(
-          children: [
-            CustomAppBarWidget(title: 'Payment'),
-            Padding(
-              padding: EdgeInsets.all(padding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  height10,
-                  Text(
-                    'Summit hostel',
-                    style: TextStyle(
-                      fontSize: 25,
-                      color: headingTextColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(
-                    height: height * 0.07,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          TitleTextWidget(title: 'Due date'),
-                          Text('Sun, 15 Jan')
-                        ],
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              CustomAppBarWidget(title: 'Payment'),
+              Padding(
+                padding: EdgeInsets.all(padding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    height10,
+                    Text(
+                      hostelName,
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: headingTextColor,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          TitleTextWidget(title: 'Current date'),
-                          Text('Sun, 15 Jan')
-                        ],
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: height * 0.07,
-                  ),
-                  PaymentSummeryWidget(
-                    isBooking: isBooking,
-                    extraMessage: extraMessage,
-                    extraAmount: extraAmount,
-                    discount: discount,
-                    rent: roomRate,
-                  ),
-                  SizedBox(
-                    height: height * 0.15,
-                  ),
-                  BlocConsumer<PaymentBloc, PaymentState>(
-                    listener: (context, state) {
-                      if (state is PaymentSuccess) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PaymentSuccessfulScreen(rent: roomRate,),
-                          ),
-                        );
-                      } else if (state is PaymentError) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: mainColor,
-                            content: Text(state.message),
-                          ),
-                        );
-                      }
-                    },
-                    builder: (context, state) {
-                      return CustomGreenButtonWidget(
-                        name: status ? 'Go back' : state is PaymentLoading ? 'Processing...' : 'Pay now',
-                        onPressed: status
-                            ? (){
-                          Navigator.pop(context);
-                        }
-                            : state is PaymentLoading
-                            ? null
-                            : () {
-                          print(String.fromEnvironment('STRIPE_PUBLISHABLE_KEY'));
-                          print(String.fromEnvironment('STRIPE_SECRET_KEY'));
-
-                          context.read<PaymentBloc>().add(
-                            MakePaymentEvent(
-                              amountToPay: (roomRate + (extraAmount ?? 0) - (discount ?? 0)),
-                              id: isBooking ? null : id,
-                              dueDate: isBooking ? null : dueDate,
-                              registrationDate: isBooking ? null : registrationDate,
-                              amount: isBooking ? 100 : roomRate,
-                              occupantId: occupantId,
-                              roomType: roomType,
-                              hostelId: hostelId,
-                              roomId: roomId,
-                              isBooking: isBooking,
-                              roomRate: roomRate,
-                              extraMessage: extraMessage,
-                              extraAmount: extraAmount,
-                              discount: discount,
-                              occupantName: occupantName,
-                              occupantImage: occupantImage,
-                              hostelName: hostelName,
+                    ),
+                    SizedBox(height: height * 0.07),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TitleTextWidget(title: 'Payment Method'),
+                            Row(
+                              children: [
+                                Radio<String>(
+                                  value: 'stripe',
+                                  groupValue: _paymentMethod,
+                                  onChanged: (value) => setState(() => _paymentMethod = value!),
+                                ),
+                                const Text('Stripe'),
+                                Radio<String>(
+                                  value: 'wallet',
+                                  groupValue: _paymentMethod,
+                                  onChanged: (value) => setState(() => _paymentMethod = value!),
+                                ),
+                                const Text('Wallet'),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    PaymentSummeryWidget(
+                      isBooking: widget.isBooking,
+                      extraMessage: widget.extraMessage ?? 'No extra fee',
+                      extraAmount: widget.extraAmount ?? 0.0,
+                      discount: widget.discount ?? 0.0,
+                      rent: roomRate,
+                    ),
+                    SizedBox(height: height * 0.1),
+                    BlocConsumer<PaymentBloc, PaymentState>(
+                      listener: (context, state) {
+                        if (state is PaymentSuccess) {
+                          context.read<WalletBloc>().add(GetPayments(userId));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PaymentSuccessfulScreen(
+                                rent: roomRate,
+                                isBooking: widget.isBooking,
+                                discount: widget.discount ?? 0.0,
+                                extraAmount: widget.extraAmount ?? 0.0,
+                                extraMessage: widget.extraMessage ?? 'No extra fee',
+                              ),
                             ),
                           );
-                        },
-                      );
-                    },
-                  ),
-                ],
+                        } else if (state is PaymentError) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: mainColor,
+                              content: Text(state.message),
+                            ),
+                          );
+                        }
+                      },
+                      builder: (context, paymentState) {
+                        return BlocBuilder<WalletBloc, WalletState>(
+                          builder: (context, walletState) {
+                            final balance = walletState is WalletDataLoaded
+                                ? walletState.balance
+                                : 0.0;
+                            print('PaymentScreen Balance: $balance');
+                            return CustomGreenButtonWidget(
+                              name: widget.status
+                                  ? 'Go back'
+                                  : paymentState is PaymentLoading
+                                  ? 'Processing...'
+                                  : 'Pay now',
+                              onPressed: widget.status
+                                  ? () => Navigator.pop(context)
+                                  : paymentState is PaymentLoading
+                                  ? null
+                                  : () async {
+                                if (_paymentMethod == 'wallet') {
+                                  if (balance < totalAmount) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Insufficient wallet balance')),
+                                    );
+                                    return;
+                                  }
+                                  // Show confirmation popup for wallet payment
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text('Confirm Payment'),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('Wallet Balance: ₹${balance.toStringAsFixed(2)}'),
+                                          Text('Amount to Pay: ₹${totalAmount.toStringAsFixed(2)}'),
+                                          SizedBox(height: 10),
+                                          Text('Do you want to proceed with the payment?'),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context, false),
+                                          child: Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context, true),
+                                          child: Text('Confirm'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirm != true) {
+                                    return;
+                                  }
+                                }
+                                // Proceed with payment
+                                context.read<PaymentBloc>().add(
+                                  MakePaymentEvent(
+                                    amountToPay: totalAmount,
+                                    id: widget.isBooking ? null : widget.id,
+                                    dueDate: widget.isBooking ? null : widget.dueDate,
+                                    registrationDate: widget.isBooking ? null : widget.registrationDate,
+                                    amount: widget.isBooking ? 100 : roomRate,
+                                    occupantId: widget.occupantId,
+                                    roomType: roomType,
+                                    hostelId: hostelId,
+                                    roomId: roomId,
+                                    isBooking: widget.isBooking,
+                                    roomRate: roomRate,
+                                    extraMessage: widget.extraMessage,
+                                    extraAmount: widget.extraAmount,
+                                    discount: widget.discount,
+                                    occupantName: widget.occupantName,
+                                    occupantImage: widget.occupantImage,
+                                    hostelName: hostelName,
+                                    paymentMethod: _paymentMethod,
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );

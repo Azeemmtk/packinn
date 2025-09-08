@@ -12,7 +12,6 @@ class MakePaymentEvent extends PaymentEvent {
   final double amountToPay;
   final String? id;
   final String occupantId;
-  final String? paymentId;
   final String roomType;
   final String hostelId;
   final String roomId;
@@ -26,10 +25,9 @@ class MakePaymentEvent extends PaymentEvent {
   final String hostelName;
   final DateTime? dueDate;
   final DateTime? registrationDate;
-
+  final String paymentMethod; // New: "wallet" or "stripe"
 
   const MakePaymentEvent({
-
     required this.amount,
     required this.amountToPay,
     this.id,
@@ -39,7 +37,6 @@ class MakePaymentEvent extends PaymentEvent {
     required this.roomId,
     this.isBooking = false,
     this.roomRate,
-    this.paymentId,
     this.extraMessage,
     this.extraAmount,
     this.discount,
@@ -48,23 +45,28 @@ class MakePaymentEvent extends PaymentEvent {
     required this.occupantName,
     required this.occupantImage,
     required this.hostelName,
+    required this.paymentMethod,
   });
 
   @override
   List<Object?> get props => [
     amount,
+    amountToPay,
+    id,
     occupantId,
     roomType,
     hostelId,
     roomId,
     isBooking,
-    paymentId,
     roomRate,
     extraMessage,
     extraAmount,
     discount,
     occupantName,
     hostelName,
+    paymentMethod,
+    dueDate,
+    registrationDate,
   ];
 }
 
