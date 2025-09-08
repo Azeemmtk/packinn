@@ -26,17 +26,23 @@ import 'package:packinn/features/app/pages/chat/domain/usecases/send_message_use
 import 'package:packinn/features/app/pages/chat/presentation/providers/bloc/allchats/all_chat_bloc.dart';
 import 'package:packinn/features/app/pages/chat/presentation/providers/bloc/chat/chat_bloc.dart';
 import 'package:packinn/features/app/pages/home/data/datasource/occupant_remote_data_sourse.dart';
+import 'package:packinn/features/app/pages/home/data/datasource/report_data_source.dart';
 import 'package:packinn/features/app/pages/home/data/datasource/review_remote_data_source.dart';
 import 'package:packinn/features/app/pages/home/data/repository/occupant_repository_impl.dart';
+import 'package:packinn/features/app/pages/home/data/repository/report_repository_impl.dart';
 import 'package:packinn/features/app/pages/home/data/repository/review_repository_impl.dart';
 import 'package:packinn/features/app/pages/home/domain/repository/occupants_repository.dart';
+import 'package:packinn/features/app/pages/home/domain/repository/report_repository.dart';
 import 'package:packinn/features/app/pages/home/domain/repository/review_repository.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/add_review_use_case.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/delete_occupant.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/fetch_occupants.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/get_review_use_case.dart';
+import 'package:packinn/features/app/pages/home/domain/usecases/report/fetch_user_report_use_case.dart';
+import 'package:packinn/features/app/pages/home/domain/usecases/report/submit_report_usecase.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/save_occupant.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/bloc/add_cooupant/add_occupant_bloc.dart';
+import 'package:packinn/features/app/pages/home/presentation/provider/bloc/report/report_bloc.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/bloc/review/review_bloc.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/cubit/occupant_field_cubit.dart';
 import 'package:packinn/features/app/pages/my_booking/data/datasourse/booking_remote_data_source.dart';
@@ -178,6 +184,9 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton<UserProfileRemoteDataSource>(
         () => UserProfileRemoteDataSourceImpl(firestore:  getIt<FirebaseFirestore>()),
   );
+  getIt.registerLazySingleton<ReportDataSource>(
+        () => ReportDataSourceImpl(firestore:  getIt<FirebaseFirestore>()),
+  );
 
 
 
@@ -232,6 +241,13 @@ Future<void> initializeDependencies() async {
         () => UserProfileRepositoryImpl(remoteDataSource: getIt<UserProfileRemoteDataSource>()),
   );
 
+  getIt.registerLazySingleton<ReportRepository>(
+        () => ReportRepositoryImpl(
+          cloudinaryService: getIt<CloudinaryService>(),
+          dataSource: getIt<ReportDataSource>()
+        ),
+  );
+
   // Use Cases
   getIt.registerLazySingleton(() => CheckAuthStatus(getIt<AuthRepository>()));
   getIt.registerLazySingleton(
@@ -272,19 +288,25 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton(
       () => SearchHostelsNearby(getIt<HostelMapSearchRepository>()));
 
-  getIt.registerLazySingleton(
-          () => AddReviewUseCase(getIt<ReviewRepository>()));
 
+  //review
+  getIt.registerLazySingleton(() => AddReviewUseCase(getIt<ReviewRepository>()));
   getIt.registerLazySingleton(() => GetReviewsUseCase(getIt<ReviewRepository>()));
 
+
+  //wallet
   getIt.registerLazySingleton(() => AddToWalletUseCase(getIt<WalletRepository>()));
   getIt.registerLazySingleton(() => DeductFromWalletUseCase(getIt<WalletRepository>()));
   getIt.registerLazySingleton(() => GetTransactionsUseCase(getIt<WalletRepository>()));
   getIt.registerLazySingleton(() => GetWalletBalanceUseCase(getIt<WalletRepository>()));
 
-
+  //profile
   getIt.registerLazySingleton(() => GetUserUseCase(getIt<UserProfileRepository>()));
   getIt.registerLazySingleton(() => UpdateUserUseCase(getIt<UserProfileRepository>()));
+
+  //report
+  getIt.registerLazySingleton(() => FetchUserReportsUseCase(getIt<ReportRepository>()));
+  getIt.registerLazySingleton(() => SubmitReportUseCase(getIt<ReportRepository>()));
 
 
 
@@ -376,6 +398,11 @@ Future<void> initializeDependencies() async {
     updateUserUseCase: getIt<UpdateUserUseCase>(),
   ));
 
+  // report
+  getIt.registerFactory(() => ReportBloc(
+    fetchUserReportsUseCase: getIt<FetchUserReportsUseCase>(),
+    submitReportUseCase: getIt<SubmitReportUseCase>(),
+  ));
 
 
 

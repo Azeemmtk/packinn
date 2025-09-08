@@ -43,6 +43,8 @@ class AllChatScreen extends StatelessWidget {
 
                         return InkWell(
                           onTap: () {
+                            print(otherName);
+                            print(otherPhoto);
                             Navigator.push(
                               context,
                               MaterialPageRoute(

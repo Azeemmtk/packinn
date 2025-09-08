@@ -6,7 +6,6 @@ import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
 import 'package:packinn/core/widgets/custom_green_button_widget.dart';
 import 'package:packinn/core/widgets/title_text_widget.dart';
-
 import '../../../../../../core/di/injection.dart';
 import '../../../../../../core/entity/hostel_entity.dart';
 import '../provider/bloc/review/review_bloc.dart';
@@ -15,6 +14,7 @@ import '../widgets/hostel_details/hostel_facility_name_section.dart';
 import '../widgets/hostel_details/review_container.dart';
 import '../widgets/hostel_details/review_room_section.dart';
 import '../widgets/hostel_details/show_add_review_dialogue.dart';
+import '../widgets/report/report_dialog.dart';
 
 class HostelDetailsScreen extends StatelessWidget {
   const HostelDetailsScreen({
@@ -53,7 +53,6 @@ class HostelDetailsScreen extends StatelessWidget {
                 Expanded(
                   child: TabBarView(
                     children: [
-                      // Details Tab
                       SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,23 +78,29 @@ class HostelDetailsScreen extends StatelessWidget {
                             CustomGreenButtonWidget(
                               name: 'Report',
                               color: Colors.redAccent,
-                              onPressed: () {},
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => ReportDialog(
+                                    hostelId: hostel.id,
+                                    ownerId: hostel.ownerId,
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
                       ),
-                      // Review & Rating Tab
                       SingleChildScrollView(
                         child: Builder(
                           builder: (blocContext) => BlocConsumer<ReviewBloc, ReviewState>(
                             listener: (context, state) {
                               if (state is ReviewAdded) {
-                                // Refresh reviews after adding a new one
                                 blocContext.read<ReviewBloc>().add(FetchReviews(hostel.id));
                               }
                             },
                             builder: (context, state) {
-                              print('Current ReviewBloc state: $state'); // Debugging
+                              print('Current ReviewBloc state: $state');
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

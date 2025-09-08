@@ -16,7 +16,7 @@ class AccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     const list = [
       'Profile',
-      'Favourite',
+      'Reports',
       'Add Compliant',
       'Help',
       'About',
