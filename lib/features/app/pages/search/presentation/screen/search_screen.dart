@@ -56,7 +56,7 @@ class _SearchScreenState extends State<SearchScreen> {
             create: (context) =>
             LocationCubit(GeolocationService())..getCurrentLocation()),
         BlocProvider(create: (context) => getIt<SearchBloc>()), //
-        BlocProvider(create: (context) => getIt<MapSearchBloc>()), // NEW: Add MapSearchBloc
+        BlocProvider(create: (context) => getIt<MapSearchBloc>()), // MapSearchBloc
       ],
       child: Scaffold(
         appBar: PreferredSize(

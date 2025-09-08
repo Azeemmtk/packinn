@@ -26,6 +26,9 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // Store the parent context that has access to SearchFilterCubit
+    final parentContext = context;
+
     return BlocBuilder<SearchFilterCubit, SearchFilterState>(
       builder: (context, filterState) {
         return TextFormField(
@@ -63,8 +66,9 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                       ),
-                      builder: (context) => BlocProvider.value(
-                        value: BlocProvider.of<SearchFilterCubit>(context),
+                      builder: (bottomSheetContext) => BlocProvider.value(
+                        // Use parentContext to access SearchFilterCubit
+                        value: BlocProvider.of<SearchFilterCubit>(parentContext),
                         child: FilterSectionWidget(),
                       ),
                     );
