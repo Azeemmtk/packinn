@@ -13,7 +13,7 @@ class ReportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final String senderId = CurrentUser().uId!;
     return BlocProvider(
-      create: (context) => getIt<ReportBloc>()..add(FetchUserReportsEvent(senderId: senderId)),
+      create: (context) => getIt<ReportBloc>()..add(FetchUserReportsEvent()),
       child: Scaffold(
         appBar: const PreferredSize(
           preferredSize: Size.fromHeight(kToolbarHeight),

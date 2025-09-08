@@ -2,16 +2,16 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../../../../core/error/failures.dart';
 import '../../../../../../../core/usecases/usecase.dart';
-import '../../entity/reposrt_entity.dart';
+import '../../entity/report_entity.dart';
 import '../../repository/report_repository.dart';
 
-class FetchUserReportsUseCase implements UseCase<List<ReportEntity>, String> {
+class FetchUserReportsUseCase implements UseCaseNoParams<List<ReportEntity>> {
   final ReportRepository repository;
 
   FetchUserReportsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, List<ReportEntity>>> call(String senderId) async {
-    return await repository.fetchReportsBySenderId(senderId);
+  Future<Either<Failure, List<ReportEntity>>> call() async {
+    return await repository.fetchReportsBySenderId();
   }
 }

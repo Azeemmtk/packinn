@@ -17,10 +17,7 @@ class SubmitReportEvent extends ReportEvent {
 }
 
 class FetchUserReportsEvent extends ReportEvent {
-  final String senderId;
 
-  const FetchUserReportsEvent({required this.senderId});
+  const FetchUserReportsEvent();
 
-  @override
-  List<Object> get props => [senderId];
 }

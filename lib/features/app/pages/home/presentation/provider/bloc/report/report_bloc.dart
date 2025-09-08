@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:dartz/dartz.dart';
 import 'package:packinn/core/error/failures.dart';
-import '../../../../domain/entity/reposrt_entity.dart';
+import '../../../../domain/entity/report_entity.dart';
 import '../../../../domain/usecases/report/fetch_user_report_use_case.dart';
 import '../../../../domain/usecases/report/submit_report_usecase.dart';
 
@@ -32,7 +32,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
 
   Future<void> _onFetchUserReports(FetchUserReportsEvent event, Emitter<ReportState> emit) async {
     emit(ReportLoading());
-    final result = await fetchUserReportsUseCase(event.senderId);
+    final result = await fetchUserReportsUseCase();
     emit(result.fold(
           (failure) => ReportError(message: failure.message),
           (reports) => ReportLoaded(reports: reports),

@@ -7,7 +7,7 @@ import 'package:packinn/core/widgets/custom_green_button_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../../../../core/services/image_picker_service.dart';
-import '../../../domain/entity/reposrt_entity.dart';
+import '../../../domain/entity/report_entity.dart';
 import '../../provider/bloc/report/report_bloc.dart';
 
 class ReportDialog extends StatefulWidget {

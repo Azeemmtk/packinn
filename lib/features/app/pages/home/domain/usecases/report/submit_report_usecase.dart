@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:packinn/core/error/failures.dart';
 
 import '../../../../../../../core/usecases/usecase.dart';
-import '../../entity/reposrt_entity.dart';
+import '../../entity/report_entity.dart';
 import '../../repository/report_repository.dart';
 
 class SubmitReportUseCase implements UseCase<void, ReportEntity> {

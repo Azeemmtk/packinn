@@ -4,7 +4,7 @@ import 'package:packinn/core/error/exceptions.dart';
 import 'package:packinn/core/error/failures.dart';
 
 import '../../../../../../core/services/cloudinary_services.dart';
-import '../../domain/entity/reposrt_entity.dart';
+import '../../domain/entity/report_entity.dart';
 import '../../domain/repository/report_repository.dart';
 import '../datasource/report_data_source.dart';
 
@@ -46,9 +46,9 @@ class ReportRepositoryImpl implements ReportRepository {
   }
 
   @override
-  Future<Either<Failure, List<ReportEntity>>> fetchReportsBySenderId(String senderId) async {
+  Future<Either<Failure, List<ReportEntity>>> fetchReportsBySenderId() async {
     try {
-      final reports = await dataSource.fetchReportsBySenderId(senderId);
+      final reports = await dataSource.fetchReportsBySenderId();
       return Right(reports);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
