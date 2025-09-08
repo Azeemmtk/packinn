@@ -15,6 +15,7 @@ class UserModel extends UserEntity {
     super.address,
     super.role,
     super.profileImageUrl,
+    super.walletBalance,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -31,6 +32,7 @@ class UserModel extends UserEntity {
       address: json['address'],
       role: json['role'] ?? 'user',
       profileImageUrl: json['profileImageUrl'],
+        walletBalance: json['walletBalance'],
     );
   }
 
@@ -53,6 +55,7 @@ class UserModel extends UserEntity {
       address: data['address'],
       role: data['role'] ?? 'user',
       profileImageUrl: data['profileImageUrl'],
+      walletBalance: data['walletBalance'],
     );
   }
 
@@ -96,6 +99,7 @@ class UserModel extends UserEntity {
       address: entity.address,
       role: entity.role,
       profileImageUrl: entity.profileImageUrl,
+      walletBalance: entity.walletBalance,
     );
   }
 

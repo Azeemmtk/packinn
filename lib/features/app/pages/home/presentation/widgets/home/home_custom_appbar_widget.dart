@@ -67,7 +67,7 @@ class HomeCustomAppbarWidget extends StatelessWidget {
                                         state.user.displayName?.isNotEmpty ==
                                             true
                                     ? state.user.displayName!
-                                    : 'Azeem ali',
+                                    : 'user',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
@@ -82,7 +82,11 @@ class HomeCustomAppbarWidget extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'Maradu, ernakualm',
+                                    state is EmailAuthAuthenticated &&
+                                        state.user.address?.isNotEmpty ==
+                                            true
+                                        ? state.user.address!
+                                        : 'adress',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey[500],

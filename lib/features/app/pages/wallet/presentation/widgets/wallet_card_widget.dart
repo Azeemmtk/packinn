@@ -33,7 +33,7 @@ class WalletCardWidget extends StatelessWidget {
                 'hostelId': payment.hostelId,
                 'hostelName': payment.hostelName,
                 'roomId': payment.id,
-                'rate': payment.amount,
+                'rate': payment.rent,
               },
               isBooking: false,
             ),

@@ -3,9 +3,13 @@ import '../widgets/payment_success_icon_Section.dart';
 import '../widgets/payment_summery_section.dart';
 
 class PaymentSuccessfulScreen extends StatelessWidget {
-  const PaymentSuccessfulScreen({super.key, required this.rent});
+  const PaymentSuccessfulScreen({super.key, required this.rent, required this.isBooking, required this.extraMessage, required this.extraAmount, required this.discount});
 
   final double rent;
+  final bool isBooking;
+  final String extraMessage;
+  final double extraAmount;
+  final double discount;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +35,13 @@ class PaymentSuccessfulScreen extends StatelessWidget {
             bottom: 0,
             left: 0,
             right: 0,
-            child: PaymentSummerySection(rent: rent),
+            child: PaymentSummerySection(
+              rent: rent,
+              extraMessage: extraMessage,
+              extraAmount: extraAmount,
+              discount:discount ,
+              isBooking: isBooking,
+            ),
           )
         ],
       ),

@@ -5,6 +5,13 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart' as google_sign_in_package;
 import 'package:packinn/core/services/cloudinary_services.dart';
 import 'package:packinn/core/services/stripe_services.dart';
+import 'package:packinn/features/app/pages/account/data/datasource/user_profile_remote_data_source.dart';
+import 'package:packinn/features/app/pages/account/data/repository/user_profile_repository_impl.dart';
+import 'package:packinn/features/app/pages/account/domain/repository/user_profile_repository.dart';
+import 'package:packinn/features/app/pages/account/domain/usecases/get_user_use_case.dart';
+import 'package:packinn/features/app/pages/account/domain/usecases/update_user_use_case.dart';
+import 'package:packinn/features/app/pages/account/presentation/provider/bloc/edit_profile/edit_profile_bloc.dart';
+import 'package:packinn/features/app/pages/account/presentation/provider/bloc/profile/profile_bloc.dart';
 import 'package:packinn/features/app/pages/chat/data/datasource/chat_remote_data_source.dart';
 import 'package:packinn/features/app/pages/chat/data/datasource/owner_remote_data_source.dart';
 import 'package:packinn/features/app/pages/chat/data/repository/chat_repository_impl.dart';
@@ -168,6 +175,9 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton<WalletRemoteDataSource>(
         () => WalletRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
   );
+  getIt.registerLazySingleton<UserProfileRemoteDataSource>(
+        () => UserProfileRemoteDataSourceImpl(firestore:  getIt<FirebaseFirestore>()),
+  );
 
 
 
@@ -216,6 +226,10 @@ Future<void> initializeDependencies() async {
 
   getIt.registerLazySingleton<ReviewRepository>(
         () => ReviewRepositoryImpl(getIt<ReviewRemoteDataSource>()),
+  );
+
+  getIt.registerLazySingleton<UserProfileRepository>(
+        () => UserProfileRepositoryImpl(remoteDataSource: getIt<UserProfileRemoteDataSource>()),
   );
 
   // Use Cases
@@ -267,6 +281,10 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton(() => DeductFromWalletUseCase(getIt<WalletRepository>()));
   getIt.registerLazySingleton(() => GetTransactionsUseCase(getIt<WalletRepository>()));
   getIt.registerLazySingleton(() => GetWalletBalanceUseCase(getIt<WalletRepository>()));
+
+
+  getIt.registerLazySingleton(() => GetUserUseCase(getIt<UserProfileRepository>()));
+  getIt.registerLazySingleton(() => UpdateUserUseCase(getIt<UserProfileRepository>()));
 
 
 
@@ -348,6 +366,15 @@ Future<void> initializeDependencies() async {
   getIt.registerFactory(() => MapSearchBloc(getIt<SearchHostelsNearby>()));
 
   getIt.registerFactory(() => ReviewBloc(addReviewUseCase: getIt<AddReviewUseCase>(),getReviewsUseCase: getIt<GetReviewsUseCase>()));
+
+
+  getIt.registerFactory(() => ProfileBloc(
+      getUserUseCase: getIt<GetUserUseCase>(),
+  ));
+
+  getIt.registerFactory(() => EditProfileBloc(
+    updateUserUseCase: getIt<UpdateUserUseCase>(),
+  ));
 
 
 

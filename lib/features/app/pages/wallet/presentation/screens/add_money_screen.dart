@@ -47,7 +47,7 @@ class _AddMoneyScreenState extends State<AddMoneyScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(state.message)),
                     );
-                  } else if (state is WalletLoaded) {
+                  } else if (state is WalletDataLoaded) {
                     Navigator.pop(context);
                   }
                 },

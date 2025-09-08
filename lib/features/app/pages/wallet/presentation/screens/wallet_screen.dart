@@ -33,7 +33,7 @@ class WalletScreen extends StatelessWidget {
                     BlocBuilder<WalletBloc, WalletState>(
                       builder: (context, state) {
                         double balance = 0.0;
-                        if (state is WalletBalanceLoaded) {
+                        if (state is WalletDataLoaded) {
                           print('-----------------------${state.balance}');
                           balance = state.balance;
                         }
@@ -41,7 +41,7 @@ class WalletScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Balance: \$${balance.toStringAsFixed(2)}',
+                              'Balance: ₹${balance.toStringAsFixed(2)}',
                               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                             ElevatedButton(
@@ -74,9 +74,11 @@ class WalletScreen extends StatelessWidget {
                       // Pending Tab
                       BlocBuilder<WalletBloc, WalletState>(
                         builder: (context, state) {
+                          print('Pending Tab State: $state');
                           if (state is WalletLoading) {
                             return const Center(child: CircularProgressIndicator());
-                          } else if (state is WalletLoaded) {
+                          } else if (state is WalletDataLoaded) {
+                            print('Pending Payments: ${state.payments}');
                             final pendingPayments = state.payments.where((p) => !p.paymentStatus).toList();
                             if (pendingPayments.isEmpty) {
                               return const Center(child: Text('No pending payments'));
@@ -98,9 +100,11 @@ class WalletScreen extends StatelessWidget {
                       // History Tab
                       BlocBuilder<WalletBloc, WalletState>(
                         builder: (context, state) {
+                          print('History Tab State: $state');
                           if (state is WalletLoading) {
                             return const Center(child: CircularProgressIndicator());
-                          } else if (state is WalletLoaded) {
+                          } else if (state is WalletDataLoaded) {
+                            print('Paid Payments: ${state.payments}');
                             final paidPayments = state.payments.where((p) => p.paymentStatus).toList();
                             if (paidPayments.isEmpty) {
                               return const Center(child: Text('No payment history'));

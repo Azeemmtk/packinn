@@ -13,6 +13,7 @@ class UserEntity extends Equatable {
   final String? address;
   final String role;
   final String? profileImageUrl;
+  final double? walletBalance;
 
   const UserEntity({
     required this.uid,
@@ -27,6 +28,7 @@ class UserEntity extends Equatable {
     this.address,
     this.role = 'user', // Default role for this app
     this.profileImageUrl,
+    this.walletBalance,
   });
 
   @override
@@ -43,6 +45,7 @@ class UserEntity extends Equatable {
     address,
     role,
     profileImageUrl,
+    walletBalance,
   ];
 
   UserEntity copyWith({
@@ -58,6 +61,7 @@ class UserEntity extends Equatable {
     String? address,
     String? role,
     String? profileImageUrl,
+    double? walletBalance,
   }) {
     return UserEntity(
       uid: uid ?? this.uid,
@@ -72,6 +76,7 @@ class UserEntity extends Equatable {
       address: address ?? this.address,
       role: role ?? this.role,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      walletBalance: walletBalance ?? this.walletBalance,
     );
   }
 }

@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../../../core/error/exceptions.dart';
 import '../model/transaction model.dart';
+import '../model/payment_model.dart';
 
 abstract class WalletRemoteDataSource {
   Future<double> getWalletBalance(String userId);
   Future<void> addToWallet(String userId, double amount, String description);
   Future<void> deductFromWallet(String userId, double amount, String description, String? paymentId);
   Future<List<TransactionModel>> getTransactions(String userId);
+  Future<List<PaymentModel>> getPayments(String userId);
 }
 
 class WalletRemoteDataSourceImpl implements WalletRemoteDataSource {
@@ -48,7 +50,7 @@ class WalletRemoteDataSourceImpl implements WalletRemoteDataSource {
           'id': transactionRef.id,
           'userId': userId,
           'type': 'credit',
-          'amount': amount, // Store amount in INR
+          'amount': amount,
           'description': description,
           'timestamp': FieldValue.serverTimestamp(),
         });
@@ -79,7 +81,7 @@ class WalletRemoteDataSourceImpl implements WalletRemoteDataSource {
           'id': transactionRef.id,
           'userId': userId,
           'type': 'debit',
-          'amount': amount, // Store amount in INR
+          'amount': amount,
           'description': description,
           'timestamp': FieldValue.serverTimestamp(),
         };
@@ -108,6 +110,25 @@ class WalletRemoteDataSourceImpl implements WalletRemoteDataSource {
     } catch (e) {
       print('Error fetching transactions: $e');
       throw ServerException('Failed to get transactions: $e');
+    }
+  }
+
+  @override
+  Future<List<PaymentModel>> getPayments(String userId) async {
+    try {
+      print('Fetching payments for userId: $userId');
+      final querySnapshot = await firestore
+          .collection('payments') // Adjust if your collection name is different
+          .where('userId', isEqualTo: userId)
+          .get();
+      final payments = querySnapshot.docs
+          .map((doc) => PaymentModel.fromJson(doc.data()))
+          .toList();
+      print('Payments retrieved: $payments');
+      return payments;
+    } catch (e) {
+      print('Error fetching payments: $e');
+      throw ServerException('Failed to get payments: $e');
     }
   }
 }

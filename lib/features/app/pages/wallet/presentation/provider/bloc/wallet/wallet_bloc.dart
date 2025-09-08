@@ -35,18 +35,35 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     emit(WalletLoading());
     print('bloc======${event.userId}');
     final result = await getPaymentsUseCase(event.userId);
-    result.fold(
-          (failure) => emit(WalletError(failure.message)),
-          (payments) => emit(WalletLoaded(payments)),
+    final currentBalance = state is WalletDataLoaded ? (state as WalletDataLoaded).balance : 0.0;
+    await result.fold(
+          (failure) async {
+        emit(WalletError(failure.message));
+      },
+          (payments) async {
+        print('Payments fetched: $payments');
+        final balanceResult = await getWalletBalanceUseCase(event.userId);
+        balanceResult.fold(
+              (failure) => emit(WalletError(failure.message)),
+              (balance) {
+            print('Emitting WalletDataLoaded with balance: $balance, payments: $payments');
+            emit(WalletDataLoaded(balance: balance, payments: payments));
+          },
+        );
+      },
     );
   }
 
   Future<void> _onGetWalletBalance(GetWalletBalance event, Emitter<WalletState> emit) async {
     emit(WalletLoading());
     final result = await getWalletBalanceUseCase(event.userId);
+    final currentPayments = state is WalletDataLoaded ? (state as WalletDataLoaded).payments : <PaymentModel>[];
     result.fold(
           (failure) => emit(WalletError(failure.message)),
-          (balance) => emit(WalletBalanceLoaded(balance)), // Balance in INR
+          (balance) {
+        print('Emitting WalletDataLoaded with balance: $balance');
+        emit(WalletDataLoaded(balance: balance, payments: currentPayments));
+      },
     );
   }
 
@@ -60,7 +77,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       }
       final result = await addToWalletUseCase(AddToWalletParams(
         userId: event.userId,
-        amount: event.amount, // Amount in INR
+        amount: event.amount,
         description: event.description,
       ));
       if (result.isLeft()) {
@@ -70,8 +87,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       }
 
       // Update balance in INR
-      double currentBalance = state is WalletBalanceLoaded ? (state as WalletBalanceLoaded).balance : 0.0;
-      emit(WalletBalanceLoaded(currentBalance + event.amount));
+      double currentBalance = state is WalletDataLoaded ? (state as WalletDataLoaded).balance : 0.0;
+      final currentPayments = state is WalletDataLoaded ? (state as WalletDataLoaded).payments : <PaymentModel>[];
+      emit(WalletDataLoaded(balance: currentBalance + event.amount, payments: currentPayments));
     } catch (e) {
       emit(WalletError('Failed to add money: $e'));
     }
