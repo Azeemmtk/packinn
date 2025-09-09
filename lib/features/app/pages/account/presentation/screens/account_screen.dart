@@ -17,7 +17,6 @@ class AccountScreen extends StatelessWidget {
     const list = [
       'Profile',
       'Reports',
-      'Add Compliant',
       'Help',
       'About',
       'Terms & Policy',
@@ -38,7 +37,7 @@ class AccountScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     SizedBox(
-                      height: height * 0.45,
+                      height: height * 0.38,
                       child: ListView.separated(
                         padding: EdgeInsets.zero,
                         itemBuilder: (context, index) {

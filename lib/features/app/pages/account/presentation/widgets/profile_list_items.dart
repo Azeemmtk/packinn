@@ -3,6 +3,9 @@ import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/features/app/pages/account/presentation/screens/profile_screen.dart';
 import 'package:packinn/features/app/pages/account/presentation/screens/report_screen.dart';
+import 'package:packinn/features/app/pages/account/presentation/widgets/terms_policy_dialog.dart';
+
+import 'help_dialog.dart';
 
 class ProfileListItems extends StatelessWidget {
   const ProfileListItems({
@@ -25,14 +28,27 @@ class ProfileListItems extends StatelessWidget {
               builder: (context) => ProfileScreen(),
             ),
           );
-        }
-
-        if (text == 'Reports') {
+        } else if (text == 'Reports') {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ReportScreen(),
             ),
+          );
+        } else if (text == 'Help') {
+          showDialog(
+            context: context,
+            builder: (context) => const HelpDialog(),
+          );
+        } else if (text == 'About') {
+          showDialog(
+            context: context,
+            builder: (context) => const AboutDialog(),
+          );
+        } else if (text == 'Terms & Policy') {
+          showDialog(
+            context: context,
+            builder: (context) => const TermsPolicyDialog(),
           );
         }
       },
