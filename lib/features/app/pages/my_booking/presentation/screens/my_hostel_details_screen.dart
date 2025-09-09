@@ -94,18 +94,14 @@ class MyHostelDetailsScreen extends StatelessWidget {
                               }
                             },
                             builder: (context, state) {
-                              print(
-                                  'Current ReviewBloc state: $state'); // Debugging
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   height20,
-                                  const TitleTextWidget(
-                                      title: 'Review and rating'),
+                                  const TitleTextWidget(title: 'Review and rating'),
                                   height10,
                                   if (state is ReviewLoading)
-                                    const Center(
-                                        child: CircularProgressIndicator())
+                                    const Center(child: CircularProgressIndicator())
                                   else if (state is ReviewLoaded)
                                     state.reviews.isNotEmpty
                                         ? Column(

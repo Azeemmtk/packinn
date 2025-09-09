@@ -4,6 +4,7 @@ import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/services/current_user.dart';
 import 'package:packinn/core/widgets/custom_green_button_widget.dart';
+import '../../../../../../core/widgets/custom_app_bar_widget.dart';
 import '../provider/bloc/wallet/wallet_bloc.dart';
 
 class AddMoneyScreen extends StatefulWidget {
@@ -27,7 +28,10 @@ class _AddMoneyScreenState extends State<AddMoneyScreen> {
     return BlocProvider(
       create: (context) => getIt<WalletBloc>(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Add Money to Wallet')),
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: CustomAppBarWidget(title: 'Add money to wallet'),
+        ),
         body: Padding(
           padding: EdgeInsets.all(padding),
           child: Column(

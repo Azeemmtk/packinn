@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/features/app/pages/chat/presentation/widgets/chat_app_bar_widget.dart';
 import 'package:packinn/features/app/pages/chat/presentation/widgets/chat_message_section.dart';
@@ -43,12 +44,16 @@ class _IndividualChatScreenState extends State<IndividualChatScreen> {
         builder: (blocContext) {
           // Use blocContext instead of context to ensure correct scope
           return Scaffold(
+            appBar: PreferredSize(
+              preferredSize: Size(double.infinity, height * 0.077),
+              child: ChatAppBarWidget(
+                title: widget.otherName,
+                photoUrl: widget.otherPhoto,
+              ),
+            ),
             body: Column(
               children: [
-                ChatAppBarWidget(
-                  title: widget.otherName,
-                  photoUrl: widget.otherPhoto,
-                ),
+
                 Expanded(
                   child: Container(
                     color: Colors.grey[50],
@@ -60,7 +65,7 @@ class _IndividualChatScreenState extends State<IndividualChatScreen> {
                           return ListView.separated(
                             padding: EdgeInsets.all(padding),
                             itemCount: state.messages.length,
-                            reverse: true, // Changed to true for bottom-up chat
+                            reverse: true,
                             itemBuilder: (context, index) {
                               final message = state.messages[index];
                               final currentUid = FirebaseAuth.instance.currentUser!.uid;
@@ -115,7 +120,7 @@ class _IndividualChatScreenState extends State<IndividualChatScreen> {
                       const SizedBox(width: 8),
                       Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
+                          color: mainColor,
                           borderRadius: BorderRadius.circular(25),
                         ),
                         child: IconButton(

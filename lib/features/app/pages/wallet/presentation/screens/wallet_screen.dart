@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/services/current_user.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/widgets/wallet_card_widget.dart';
 import '../../../../../../core/widgets/custom_app_bar_widget.dart';
 import '../provider/bloc/wallet/wallet_bloc.dart';
+import '../widgets/history_tab.dart';
+import '../widgets/pendig_tab.dart';
 import 'add_money_screen.dart';
 
 class WalletScreen extends StatelessWidget {
@@ -13,10 +16,12 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('Current User ID: ${CurrentUser().uId}');
     return BlocProvider(
       create: (context) => getIt<WalletBloc>()
         ..add(GetPayments(CurrentUser().uId!))
-        ..add(GetWalletBalance(userId: CurrentUser().uId!)),
+        ..add(GetWalletBalance(userId: CurrentUser().uId!))
+        ..add(GetTransactions(CurrentUser().uId!)),
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -34,7 +39,7 @@ class WalletScreen extends StatelessWidget {
                       builder: (context, state) {
                         double balance = 0.0;
                         if (state is WalletDataLoaded) {
-                          print('-----------------------${state.balance}');
+                          print('Balance: ${state.balance}');
                           balance = state.balance;
                         }
                         return Row(
@@ -42,15 +47,25 @@ class WalletScreen extends StatelessWidget {
                           children: [
                             Text(
                               'Balance: ₹${balance.toStringAsFixed(2)}',
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              style:  TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                             ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: mainColor,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => const AddMoneyScreen()),
                                 );
                               },
+
                               child: const Text('Add Money'),
                             ),
                           ],
@@ -72,57 +87,9 @@ class WalletScreen extends StatelessWidget {
                   child: TabBarView(
                     children: [
                       // Pending Tab
-                      BlocBuilder<WalletBloc, WalletState>(
-                        builder: (context, state) {
-                          print('Pending Tab State: $state');
-                          if (state is WalletLoading) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else if (state is WalletDataLoaded) {
-                            print('Pending Payments: ${state.payments}');
-                            final pendingPayments = state.payments.where((p) => !p.paymentStatus).toList();
-                            if (pendingPayments.isEmpty) {
-                              return const Center(child: Text('No pending payments'));
-                            }
-                            return ListView.separated(
-                              padding: EdgeInsets.zero,
-                              itemBuilder: (context, index) {
-                                return WalletCardWidget(payment: pendingPayments[index]);
-                              },
-                              separatorBuilder: (context, index) => height20,
-                              itemCount: pendingPayments.length,
-                            );
-                          } else if (state is WalletError) {
-                            return Center(child: Text(state.message));
-                          }
-                          return const Center(child: Text('Initialize Wallet'));
-                        },
-                      ),
+                      PendingTab(),
                       // History Tab
-                      BlocBuilder<WalletBloc, WalletState>(
-                        builder: (context, state) {
-                          print('History Tab State: $state');
-                          if (state is WalletLoading) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else if (state is WalletDataLoaded) {
-                            print('Paid Payments: ${state.payments}');
-                            final paidPayments = state.payments.where((p) => p.paymentStatus).toList();
-                            if (paidPayments.isEmpty) {
-                              return const Center(child: Text('No payment history'));
-                            }
-                            return ListView.separated(
-                              padding: EdgeInsets.zero,
-                              itemBuilder: (context, index) {
-                                return WalletCardWidget(payment: paidPayments[index]);
-                              },
-                              separatorBuilder: (context, index) => height20,
-                              itemCount: paidPayments.length,
-                            );
-                          } else if (state is WalletError) {
-                            return Center(child: Text(state.message));
-                          }
-                          return const Center(child: Text('Initialize Wallet'));
-                        },
-                      ),
+                      HistoryTab(),
                     ],
                   ),
                 ),

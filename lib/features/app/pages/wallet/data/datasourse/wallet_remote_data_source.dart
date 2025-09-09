@@ -99,11 +99,13 @@ class WalletRemoteDataSourceImpl implements WalletRemoteDataSource {
   @override
   Future<List<TransactionModel>> getTransactions(String userId) async {
     try {
+      print('Fetching transaction for userId: $userId');
       final querySnapshot = await firestore
           .collection('transactions')
           .where('userId', isEqualTo: userId)
           .orderBy('timestamp', descending: true)
           .get();
+      print('transaction retrieved: ${querySnapshot.docs}');
       return querySnapshot.docs
           .map((doc) => TransactionModel.fromJson(doc.data()))
           .toList();

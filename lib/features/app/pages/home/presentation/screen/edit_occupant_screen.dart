@@ -15,7 +15,8 @@ class EditOccupantScreen extends StatefulWidget {
   final OccupantEntity occupant;
   final Map<String, dynamic> room;
 
-  const EditOccupantScreen({super.key, required this.occupant, required this.room});
+  const EditOccupantScreen(
+      {super.key, required this.occupant, required this.room});
 
   @override
   _EditOccupantScreenState createState() => _EditOccupantScreenState();
@@ -35,10 +36,14 @@ class _EditOccupantScreenState extends State<EditOccupantScreen> {
     // Initialize controllers with occupant data
     _nameController = TextEditingController(text: widget.occupant.name);
     _phoneController = TextEditingController(text: widget.occupant.phone);
-    _ageController = TextEditingController(text: widget.occupant.age.toString());
-    _guardianNameController = TextEditingController(text: widget.occupant.guardian?.name ?? '');
-    _guardianPhoneController = TextEditingController(text: widget.occupant.guardian?.phone ?? '');
-    _guardianRelationController = TextEditingController(text: widget.occupant.guardian?.relation ?? '');
+    _ageController =
+        TextEditingController(text: widget.occupant.age.toString());
+    _guardianNameController =
+        TextEditingController(text: widget.occupant.guardian?.name ?? '');
+    _guardianPhoneController =
+        TextEditingController(text: widget.occupant.guardian?.phone ?? '');
+    _guardianRelationController =
+        TextEditingController(text: widget.occupant.guardian?.relation ?? '');
   }
 
   @override
@@ -70,7 +75,6 @@ class _EditOccupantScreenState extends State<EditOccupantScreen> {
               profileImageUrl: widget.occupant.profileImageUrl,
             )),
         ),
-
         BlocProvider(
           create: (context) => getIt<OccupantFieldCubit>()
             ..updateField(
@@ -103,19 +107,19 @@ class _EditOccupantScreenState extends State<EditOccupantScreen> {
               final currentState = state is AddOccupantLoaded
                   ? state
                   : AddOccupantLoaded(
-                name: textFieldState.name,
-                phone: textFieldState.phone,
-                age: int.tryParse(textFieldState.age),
-                guardianName: textFieldState.guardianName,
-                guardianPhone: textFieldState.guardianPhone,
-                guardianRelation: textFieldState.guardianRelation,
-                idProof: null,
-                addressProof: null,
-                idProofUrl: widget.occupant.idProofUrl,
-                addressProofUrl: widget.occupant.addressProofUrl,
-                occupants: [],
-                showForm: true,
-              );
+                      name: textFieldState.name,
+                      phone: textFieldState.phone,
+                      age: int.tryParse(textFieldState.age),
+                      guardianName: textFieldState.guardianName,
+                      guardianPhone: textFieldState.guardianPhone,
+                      guardianRelation: textFieldState.guardianRelation,
+                      idProof: null,
+                      addressProof: null,
+                      idProofUrl: widget.occupant.idProofUrl,
+                      addressProofUrl: widget.occupant.addressProofUrl,
+                      occupants: [],
+                      showForm: true,
+                    );
 
               // Update controllers only if the text field state changes significantly
               if (_nameController.text != textFieldState.name) {
@@ -130,11 +134,14 @@ class _EditOccupantScreenState extends State<EditOccupantScreen> {
               if (_guardianNameController.text != textFieldState.guardianName) {
                 _guardianNameController.text = textFieldState.guardianName;
               }
-              if (_guardianPhoneController.text != textFieldState.guardianPhone) {
+              if (_guardianPhoneController.text !=
+                  textFieldState.guardianPhone) {
                 _guardianPhoneController.text = textFieldState.guardianPhone;
               }
-              if (_guardianRelationController.text != textFieldState.guardianRelation) {
-                _guardianRelationController.text = textFieldState.guardianRelation;
+              if (_guardianRelationController.text !=
+                  textFieldState.guardianRelation) {
+                _guardianRelationController.text =
+                    textFieldState.guardianRelation;
               }
 
               return Scaffold(
@@ -162,9 +169,12 @@ class _EditOccupantScreenState extends State<EditOccupantScreen> {
                                     addOccupantBloc: addOccupantBloc,
                                     textFieldCubit: textFieldCubit,
                                     currentState: currentState,
-                                    guardianNameController: _guardianNameController,
-                                    guardianPhoneController: _guardianPhoneController,
-                                    guardianRelationController: _guardianRelationController,
+                                    guardianNameController:
+                                        _guardianNameController,
+                                    guardianPhoneController:
+                                        _guardianPhoneController,
+                                    guardianRelationController:
+                                        _guardianRelationController,
                                     ageText: _ageController.text,
                                   ),
                                   EditImageSection(
@@ -175,15 +185,18 @@ class _EditOccupantScreenState extends State<EditOccupantScreen> {
                                   CustomGreenButtonWidget(
                                     name: 'Save and Continue',
                                     onPressed: () {
-                                      final error = textFieldCubit.validateAndGetError();
+                                      final error =
+                                          textFieldCubit.validateAndGetError();
                                       if (error == null) {
                                         addOccupantBloc.add(SaveOccupantEvent(
                                           widget.room,
                                           occupantId: widget.occupant.id,
                                         ));
                                       } else {
-                                        textFieldCubit.validateFields(isSubmitted: true);
-                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        textFieldCubit.validateFields(
+                                            isSubmitted: true);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
                                           SnackBar(content: Text(error)),
                                         );
                                       }

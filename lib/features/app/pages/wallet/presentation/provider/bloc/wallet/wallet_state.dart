@@ -14,23 +14,16 @@ class WalletLoading extends WalletState {}
 class WalletDataLoaded extends WalletState {
   final double balance; // Balance in INR
   final List<PaymentModel> payments;
+  final List<TransactionModel> transactions; // Add transactions
 
   const WalletDataLoaded({
     this.balance = 0.0,
     this.payments = const [],
+    this.transactions = const [], // Initialize transactions
   });
 
   @override
-  List<Object> get props => [balance, payments];
-}
-
-class TransactionsLoaded extends WalletState {
-  final List<TransactionModel> transactions;
-
-  const TransactionsLoaded(this.transactions);
-
-  @override
-  List<Object> get props => [transactions];
+  List<Object> get props => [balance, payments, transactions];
 }
 
 class WalletError extends WalletState {

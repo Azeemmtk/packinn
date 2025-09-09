@@ -33,21 +33,26 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   Future<void> _onFetchPayments(GetPayments event, Emitter<WalletState> emit) async {
     emit(WalletLoading());
-    print('bloc======${event.userId}');
+    print('Fetching payments for userId: ${event.userId}');
     final result = await getPaymentsUseCase(event.userId);
     final currentBalance = state is WalletDataLoaded ? (state as WalletDataLoaded).balance : 0.0;
+    final currentTransactions = state is WalletDataLoaded ? (state as WalletDataLoaded).transactions : <TransactionModel>[];
     await result.fold(
           (failure) async {
-        emit(WalletError(failure.message));
+        emit(WalletError('Failed to fetch payments: ${failure.message}'));
       },
           (payments) async {
         print('Payments fetched: $payments');
         final balanceResult = await getWalletBalanceUseCase(event.userId);
         balanceResult.fold(
-              (failure) => emit(WalletError(failure.message)),
+              (failure) => emit(WalletError('Failed to fetch balance: ${failure.message}')),
               (balance) {
             print('Emitting WalletDataLoaded with balance: $balance, payments: $payments');
-            emit(WalletDataLoaded(balance: balance, payments: payments));
+            emit(WalletDataLoaded(
+              balance: balance,
+              payments: payments,
+              transactions: currentTransactions,
+            ));
           },
         );
       },
@@ -58,11 +63,16 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     emit(WalletLoading());
     final result = await getWalletBalanceUseCase(event.userId);
     final currentPayments = state is WalletDataLoaded ? (state as WalletDataLoaded).payments : <PaymentModel>[];
+    final currentTransactions = state is WalletDataLoaded ? (state as WalletDataLoaded).transactions : <TransactionModel>[];
     result.fold(
-          (failure) => emit(WalletError(failure.message)),
+          (failure) => emit(WalletError('Failed to fetch balance: ${failure.message}')),
           (balance) {
         print('Emitting WalletDataLoaded with balance: $balance');
-        emit(WalletDataLoaded(balance: balance, payments: currentPayments));
+        emit(WalletDataLoaded(
+          balance: balance,
+          payments: currentPayments,
+          transactions: currentTransactions,
+        ));
       },
     );
   }
@@ -70,7 +80,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   Future<void> _onAddToWallet(AddToWallet event, Emitter<WalletState> emit) async {
     emit(WalletLoading());
     try {
-      final success = await stripeService.makePayment(amount: event.amount); // Amount in INR
+      final success = await stripeService.makePayment(amount: event.amount);
       if (!success) {
         emit(const WalletError('Payment failed or canceled'));
         return;
@@ -82,14 +92,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ));
       if (result.isLeft()) {
         final failure = result.fold((f) => f, (_) => null);
-        emit(WalletError(failure?.message ?? 'Failed to add to wallet'));
+        emit(WalletError('Failed to add to wallet: ${failure?.message}'));
         return;
       }
-
-      // Update balance in INR
       double currentBalance = state is WalletDataLoaded ? (state as WalletDataLoaded).balance : 0.0;
       final currentPayments = state is WalletDataLoaded ? (state as WalletDataLoaded).payments : <PaymentModel>[];
-      emit(WalletDataLoaded(balance: currentBalance + event.amount, payments: currentPayments));
+      final currentTransactions = state is WalletDataLoaded ? (state as WalletDataLoaded).transactions : <TransactionModel>[];
+      emit(WalletDataLoaded(
+        balance: currentBalance + event.amount,
+        payments: currentPayments,
+        transactions: currentTransactions,
+      ));
     } catch (e) {
       emit(WalletError('Failed to add money: $e'));
     }
@@ -98,9 +111,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   Future<void> _onGetTransactions(GetTransactions event, Emitter<WalletState> emit) async {
     emit(WalletLoading());
     final result = await getTransactionsUseCase(event.userId);
+    final currentBalance = state is WalletDataLoaded ? (state as WalletDataLoaded).balance : 0.0;
+    final currentPayments = state is WalletDataLoaded ? (state as WalletDataLoaded).payments : <PaymentModel>[];
     result.fold(
-          (failure) => emit(WalletError(failure.message)),
-          (transactions) => emit(TransactionsLoaded(transactions)),
+          (failure) => emit(WalletError('Failed to fetch transactions: ${failure.message}')),
+          (transactions) {
+        print('Emitting WalletDataLoaded with transactions: $transactions');
+        emit(WalletDataLoaded(
+          balance: currentBalance,
+          payments: currentPayments,
+          transactions: transactions,
+        ));
+      },
     );
   }
 }

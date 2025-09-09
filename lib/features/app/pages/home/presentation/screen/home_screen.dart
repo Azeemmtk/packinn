@@ -60,13 +60,13 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Text(
-                            'See more...',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: mainColor,
-                            ),
-                          ),
+                          // Text(
+                          //   'See more...',
+                          //   style: TextStyle(
+                          //     fontSize: 14,
+                          //     color: mainColor,
+                          //   ),
+                          // ),
                         ],
                       ),
                       height10,
@@ -134,13 +134,13 @@ class HomeScreen extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Text(
-                            'See more...',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: mainColor,
-                            ),
-                          ),
+                          // Text(
+                          //   'See more...',
+                          //   style: TextStyle(
+                          //     fontSize: 14,
+                          //     color: mainColor,
+                          //   ),
+                          // ),
                         ],
                       ),
                       height10,
