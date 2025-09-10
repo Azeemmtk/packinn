@@ -105,7 +105,7 @@ class WalletRemoteDataSourceImpl implements WalletRemoteDataSource {
           .where('userId', isEqualTo: userId)
           .orderBy('timestamp', descending: true)
           .get();
-      print('transaction retrieved: ${querySnapshot.docs}');
+      print('Raw transaction data: ${querySnapshot.docs.map((doc) => doc.data()).toList()}');
       return querySnapshot.docs
           .map((doc) => TransactionModel.fromJson(doc.data()))
           .toList();

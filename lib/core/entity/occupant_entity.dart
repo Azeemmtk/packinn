@@ -28,7 +28,7 @@ class OccupantEntity extends Equatable {
     this.hostelId,
     this.roomId,
     this.roomType,
-    this.rentPaid= false,
+    this.rentPaid= true,
   });
 
   @override
