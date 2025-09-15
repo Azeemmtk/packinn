@@ -18,7 +18,7 @@ class HistoryTab extends StatelessWidget {
         if (state is WalletLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is WalletDataLoaded) {
-          print('Transactions: ${state.transactions}');
+          print('Transactions in HistoryTab: ${state.transactions}');
           if (state.transactions.isEmpty) {
             return const Center(child: Text('No transaction history'));
           }

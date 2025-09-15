@@ -70,58 +70,61 @@ class HomeScreen extends StatelessWidget {
                         ],
                       ),
                       height10,
-                      BlocBuilder<HostelBloc, HostelState>(
-                        builder: (context, state) {
-                          if (state is HostelLoading) {
-                            return Center(
-                              child: CircularProgressIndicator(
-                                color: mainColor,
-                              ),
-                            );
-                          } else if (state is HostelLoaded) {
-                            if (state.hostels.isEmpty) {
-                              return const Center(
-                                child: Text('Hostels Not Available'),
+                      SizedBox(
+                        height: height * 0.36,
+                        child: BlocBuilder<HostelBloc, HostelState>(
+                          builder: (context, state) {
+                            if (state is HostelLoading) {
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  color: mainColor,
+                                ),
+                              );
+                            } else if (state is HostelLoaded) {
+                              if (state.hostels.isEmpty) {
+                                return const Center(
+                                  child: Text('Hostels Not Available'),
+                                );
+                              }
+                              return SizedBox(
+                                height: height * 0.36,
+                                child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: state.hostels.length,
+                                  itemBuilder: (context, index) {
+                                    final hostel = state.hostels[index];
+                                    return InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => HostelDetailsScreen(hostel: hostel),
+                                          ),
+                                        );
+                                      },
+                                      child: BuildTopRatedHostelCard(
+                                        imageUrl: hostel.mainImageUrl ?? imagePlaceHolder,
+                                        title: hostel.name,
+                                        location: hostel.placeName,
+                                        rent: (hostel.rooms[0]['rate'] as num).toDouble(),
+                                        rating: hostel.rating ?? 0.0,
+                                        distance: 5,
+                                      ),
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) => width10,
+                                ),
+                              );
+                            } else if (state is HostelError) {
+                              return Center(
+                                child: Text(state.message),
                               );
                             }
-                            return SizedBox(
-                              height: height * 0.36,
-                              child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: state.hostels.length,
-                                itemBuilder: (context, index) {
-                                  final hostel = state.hostels[index];
-                                  return InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => HostelDetailsScreen(hostel: hostel),
-                                        ),
-                                      );
-                                    },
-                                    child: BuildTopRatedHostelCard(
-                                      imageUrl: hostel.mainImageUrl ?? imagePlaceHolder,
-                                      title: hostel.name,
-                                      location: hostel.placeName,
-                                      rent: (hostel.rooms[0]['rate'] as double).toInt(),
-                                      rating: hostel.rating ?? 0.0,
-                                      distance: 5,
-                                    ),
-                                  );
-                                },
-                                separatorBuilder: (context, index) => width10,
-                              ),
+                            return const Center(
+                              child: Text('Hostel Not Available'),
                             );
-                          } else if (state is HostelError) {
-                            return Center(
-                              child: Text(state.message),
-                            );
-                          }
-                          return const Center(
-                            child: Text('Hostel Not Available'),
-                          );
-                        },
+                          },
+                        ),
                       ),
                       height20,
                       Row(
@@ -154,8 +157,11 @@ class HomeScreen extends StatelessWidget {
                             );
                           } else if (state is HostelLoaded) {
                             if (state.hostels.isEmpty) {
-                              return const Center(
-                                child: Text('Hostels Not Available'),
+                              return SizedBox(
+                                height: 170,
+                                child: const Center(
+                                  child: Text('Hostels Not Available'),
+                                ),
                               );
                             }
                             return SizedBox(
@@ -178,7 +184,7 @@ class HomeScreen extends StatelessWidget {
                                       imageUrl: hostel.mainImageUrl ?? imagePlaceHolder,
                                       title: hostel.name,
                                       distance: '2 Km',
-                                      rent: hostel.rooms[0]['rate'],
+                                      rent: (hostel.rooms[0]['rate'] as num).toDouble(),
                                     ),
                                   );
                                 },

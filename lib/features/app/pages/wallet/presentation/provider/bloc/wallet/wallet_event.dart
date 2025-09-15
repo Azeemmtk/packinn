@@ -1,6 +1,5 @@
 part of 'wallet_bloc.dart';
 
-
 abstract class WalletEvent extends Equatable {
   const WalletEvent();
 
@@ -41,6 +40,15 @@ class GetTransactions extends WalletEvent {
   final String userId;
 
   const GetTransactions(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
+}
+
+class InitializeWallet extends WalletEvent {
+  final String userId;
+
+  const InitializeWallet(this.userId);
 
   @override
   List<Object?> get props => [userId];

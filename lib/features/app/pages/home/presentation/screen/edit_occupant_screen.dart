@@ -5,6 +5,7 @@ import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
 import 'package:packinn/core/widgets/custom_green_button_widget.dart';
 import 'package:packinn/core/entity/occupant_entity.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/cubit/occupant_field_cubit.dart';
 import '../provider/bloc/add_cooupant/add_occupant_bloc.dart';
 import '../widgets/edit_occupant/edit_guardian_section.dart';
@@ -95,7 +96,7 @@ class _EditOccupantScreenState extends State<EditOccupantScreen> {
             Navigator.pop(context, true);
           } else if (state is AddOccupantError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              customSnackBar(text: state.message)
             );
           }
         },
@@ -197,7 +198,7 @@ class _EditOccupantScreenState extends State<EditOccupantScreen> {
                                             isSubmitted: true);
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                          SnackBar(content: Text(error)),
+                                          customSnackBar(text: error, color: Colors.red),
                                         );
                                       }
                                     },

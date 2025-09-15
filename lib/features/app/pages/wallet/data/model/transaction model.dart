@@ -5,7 +5,7 @@ class TransactionModel extends Equatable {
   final String id;
   final String userId;
   final String type;
-  final double amount; // Amount in INR
+  final double amount;
   final String description;
   final DateTime? timestamp;
   final String? paymentId;
@@ -21,15 +21,20 @@ class TransactionModel extends Equatable {
   });
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
-    return TransactionModel(
-      id: json['id'] as String,
-      userId: json['userId'] as String,
-      type: json['type'] as String,
-      amount: (json['amount'] as num).toDouble(), // Ensure INR amount
-      description: json['description'] as String,
-      timestamp: (json['timestamp'] as Timestamp?)?.toDate(),
-      paymentId: json['paymentId'] as String?,
-    );
+    try {
+      return TransactionModel(
+        id: json['id'] as String? ?? '',
+        userId: json['userId'] as String? ?? '',
+        type: json['type'] as String? ?? '',
+        amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+        description: json['description'] as String? ?? '',
+        timestamp: (json['timestamp'] as Timestamp?)?.toDate(),
+        paymentId: json['paymentId'] as String?,
+      );
+    } catch (e) {
+      print('Error parsing TransactionModel: $e, JSON: $json');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -37,7 +42,7 @@ class TransactionModel extends Equatable {
       'id': id,
       'userId': userId,
       'type': type,
-      'amount': amount, // Store in INR
+      'amount': amount,
       'description': description,
       'timestamp': timestamp != null ? Timestamp.fromDate(timestamp!) : null,
       'paymentId': paymentId,

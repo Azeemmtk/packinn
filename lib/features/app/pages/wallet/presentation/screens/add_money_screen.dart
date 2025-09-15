@@ -4,6 +4,7 @@ import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/services/current_user.dart';
 import 'package:packinn/core/widgets/custom_green_button_widget.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 import '../../../../../../core/widgets/custom_app_bar_widget.dart';
 import '../provider/bloc/wallet/wallet_bloc.dart';
 
@@ -49,7 +50,7 @@ class _AddMoneyScreenState extends State<AddMoneyScreen> {
                 listener: (context, state) {
                   if (state is WalletError) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
+                      customSnackBar(text: state.message)
                     );
                   } else if (state is WalletDataLoaded) {
                     Navigator.pop(context);
@@ -70,7 +71,7 @@ class _AddMoneyScreenState extends State<AddMoneyScreen> {
                         ));
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please enter a valid amount in INR')),
+                          customSnackBar(text: 'Please enter a valid amount in INR')
                         );
                       }
                     },

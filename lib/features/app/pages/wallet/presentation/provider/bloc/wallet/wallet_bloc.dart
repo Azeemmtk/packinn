@@ -29,6 +29,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<GetWalletBalance>(_onGetWalletBalance);
     on<AddToWallet>(_onAddToWallet);
     on<GetTransactions>(_onGetTransactions);
+    on<InitializeWallet>(_onInitializeWallet);
   }
 
   Future<void> _onFetchPayments(GetPayments event, Emitter<WalletState> emit) async {
@@ -116,6 +117,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     result.fold(
           (failure) => emit(WalletError('Failed to fetch transactions: ${failure.message}')),
           (transactions) {
+        print('Fetched transactions: $transactions');
         print('Emitting WalletDataLoaded with transactions: $transactions');
         emit(WalletDataLoaded(
           balance: currentBalance,
@@ -124,5 +126,40 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ));
       },
     );
+  }
+
+  Future<void> _onInitializeWallet(InitializeWallet event, Emitter<WalletState> emit) async {
+    emit(WalletLoading());
+    try {
+      final balanceResult = await getWalletBalanceUseCase(event.userId);
+      final paymentsResult = await getPaymentsUseCase(event.userId);
+      final transactionsResult = await getTransactionsUseCase(event.userId);
+
+      final failure = balanceResult.isLeft()
+          ? balanceResult.fold((f) => f, (_) => null)
+          : paymentsResult.isLeft()
+          ? paymentsResult.fold((f) => f, (_) => null)
+          : transactionsResult.isLeft()
+          ? transactionsResult.fold((f) => f, (_) => null)
+          : null;
+
+      if (failure != null) {
+        emit(WalletError('Failed to initialize wallet: ${failure.message}'));
+        return;
+      }
+
+      final balance = balanceResult.fold((_) => 0.0, (b) => b);
+      final payments = paymentsResult.fold((_) => <PaymentModel>[], (p) => p);
+      final transactions = transactionsResult.fold((_) => <TransactionModel>[], (t) => t);
+
+      print('Emitting WalletDataLoaded with balance: $balance, payments: $payments, transactions: $transactions');
+      emit(WalletDataLoaded(
+        balance: balance,
+        payments: payments,
+        transactions: transactions,
+      ));
+    } catch (e) {
+      emit(WalletError('Failed to initialize wallet: $e'));
+    }
   }
 }

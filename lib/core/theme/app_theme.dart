@@ -9,7 +9,7 @@ class AppTheme {
     textTheme: GoogleFonts.robotoTextTheme(
       ThemeData.light().textTheme,
     ).apply(
-      bodyColor: const Color(0xFF616161), // <-- Set default text color
+      bodyColor: const Color(0xFF616161),
       displayColor: const Color(0xFF616161),
     ),
   );

@@ -4,7 +4,6 @@ import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/services/current_user.dart';
-import 'package:packinn/features/app/pages/wallet/presentation/widgets/wallet_card_widget.dart';
 import '../../../../../../core/widgets/custom_app_bar_widget.dart';
 import '../provider/bloc/wallet/wallet_bloc.dart';
 import '../widgets/history_tab.dart';
@@ -19,9 +18,7 @@ class WalletScreen extends StatelessWidget {
     print('Current User ID: ${CurrentUser().uId}');
     return BlocProvider(
       create: (context) => getIt<WalletBloc>()
-        ..add(GetPayments(CurrentUser().uId!))
-        ..add(GetWalletBalance(userId: CurrentUser().uId!))
-        ..add(GetTransactions(CurrentUser().uId!)),
+        ..add(InitializeWallet(CurrentUser().uId!)),
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -47,7 +44,7 @@ class WalletScreen extends StatelessWidget {
                           children: [
                             Text(
                               'Balance: ₹${balance.toStringAsFixed(2)}',
-                              style:  TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -58,14 +55,12 @@ class WalletScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => const AddMoneyScreen()),
                                 );
                               },
-
                               child: const Text('Add Money'),
                             ),
                           ],
@@ -86,9 +81,7 @@ class WalletScreen extends StatelessWidget {
                   padding: EdgeInsets.all(padding),
                   child: TabBarView(
                     children: [
-                      // Pending Tab
                       PendingTab(),
-                      // History Tab
                       HistoryTab(),
                     ],
                   ),

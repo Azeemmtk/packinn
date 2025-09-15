@@ -50,6 +50,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         phone: user.phoneNumber ?? 'unKnown',
         emailVerified: user.emailVerified,
         role: 'user',
+        walletBalance: 0.0,
       );
 
       final hostelOwnerQuery = await firestore
@@ -115,6 +116,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           address: userFromFirestore.address ?? 'Address',
           emailVerified: userFromFirestore.emailVerified ?? firebaseUser.emailVerified,
           role: userFromFirestore.role ?? 'user',
+          walletBalance: userFromFirestore.walletBalance,
         );
       }
 
@@ -127,6 +129,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         address: 'Address',
         emailVerified: firebaseUser.emailVerified,
         role: 'user',
+        walletBalance: 0.0,
       );
     } catch (e) {
       throw AuthException('Failed to get current user: ${e.toString()}');
@@ -330,7 +333,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<UserModel> signUpWithEmail(
       String name, String email, String phone, String password) async {
     print('remote=========== $name, $email, $phone, $password..............');
-
     try {
       final hostelOwnerQuery = await firestore
           .collection('hostel_owners')
@@ -358,7 +360,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           phone: phone,
           phoneVerified: true,
           emailVerified: firebaseUser.emailVerified,
-          role: 'user');
+          role: 'user',
+        walletBalance: 0.0
+      );
       await saveUserToFirestore(userModel);
       return userModel;
     } catch (e) {

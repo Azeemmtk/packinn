@@ -4,6 +4,7 @@ import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/services/current_user.dart';
 import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/cubit/occupant_field_cubit.dart';
 import '../provider/bloc/add_cooupant/add_occupant_bloc.dart';
 import '../widgets/add_occupant/AddNewOccupantSection.dart';
@@ -35,13 +36,13 @@ class AddOccupantScreen extends StatelessWidget {
           if (state is AddOccupantSuccess) {
             // Show a SnackBar to indicate successful addition
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Occupant added successfully')),
+              customSnackBar(text: 'Occupant added successfully')
             );
             // Toggle the form to show the occupant selection list
             context.read<AddOccupantBloc>().add(ToggleFormEvent(false));
           } else if (state is AddOccupantError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              customSnackBar(text: state.message)
             );
           }
         },

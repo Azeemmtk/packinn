@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/services/cloudinary_services.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 
 import '../../../../../../auth/data/model/user_model.dart';
 import '../../provider/bloc/edit_profile/edit_profile_bloc.dart';
@@ -47,10 +48,7 @@ class SaveButton extends StatelessWidget {
               }
             } catch (e) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Failed to upload image: $e'),
-                  backgroundColor: Colors.red,
-                ),
+                customSnackBar(text: 'Failed to upload image: $e', color: Colors.red),
               );
               return;
             }

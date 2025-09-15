@@ -17,6 +17,7 @@ class UserProfileRemoteDataSourceImpl implements UserProfileRemoteDataSource {
   Future<UserModel> getUser(String uid) async {
     try {
       final doc = await firestore.collection('users').doc(uid).get();
+      print(doc.data());
       if (!doc.exists) {
         throw ServerException('User not found');
       }

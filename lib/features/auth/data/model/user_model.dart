@@ -32,7 +32,7 @@ class UserModel extends UserEntity {
       address: json['address'],
       role: json['role'] ?? 'user',
       profileImageUrl: json['profileImageUrl'],
-        walletBalance: json['walletBalance'],
+      walletBalance: json['walletBalance'],
     );
   }
 

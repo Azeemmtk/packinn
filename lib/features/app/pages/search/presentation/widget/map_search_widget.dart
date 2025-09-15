@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 import 'package:packinn/features/app/pages/search/presentation/provider/bloc/map_search/map_search_bloc.dart';
 import 'package:packinn/features/app/pages/search/presentation/provider/bloc/map_search/map_search_state.dart';
 import 'package:packinn/features/app/pages/search/presentation/provider/cubit/loacation/location_cubit.dart';
@@ -43,14 +44,9 @@ class _MapSearchWidgetState extends State<MapSearchWidget> {
                   if (state is MapSearchError) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            state.message.contains('timed out')
-                                ? 'The server is taking too long to respond. Please try again.'
-                                : 'Error: ${state.message}',
-                          ),
-                          duration: Duration(seconds: 3),
-                        ),
+                        customSnackBar(text: state.message.contains('timed out')
+                            ? 'The server is taking too long to respond. Please try again.'
+                            : 'Error: ${state.message}')
                       );
                     });
                   }

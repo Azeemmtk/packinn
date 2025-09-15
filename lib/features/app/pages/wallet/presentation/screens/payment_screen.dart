@@ -5,6 +5,7 @@ import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
 import 'package:packinn/core/widgets/custom_green_button_widget.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/provider/bloc/payment/payment_bloc.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/screens/payment_successful_screen.dart';
 import '../../../../../../core/services/current_user.dart';
@@ -148,10 +149,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           );
                         } else if (state is PaymentError) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: mainColor,
-                              content: Text(state.message),
-                            ),
+                            customSnackBar(text: state.message)
                           );
                         }
                       },

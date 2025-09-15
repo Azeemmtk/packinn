@@ -5,6 +5,7 @@ import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/widgets/custom_green_button_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 
 import '../../../../../../../core/services/image_picker_service.dart';
 import '../../../domain/entity/report_entity.dart';
@@ -44,11 +45,11 @@ class _ReportDialogState extends State<ReportDialog> {
           if (state is ReportSubmitted) {
             Navigator.of(context).pop();
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Report submitted successfully')),
+              customSnackBar(text: 'Report submitted successfully')
             );
           } else if (state is ReportError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error: ${state.message}')),
+              customSnackBar(text: 'Error: ${state.message}', color: Colors.red)
             );
           }
         },
@@ -102,13 +103,13 @@ class _ReportDialogState extends State<ReportDialog> {
                   final userId = FirebaseAuth.instance.currentUser?.uid;
                   if (userId == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please log in to submit a report')),
+                      customSnackBar(text: 'Please log in to submit a report'),
                     );
                     return;
                   }
                   if (_messageController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please enter a report message')),
+                      customSnackBar(text: 'Please enter a report message')
                     );
                     return;
                   }

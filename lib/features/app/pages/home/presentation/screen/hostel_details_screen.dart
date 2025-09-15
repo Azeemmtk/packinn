@@ -75,19 +75,6 @@ class HostelDetailsScreen extends StatelessWidget {
                                   .toList(),
                             ),
                             height10,
-                            CustomGreenButtonWidget(
-                              name: 'Report',
-                              color: Colors.redAccent,
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => ReportDialog(
-                                    hostelId: hostel.id,
-                                    ownerId: hostel.ownerId,
-                                  ),
-                                );
-                              },
-                            ),
                           ],
                         ),
                       ),
@@ -126,6 +113,19 @@ class HostelDetailsScreen extends StatelessWidget {
                                     name: 'Add Review & Rating',
                                     color: mainColor,
                                     onPressed: () => showAddReviewDialog(blocContext, hostel.id),
+                                  ),
+                                  CustomGreenButtonWidget(
+                                    name: 'Report',
+                                    color: Colors.redAccent,
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => ReportDialog(
+                                          hostelId: hostel.id,
+                                          ownerId: hostel.ownerId,
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ],
                               );

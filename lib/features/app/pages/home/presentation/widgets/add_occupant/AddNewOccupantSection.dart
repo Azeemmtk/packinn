@@ -4,6 +4,7 @@ import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/services/image_picker_service.dart';
 import 'package:packinn/core/widgets/custom_green_button_widget.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 import 'package:packinn/core/widgets/custom_text_field_widget.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/cubit/occupant_field_cubit.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/bloc/add_cooupant/add_occupant_bloc.dart';
@@ -294,7 +295,7 @@ class AddNewOccupantSection extends StatelessWidget {
                 } else {
                   textFieldCubit.validateFields(isSubmitted: true);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(error)),
+                    customSnackBar(text: error, color: Colors.red),
                   );
                 }
               },

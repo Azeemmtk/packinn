@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:packinn/core/di/injection.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 import 'package:packinn/features/app/pages/chat/domain/usecases/create_chat_use_case.dart';
 import 'package:packinn/features/app/pages/chat/domain/usecases/get_owner_details_use_case.dart';
 import 'package:packinn/features/app/pages/chat/presentation/screens/individual_chat_screen.dart';
@@ -34,14 +35,14 @@ class ContactReachWidget extends StatelessWidget {
             await ownerResult.fold(
               (failure) async {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(failure.message)),
+                  customSnackBar(text: failure.message),
                 );
               },
               (ownerDetails) async{
                 final chatResult = await createChatUseCase(hostel.ownerId);
                 chatResult.fold(
                   (failure) =>ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(failure.message)),
+                    customSnackBar(text: failure.message),
                   ) ,
                   (chatId) {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => IndividualChatScreen(

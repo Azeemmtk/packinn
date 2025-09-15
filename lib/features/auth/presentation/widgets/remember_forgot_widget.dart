@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/const.dart';
 import '../provider/bloc/email/email_auth_bloc.dart';
@@ -57,13 +58,11 @@ class _RememberForgotWidgetState extends State<RememberForgotWidget> {
       listener: (context, state) {
         if (state is EmailAuthPasswordResetSent) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Password reset email sent! Check your inbox and follow the link to reset your password.'),
-            ),
+            customSnackBar(text: 'Password reset email sent! Check your inbox and follow the link to reset your password.')
           );
         } else if (state is EmailAuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
+            customSnackBar(text: state.message)
           );
         }
       },

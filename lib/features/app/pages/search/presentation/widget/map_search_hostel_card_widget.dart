@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../domain/entity/map_hostel.dart';
@@ -28,9 +29,7 @@ class MapSearchHostelCardWidget extends StatelessWidget {
             await launchUrl(googleMapsUrl, mode: LaunchMode.externalApplication);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Failed to open Google Maps'),
-              ),
+              customSnackBar(text: 'Failed to open Google Maps')
             );
           }
         },

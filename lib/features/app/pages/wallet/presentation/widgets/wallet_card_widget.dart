@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/features/app/pages/wallet/data/model/payment_model.dart';
@@ -51,7 +52,7 @@ class WalletCardWidget extends StatelessWidget {
               offset: const Offset(0, 2),
             ),
           ],
-          border: isOverdue ? Border.all(color: Colors.red, width: 2) : null,
+          // border: isOverdue ? Border.all(color: Colors.red, width: 2) : null,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,12 +115,13 @@ class WalletCardWidget extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    'Due: ${payment.dueDate.toString().substring(0, 10)}',
+                    'Due: ${DateFormat('dd-MMM-yyyy').format(payment.dueDate)}',
                     style: TextStyle(
                       fontSize: 12,
                       color: isOverdue ? Colors.red : Colors.grey,
                     ),
                   ),
+
                   if (payment.paidVia != null)
                     Text(
                       'Paid via: ${payment.paidVia}',

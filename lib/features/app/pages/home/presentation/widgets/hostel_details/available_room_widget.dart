@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:packinn/features/app/pages/home/presentation/screen/add_occupant_screen.dart';
 import '../../../../../../../core/constants/colors.dart';
 import '../../../../../../../core/constants/const.dart';
+import '../../../../../../../core/widgets/custom_snack_bar.dart';
 
 class AvailableRoomWidget extends StatelessWidget {
   final Map<String, dynamic> room;
@@ -15,11 +16,23 @@ class AvailableRoomWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddOccupantScreen(room: room,),
-            ));
+        if (room['count'] <= 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            customSnackBar(
+              text: "No rooms available, choose another room",
+              color: Colors.red
+            ),
+          );
+
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddOccupantScreen(
+                  room: room,
+                ),
+              ));
+        }
       },
       child: Card(
         elevation: 4,

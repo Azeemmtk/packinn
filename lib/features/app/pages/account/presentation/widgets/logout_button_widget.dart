@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 
 import '../../../../../../core/constants/const.dart';
 import '../../../../../auth/presentation/provider/bloc/auth_bloc.dart';
@@ -24,7 +25,7 @@ class LogoutButtonWidget extends StatelessWidget {
           );
         } else if (state is EmailAuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
+            customSnackBar(text: state.message)
           );
         }
       },
@@ -81,11 +82,7 @@ class LogoutButtonWidget extends StatelessWidget {
               onPressed: () {
                 Navigator.of(dialogContext).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Logged out successfully'),
-                    backgroundColor: Colors.green,
-                    duration: Duration(seconds: 2),
-                  ),
+                  customSnackBar(text: 'Logged out successfully'),
                 );
                 context.read<AuthBloc>().add(SignOutEvent());
               },

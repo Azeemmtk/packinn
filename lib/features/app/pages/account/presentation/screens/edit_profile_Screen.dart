@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
+import 'package:packinn/core/widgets/custom_snack_bar.dart';
 import '../../../../../auth/data/model/user_model.dart';
 import '../provider/bloc/edit_profile/edit_profile_bloc.dart';
 import '../widgets/edit/edit_profile_form.dart';
@@ -21,18 +22,12 @@ class EditProfileScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is EditProfileSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Profile updated successfully'),
-                backgroundColor: Colors.green,
-              ),
+              customSnackBar(text: 'Profile updated successfully'),
             );
             Navigator.pop(context, true);
           } else if (state is EditProfileError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
+              customSnackBar(text: state.message)
             );
           }
         },
