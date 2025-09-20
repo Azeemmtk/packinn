@@ -11,7 +11,7 @@ class ReportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String senderId = CurrentUser().uId!;
+
     return BlocProvider(
       create: (context) => getIt<ReportBloc>()..add(FetchUserReportsEvent()),
       child: Scaffold(
@@ -25,6 +25,8 @@ class ReportScreen extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             } else if (state is ReportLoaded) {
               final reports = state.reports;
+              print(reports.length);
+              print(reports);
               if (reports.isEmpty) {
                 return const Center(child: Text('No reports submitted yet'));
               }

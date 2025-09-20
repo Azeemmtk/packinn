@@ -114,6 +114,7 @@ class HostelDetailsScreen extends StatelessWidget {
                                     color: mainColor,
                                     onPressed: () => showAddReviewDialog(blocContext, hostel.id),
                                   ),
+                                  height20,
                                   CustomGreenButtonWidget(
                                     name: 'Report',
                                     color: Colors.redAccent,

@@ -25,6 +25,13 @@ class CustomAppBarWidget extends StatelessWidget {
         borderRadius: BorderRadius.only(
           bottomRight: Radius.circular(width * 0.1),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.5),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Padding(
         padding: EdgeInsets.all(padding),

@@ -53,15 +53,13 @@ class _SearchScreenState extends State<SearchScreen> {
       providers: [
         BlocProvider(create: (context) => SearchFilterCubit()),
         BlocProvider(
-            create: (context) =>
-            LocationCubit(GeolocationService())..getCurrentLocation()),
-        BlocProvider(create: (context) => getIt<SearchBloc>()), //
-        BlocProvider(create: (context) => getIt<MapSearchBloc>()), // MapSearchBloc
+            create: (context) => LocationCubit(GeolocationService())..getCurrentLocation()),
+        BlocProvider(create: (context) => getIt<SearchBloc>()),
+        BlocProvider(create: (context) => getIt<MapSearchBloc>()),
       ],
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize:
-              const Size.fromHeight(kToolbarHeight),
+          preferredSize: const Size.fromHeight(kToolbarHeight),
           child: CustomAppBarWidget(
             title: 'Search',
             enableChat: true,
@@ -113,7 +111,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   Expanded(
                     child: BlocBuilder<SearchBloc, SearchState>(
                       builder: (context, state) {
-                        if (_searchQuery.isNotEmpty) {
+                        if (_searchQuery.isNotEmpty || state is SearchLoaded || state is SearchError) {
                           if (state is SearchInitial) {
                             return const Center(
                               child: Text(
@@ -126,12 +124,13 @@ class _SearchScreenState extends State<SearchScreen> {
                             );
                           } else if (state is SearchLoading) {
                             return const Center(
-                                child: Column(
-                                  children: [
-                                    CircularProgressIndicator(color: mainColor,),
-                                    Text('Getting hostel details'),
-                                  ],
-                                ));
+                              child: Column(
+                                children: [
+                                  CircularProgressIndicator(color: mainColor),
+                                  Text('Getting hostel details'),
+                                ],
+                              ),
+                            );
                           } else if (state is SearchLoaded) {
                             if (state.hostels.isEmpty) {
                               return const Center(
@@ -158,12 +157,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                       ),
                                     );
                                   },
-                                  child: HostelSearchResultCard(
-                                      hostel: state.hostels[index]),
+                                  child: HostelSearchResultCard(hostel: state.hostels[index]),
                                 );
                               },
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 10),
+                              separatorBuilder: (context, index) => const SizedBox(height: 10),
                               itemCount: state.hostels.length,
                             );
                           } else if (state is SearchError) {
@@ -177,10 +174,8 @@ class _SearchScreenState extends State<SearchScreen> {
                               ),
                             );
                           }
-                          return const SizedBox();
-                        } else {
-                          return MapSearchWidget();
                         }
+                        return MapSearchWidget();
                       },
                     ),
                   ),

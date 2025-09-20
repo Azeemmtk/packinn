@@ -55,6 +55,7 @@ import 'package:packinn/features/app/pages/search/data/repository/hostel_map_sea
 import 'package:packinn/features/app/pages/search/data/repository/hostel_search_repository_impl.dart';
 import 'package:packinn/features/app/pages/search/domain/repository/hostel_map_search_repository.dart';
 import 'package:packinn/features/app/pages/search/domain/repository/hostel_search_repository.dart';
+import 'package:packinn/features/app/pages/search/domain/usecases/get_autocomlete_suggestion.dart';
 import 'package:packinn/features/app/pages/search/domain/usecases/search_hostel.dart';
 import 'package:packinn/features/app/pages/search/domain/usecases/search_hostels_nearby.dart';
 import 'package:packinn/features/app/pages/search/presentation/provider/bloc/map_search/map_search_bloc.dart';
@@ -259,8 +260,8 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton(() => SendOtp(getIt<AuthRepository>()));
   getIt.registerLazySingleton(() => ResetPassword(getIt<AuthRepository>()));
   getIt.registerLazySingleton(() => GetHostelData(getIt<HostelRepository>()));
-  getIt.registerLazySingleton(
-      () => SearchHostels(getIt<HostelSearchRepository>()));
+
+  getIt.registerLazySingleton(() => SearchHostels(getIt<HostelSearchRepository>()));
   getIt.registerLazySingleton(() => SaveOccupant(getIt<OccupantsRepository>()));
   getIt.registerLazySingleton(
       () => FetchOccupants(getIt<OccupantsRepository>()));
@@ -308,6 +309,9 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton(() => FetchUserReportsUseCase(getIt<ReportRepository>()));
   getIt.registerLazySingleton(() => SubmitReportUseCase(getIt<ReportRepository>()));
 
+  //auto complete
+  getIt.registerLazySingleton(() => GetAutocompleteSuggestions(getIt<HostelSearchRepository>()));
+
 
 
   // BLoCs
@@ -346,7 +350,9 @@ Future<void> initializeDependencies() async {
   );
 
   getIt.registerFactory(
-    () => SearchBloc(searchHostels: getIt<SearchHostels>()),
+    () => SearchBloc(
+        searchHostels: getIt<SearchHostels>(),
+        getAutocompleteSuggestions: getIt<GetAutocompleteSuggestions>()),
   );
 
   getIt.registerFactory(

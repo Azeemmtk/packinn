@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:packinn/core/constants/const.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,13 +19,15 @@ class BuildTopRatedHostelCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 300,
+      margin: EdgeInsets.all(10),
+      width: 280,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.5),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -68,13 +71,25 @@ class BuildTopRatedHostelCard extends StatelessWidget {
                       ),
                     );
                   },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Shimmer.fromColors(
+                      baseColor: secondaryColor,
+                      highlightColor: mainColor,
+                      direction: ShimmerDirection.ltr,
+                      child: Container(
+                        width: double.infinity,
+                        height: 170,
+                        color: Colors.white,
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
           ),
           // Content Section
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(10),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -89,14 +104,14 @@ class BuildTopRatedHostelCard extends StatelessWidget {
                             color: Colors.amber,
                             size: 18,
                           ),
-                          const SizedBox(width: 4),
+                          // const SizedBox(width: 4),
                           Text(
                             rating.toString(),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          // const SizedBox(width: 8),
                           Text(
                             '($distance KM)',
                             style: TextStyle(
@@ -106,7 +121,7 @@ class BuildTopRatedHostelCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      // const SizedBox(height: 4),
                       Text(
                         title,
                         style: const TextStyle(

@@ -16,7 +16,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[200],
       body: Column(
         children: [
           const HomeCustomAppbarWidget(),
@@ -86,34 +86,31 @@ class HomeScreen extends StatelessWidget {
                                   child: Text('Hostels Not Available'),
                                 );
                               }
-                              return SizedBox(
-                                height: height * 0.36,
-                                child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: state.hostels.length,
-                                  itemBuilder: (context, index) {
-                                    final hostel = state.hostels[index];
-                                    return InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => HostelDetailsScreen(hostel: hostel),
-                                          ),
-                                        );
-                                      },
-                                      child: BuildTopRatedHostelCard(
-                                        imageUrl: hostel.mainImageUrl ?? imagePlaceHolder,
-                                        title: hostel.name,
-                                        location: hostel.placeName,
-                                        rent: (hostel.rooms[0]['rate'] as num).toDouble(),
-                                        rating: hostel.rating ?? 0.0,
-                                        distance: 5,
-                                      ),
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) => width10,
-                                ),
+                              return ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: state.hostels.length,
+                                itemBuilder: (context, index) {
+                                  final hostel = state.hostels[index];
+                                  return InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => HostelDetailsScreen(hostel: hostel),
+                                        ),
+                                      );
+                                    },
+                                    child: BuildTopRatedHostelCard(
+                                      imageUrl: hostel.mainImageUrl ?? imagePlaceHolder,
+                                      title: hostel.name,
+                                      location: hostel.placeName,
+                                      rent: (hostel.rooms[0]['rate'] as num).toDouble(),
+                                      rating: hostel.rating ?? 0.0,
+                                      distance: 5,
+                                    ),
+                                  );
+                                },
+                                separatorBuilder: (context, index) => width10,
                               );
                             } else if (state is HostelError) {
                               return Center(
@@ -165,7 +162,7 @@ class HomeScreen extends StatelessWidget {
                               );
                             }
                             return SizedBox(
-                              height: 170,
+                              height: 190,
                               child: ListView.separated(
                                 scrollDirection: Axis.horizontal,
                                 itemCount: state.hostels.length,

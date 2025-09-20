@@ -32,22 +32,23 @@ class _MapSearchWidgetState extends State<MapSearchWidget> {
           child: BlocConsumer<LocationCubit, LocationState>(
             listener: (context, state) {
               if (state is LocationLoaded) {
-                _mapController.move(LatLng(state.latitude, state.longitude), 13.0);
+                _mapController.move(
+                    LatLng(state.latitude, state.longitude), 13.0);
               }
             },
             builder: (context, locationState) {
               if (locationState is LocationLoaded) {
-                _initialCenter = LatLng(locationState.latitude, locationState.longitude);
+                _initialCenter =
+                    LatLng(locationState.latitude, locationState.longitude);
               }
               return BlocConsumer<MapSearchBloc, MapSearchState>(
                 listener: (context, state) {
                   if (state is MapSearchError) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        customSnackBar(text: state.message.contains('timed out')
-                            ? 'The server is taking too long to respond. Please try again.'
-                            : 'Error: ${state.message}')
-                      );
+                      ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
+                          text: state.message.contains('timed out')
+                              ? 'The server is taking too long to respond. Please try again.'
+                              : 'Error: ${state.message}'));
                     });
                   }
                 },
@@ -92,8 +93,10 @@ class _MapSearchWidgetState extends State<MapSearchWidget> {
                       ),
                       children: [
                         TileLayer(
-                          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          userAgentPackageName: 'PackInhApp/1.0 (contact: aseemmtk@example.com)',
+                          urlTemplate:
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName:
+                              'PackInhApp/1.0 (contact: aseemmtk@example.com)',
                         ),
                         CircleLayer(circles: circles),
                         MarkerLayer(markers: markers),
@@ -111,16 +114,20 @@ class _MapSearchWidgetState extends State<MapSearchWidget> {
           child: BlocBuilder<MapSearchBloc, MapSearchState>(
             builder: (context, state) {
               if (state is MapSearchLoading) {
-                return const Center(child: Column(
+                return const Center(
+                    child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(color: mainColor,),
+                    CircularProgressIndicator(
+                      color: mainColor,
+                    ),
                     Text('Fetching nearby hostels'),
                   ],
                 ));
               } else if (state is MapSearchLoaded) {
                 if (state.hostels.isEmpty) {
-                  return const Center(child: Text('No hostels found in this area'));
+                  return const Center(
+                      child: Text('No hostels found in this area'));
                 }
                 return ListView.separated(
                   scrollDirection: Axis.horizontal,
@@ -140,9 +147,18 @@ class _MapSearchWidgetState extends State<MapSearchWidget> {
                   itemCount: state.hostels.length,
                 );
               } else if (state is MapSearchError) {
-                return Center(child: Text('Failed to load hostels. Please try again.'));
+                return Center(
+                    child: Text('Failed to load hostels. Please try again.'));
               }
-              return const Center(child: Text('Tap on the map to search for hostels'));
+              return Card(
+                color: secondaryColor,
+                child: const Center(
+                  child: Text(
+                    'Tap on the map to search for hostels',
+                    style: TextStyle(fontSize: 17,),
+                  ),
+                ),
+              );
             },
           ),
         ),

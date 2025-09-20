@@ -7,6 +7,8 @@ import 'package:packinn/features/app/pages/home/presentation/provider/bloc/add_c
 import 'package:packinn/features/app/pages/home/presentation/provider/cubit/occupant_field_cubit.dart';
 import 'package:packinn/features/app/pages/home/presentation/widgets/confirm_booking/image_view_dialog.dart';
 
+import '../../../../../../../core/constants/colors.dart';
+
 class EditImageSection extends StatelessWidget {
   final AddOccupantBloc addOccupantBloc;
   final OccupantFieldCubit textFieldCubit;
@@ -28,6 +30,11 @@ class EditImageSection extends StatelessWidget {
             Row(
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: mainColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))
+                  ),
                   onPressed: () async {
                     final image = await getIt<ImagePickerService>().showImageSourceDialog(context);
                     if (image != null) {
@@ -64,9 +71,11 @@ class EditImageSection extends StatelessWidget {
                       );
                     },
                     child: Container(
-                      width: 50,
-                      height: 50,
+                      width: 45,
+                      height: 45,
                       decoration: BoxDecoration(
+                        border: Border.all(color: mainColor),
+                        borderRadius: BorderRadius.circular(5),
                         image: DecorationImage(
                           image: currentState.profileImage != null
                               ? FileImage(currentState.profileImage!)
@@ -82,6 +91,11 @@ class EditImageSection extends StatelessWidget {
             Row(
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: mainColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))
+                  ),
                   onPressed: () async {
                     final image = await getIt<ImagePickerService>().showImageSourceDialog(context);
                     if (image != null) {
@@ -121,9 +135,11 @@ class EditImageSection extends StatelessWidget {
                       );
                     },
                     child: Container(
-                      width: 50,
-                      height: 50,
+                      width: 45,
+                      height: 45,
                       decoration: BoxDecoration(
+                        border: Border.all(color: mainColor),
+                        borderRadius: BorderRadius.circular(5),
                         image: DecorationImage(
                           image: currentState.idProof != null
                               ? FileImage(currentState.idProof!)
@@ -147,6 +163,11 @@ class EditImageSection extends StatelessWidget {
             Row(
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: mainColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))
+                  ),
                   onPressed: () async {
                     final image = await getIt<ImagePickerService>().showImageSourceDialog(context);
                     if (image != null) {
@@ -186,9 +207,11 @@ class EditImageSection extends StatelessWidget {
                       );
                     },
                     child: Container(
-                      width: 50,
-                      height: 50,
+                      width: 45,
+                      height: 45,
                       decoration: BoxDecoration(
+                        border: Border.all(color: mainColor),
+                        borderRadius: BorderRadius.circular(5),
                         image: DecorationImage(
                           image: currentState.addressProof != null
                               ? FileImage(currentState.addressProof!)

@@ -20,13 +20,14 @@ class BuildSmallHostelCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.all(10),
       width: 160,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.5),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -67,6 +68,18 @@ class BuildSmallHostelCard extends StatelessWidget {
                   ),
                 );
               },
+              errorBuilder: (context, error, stackTrace) {
+                return Shimmer.fromColors(
+                  baseColor: secondaryColor,
+                  highlightColor: mainColor,
+                  direction: ShimmerDirection.ltr,
+                  child: Container(
+                    width: double.infinity,
+                    height: 96,
+                    color: Colors.white,
+                  ),
+                );
+              },
             ),
           ),
           Padding(
@@ -81,7 +94,6 @@ class BuildSmallHostelCard extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-                const SizedBox(height: 2),
                 Text(
                   'RENT - $rent',
                   style: const TextStyle(
@@ -89,7 +101,6 @@ class BuildSmallHostelCard extends StatelessWidget {
                     fontSize: 12,
                   ),
                 ),
-                const SizedBox(height: 2),
                 Text(
                   'Distance - $distance',
                   style: TextStyle(

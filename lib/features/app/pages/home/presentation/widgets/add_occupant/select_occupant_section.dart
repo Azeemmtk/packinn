@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:packinn/core/constants/colors.dart';
 
 import '../../../../../../../core/constants/const.dart';
 import '../../../../../../../core/services/current_user.dart';
@@ -26,7 +27,7 @@ class SelectOccupantSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TitleTextWidget(title: 'Select Occupant'),
+        TitleTextWidget(title: 'Choose Occupant'),
         ListView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
@@ -36,61 +37,62 @@ class SelectOccupantSection extends StatelessWidget {
             print('========image url=======${occupant.profileImageUrl}');
             return InkWell(
               onTap: () async {
-                final result = await Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditOccupantScreen(
-                      occupant: occupant,
+                    builder: (context) => ConfirmBookingScreen(
                       room: room,
+                      occupant: occupant,
                     ),
                   ),
                 );
-                if (result == true) {
-                  context
-                      .read<AddOccupantBloc>()
-                      .add(FetchOccupantsEvent(CurrentUser().uId!));
-                }
               },
-              child: ListTile(
-                title: Text(occupant.name),
-                subtitle: Text(occupant.phone),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // addOccupantBloc.add(
-                        //   SelectOccupantEvent(
-                        //     occupant,
-                        //     room,
-                        //   ),
-                        // );
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ConfirmBookingScreen(
-                              room: room,
-                              occupant: occupant,
-
+              child: Card(
+                color: secondaryColor,
+                child: ListTile(
+                  title: Text(occupant.name),
+                  subtitle: Text(occupant.phone),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: mainColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))
+                        ),
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditOccupantScreen(
+                                occupant: occupant,
+                                room: room,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      child: Text('Select'),
-                    ),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      onPressed: () {
-                        addOccupantBloc.add(
-                          DeleteOccupantEvent(occupant.id!),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.delete,
-                        color: Colors.red,
+                          );
+                          if (result == true) {
+                            context
+                                .read<AddOccupantBloc>()
+                                .add(FetchOccupantsEvent(CurrentUser().uId!));
+                          }
+                        },
+                        child: Text('Edit'),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      IconButton(
+                        onPressed: () {
+                          addOccupantBloc.add(
+                            DeleteOccupantEvent(occupant.id!),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );

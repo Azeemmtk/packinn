@@ -17,6 +17,13 @@ class HomeCustomAppbarWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: secondaryColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.5),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
         borderRadius: BorderRadius.only(
           bottomRight: Radius.circular(width * 0.1),
         ),

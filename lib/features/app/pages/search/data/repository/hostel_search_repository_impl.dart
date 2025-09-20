@@ -1,63 +1,52 @@
 import 'package:dartz/dartz.dart';
-import '../../../../../../core/error/failures.dart';
 import '../../../../../../core/entity/hostel_entity.dart';
+import '../../../../../../core/error/failures.dart';
+import '../../../../../../core/error/exceptions.dart';
+import '../../../../../../core/services/ds/trie.dart';
 import '../../domain/repository/hostel_search_repository.dart';
 import '../../presentation/provider/cubit/search_filter/search_filter_state.dart';
 import '../datasource/hostel_search_remote_data_source.dart';
 
 class HostelSearchRepositoryImpl implements HostelSearchRepository {
   final HostelSearchRemoteDataSource remoteDataSource;
+  final Trie _searchTrie = Trie();
 
-  HostelSearchRepositoryImpl(this.remoteDataSource);
+  HostelSearchRepositoryImpl(this.remoteDataSource) {
+    _loadHostelsIntoTrie();
+  }
+
+  Future<void> _loadHostelsIntoTrie() async {
+    final result = await remoteDataSource.getHostelData();
+    result.fold(
+          (failure) => null, // Handle failure silently or log
+          (hostels) {
+        for (var hostel in hostels) {
+          _searchTrie.insert(hostel.name, hostel.id);
+          if (hostel.placeName.isNotEmpty) {
+            _searchTrie.insert(hostel.placeName, hostel.id);
+          }
+        }
+      },
+    );
+  }
 
   @override
-  Future<Either<Failure, List<HostelEntity>>> searchHostels(
-      String query, SearchFilterState filters) async {
+  Future<Either<Failure, List<HostelEntity>>> searchHostels(String query, SearchFilterState filters) async {
     try {
       final hostels = await remoteDataSource.getHostelData();
-      return hostels.fold(
-            (failure) => Left(failure),
-            (hostelList) {
-          var filteredHostels = hostelList;
-
-          // Filter by name
-          if (query.isNotEmpty) {
-            filteredHostels = filteredHostels
-                .where((hostel) =>
-                hostel.name.toLowerCase().contains(query.toLowerCase()))
-                .toList();
-          }
-
-          // Filter by facilities
-          if (filters.facilities.isNotEmpty) {
-            filteredHostels = filteredHostels.where((hostel) {
-              return filters.facilities.every((facility) => hostel.facilities.contains(facility));
-            }).toList();
-          }
-
-          // Filter by room types
-          if (filters.roomTypes.isNotEmpty) {
-            filteredHostels = filteredHostels.where((hostel) {
-              return hostel.rooms.any((room) {
-                final roomType = room['type'] as String?;
-                return roomType != null && filters.roomTypes.contains(roomType);
-              });
-            }).toList();
-          }
-
-          // Filter by price range
-          filteredHostels = filteredHostels.where((hostel) {
-            return hostel.rooms.any((room) {
-              final price = (room['rate'] as num?)?.toDouble() ?? 0.0;
-              return price >= filters.priceRange.start && price <= filters.priceRange.end;
-            });
-          }).toList();
-
-          return Right(filteredHostels);
-        },
-      );
+      return hostels;
     } catch (e) {
-      return Left(ServerFailure('Failed to search hostels: $e'));
+      return Left(ServerFailure('Failed to fetch hostels: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<String>>> getAutocompleteSuggestions(String query) async {
+    try {
+      final suggestions = _searchTrie.search(query);
+      return Right(suggestions);
+    } catch (e) {
+      return Left(ServerFailure('Failed to fetch suggestions: $e'));
     }
   }
 }
