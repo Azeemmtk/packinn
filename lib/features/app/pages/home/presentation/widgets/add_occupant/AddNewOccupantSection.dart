@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/services/image_picker_service.dart';
@@ -9,6 +12,11 @@ import 'package:packinn/core/widgets/custom_text_field_widget.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/cubit/occupant_field_cubit.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/bloc/add_cooupant/add_occupant_bloc.dart';
 import 'package:packinn/features/app/pages/home/presentation/widgets/confirm_booking/image_view_dialog.dart';
+
+import 'image_add_section.dart';
+import 'image_button.dart';
+
+
 
 class AddNewOccupantSection extends StatelessWidget {
   final AddOccupantBloc addOccupantBloc;
@@ -156,135 +164,12 @@ class AddNewOccupantSection extends StatelessWidget {
               ],
               height10,
             ],
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    final image = await getIt<ImagePickerService>().showImageSourceDialog(context);
-                    if (image != null) {
-                      textFieldCubit.updateField(profileImage: image);
-                      addOccupantBloc.add(UpdateOccupantEvent(profileImage: image));
-                      textFieldCubit.validateFields(isSubmitted: false);
-                    }
-                  },
-                  child: Text(
-                      'Occupant image'),
-                ),
-                if (currentState.profileImage != null) ...[
-                  width10,
-                  GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (_) => ImageViewDialog(image: currentState.profileImage!),
-                      );
-                    },
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: FileImage(currentState.profileImage!),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
+            height20,
+            ImageAddSection(
+              addOccupantBloc: addOccupantBloc,
+              textFieldCubit: textFieldCubit,
+              currentState: currentState,
             ),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    final image =
-                    await getIt<ImagePickerService>().showImageSourceDialog(context);
-                    if (image != null) {
-                      textFieldCubit.updateField(idProof: image);
-                      addOccupantBloc.add(UpdateOccupantEvent(idProof: image));
-                      textFieldCubit.validateFields(isSubmitted: false);
-                    }
-                  },
-                  child: Text(
-                      currentState.idProof == null ? 'Upload ID Proof' : 'ID Proof Uploaded'),
-                ),
-                if (currentState.idProof != null) ...[
-                  width10,
-                  GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (_) => ImageViewDialog(image: currentState.idProof!),
-                      );
-                    },
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: FileImage(currentState.idProof!),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-            if (textFieldState.idProofError != null) ...[
-              height5,
-              Text(
-                textFieldState.idProofError!,
-                style: const TextStyle(color: Colors.red, fontSize: 12),
-              ),
-            ],
-            height10,
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    final image =
-                    await getIt<ImagePickerService>().showImageSourceDialog(context);
-                    if (image != null) {
-                      textFieldCubit.updateField(addressProof: image);
-                      addOccupantBloc.add(UpdateOccupantEvent(addressProof: image));
-                      textFieldCubit.validateFields(isSubmitted: false);
-                    }
-                  },
-                  child: Text(currentState.addressProof == null
-                      ? 'Upload Address Proof'
-                      : 'Address Proof Uploaded'),
-                ),
-                if (currentState.addressProof != null) ...[
-                  width10,
-                  GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (_) => ImageViewDialog(image: currentState.addressProof!),
-                      );
-                    },
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: FileImage(currentState.addressProof!),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-            if (textFieldState.addressProofError != null) ...[
-              height5,
-              Text(
-                textFieldState.addressProofError!,
-                style: const TextStyle(color: Colors.red, fontSize: 12),
-              ),
-            ],
             height20,
             CustomGreenButtonWidget(
               name: 'Save and Continue',

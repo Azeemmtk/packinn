@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:packinn/core/entity/hostel_entity.dart';
-import 'package:packinn/features/app/pages/home/presentation/widgets/hostel_details/preview_image_container_widget.dart';
 import '../../../../../../../core/constants/colors.dart';
 import '../../../../../../../core/constants/const.dart';
 import '../../../../../../../core/widgets/title_text_widget.dart';
@@ -27,7 +26,7 @@ class DescriptionPreviewSection extends StatelessWidget {
           style: const TextStyle(fontSize: 16),
         ),
         height20,
-        ContactReachWidget(hostel: hostel,),
+        ContactReachWidget(hostel: hostel),
         height20,
         RichText(
           text: TextSpan(
@@ -61,20 +60,7 @@ class DescriptionPreviewSection extends StatelessWidget {
           ),
         ),
         height20,
-        const TitleTextWidget(title: 'Preview'),
-        height10,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(
-            3,
-                (index) => PreviewImageContainerWidget(
-              imageUrl: index < hostel.smallImageUrls.length ? hostel.smallImageUrls[index] : null,
-            ),
-          ),
-        ),
-        height20,
       ],
     );
   }
 }
-

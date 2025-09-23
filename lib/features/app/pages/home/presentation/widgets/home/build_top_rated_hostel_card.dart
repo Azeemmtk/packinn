@@ -20,14 +20,14 @@ class BuildTopRatedHostelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(10),
-      width: 280,
+      width: width * 0.7,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
 
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -37,55 +37,51 @@ class BuildTopRatedHostelCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Image Section
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                ),
-                child: Image.network(
-                  imageUrl,
-                  width: double.infinity,
-                  height: 170,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) {
-                      // Image loaded → fade in
-                      return AnimatedOpacity(
-                        opacity: 1.0,
-                        duration: const Duration(milliseconds: 300),
-                        child: child,
-                      );
-                    }
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(12),
+              topRight: Radius.circular(12),
+            ),
+            child: Image.network(
+              imageUrl,
+              width: double.infinity,
+              height: 170,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  // Image loaded → fade in
+                  return AnimatedOpacity(
+                    opacity: 1.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: child,
+                  );
+                }
 
-                    // Show shimmer while loading
-                    return Shimmer.fromColors(
-                      baseColor: secondaryColor,
-                      highlightColor: mainColor,
-                      direction: ShimmerDirection.ltr,
-                      child: Container(
-                        width: double.infinity,
-                        height: 170,
-                        color: Colors.white,
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return Shimmer.fromColors(
-                      baseColor: secondaryColor,
-                      highlightColor: mainColor,
-                      direction: ShimmerDirection.ltr,
-                      child: Container(
-                        width: double.infinity,
-                        height: 170,
-                        color: Colors.white,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+                // Show shimmer while loading
+                return Shimmer.fromColors(
+                  baseColor: secondaryColor,
+                  highlightColor: mainColor,
+                  direction: ShimmerDirection.ltr,
+                  child: Container(
+                    width: double.infinity,
+                    height: 170,
+                    color: Colors.white,
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Shimmer.fromColors(
+                  baseColor: secondaryColor,
+                  highlightColor: mainColor,
+                  direction: ShimmerDirection.ltr,
+                  child: Container(
+                    width: double.infinity,
+                    height: 170,
+                    color: Colors.white,
+                  ),
+                );
+              },
+            ),
           ),
           // Content Section
           Padding(
@@ -97,39 +93,34 @@ class BuildTopRatedHostelCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      height5,
                       Row(
                         children: [
-                          const Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                            size: 18,
-                          ),
-                          // const SizedBox(width: 4),
                           Text(
-                            rating.toString(),
+                            title,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
                           ),
-                          // const SizedBox(width: 8),
-                          Text(
-                            '($distance KM)',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 14,
-                            ),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 19,
+                              ),
+                              Text(
+                                rating.toString(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      // const SizedBox(height: 4),
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
+                      height5,
                       Text(
                         location,
                         style: TextStyle(
@@ -137,7 +128,7 @@ class BuildTopRatedHostelCard extends StatelessWidget {
                           fontSize: 14,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      height5,
                       Text(
                         'RENT - $rent /MONTH',
                         style: const TextStyle(

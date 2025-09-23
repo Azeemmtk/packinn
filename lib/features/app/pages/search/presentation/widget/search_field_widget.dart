@@ -39,7 +39,6 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
                 widget.onChanged?.call(value);
                 _debouncer.run(() {
                   if (value.isEmpty) {
-                    // Clear suggestions when the search query is empty
                     context.read<SearchBloc>().add(GetAutocompleteSuggestionsEvent(''));
                   } else {
                     context.read<SearchBloc>().add(GetAutocompleteSuggestionsEvent(value));
@@ -50,7 +49,7 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
               decoration: InputDecoration(
                 hintText: 'Search hostel',
                 filled: true,
-                fillColor: secondaryColor,
+                fillColor: Colors.white,
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -59,7 +58,6 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
                         onPressed: () {
                           widget.controller?.clear();
                           widget.onChanged?.call('');
-                          // Clear suggestions and reset search
                           context.read<SearchBloc>().add(GetAutocompleteSuggestionsEvent(''));
                           context.read<SearchBloc>().add(SearchHostelsEvent('', filterState));
                         },

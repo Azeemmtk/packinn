@@ -7,13 +7,12 @@ import 'package:packinn/features/auth/presentation/screens/sign_in_screen.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/const.dart';
 import '../../../../core/widgets/custom_green_button_widget.dart';
-import '../provider/bloc/otp/otp_auth_bloc.dart';
-import '../provider/bloc/otp/otp_auth_event.dart';
-import '../provider/bloc/otp/otp_auth_state.dart';
+import '../provider/bloc/email/email_auth_bloc.dart';
+import '../provider/bloc/email/email_auth_event.dart';
+import '../provider/bloc/email/email_auth_state.dart';
 import '../provider/cubit/sign_up_cubit.dart';
 import '../widgets/curved_container_widget.dart';
 import '../widgets/custom_auth_input_widget.dart';
-import 'otp_screen.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -21,36 +20,22 @@ class SignUpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocListener<OtpAuthBloc, OtpAuthState>(
+      body: BlocListener<EmailAuthBloc, EmailAuthState>(
         listener: (context, state) {
-          if (state is OtpEmailChecked) {
-            if (state.emailExists) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('This account is already registered.'),
-                ),
-              );
-            } else {
-              // Email doesn't exist, proceed to send OTP
-              context.read<OtpAuthBloc>().add(OtpAuthSendOtp('+91${context.read<SignUpCubit>().state.phone}'));
-            }
-          } else if (state is OtpSent) {
-            Navigator.push(
+          if (state is EmailAuthAuthenticated) {
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
-                builder: (context) => OtpScreen(
-                  data: {
-                    'name': context.read<SignUpCubit>().state.name,
-                    'email': context.read<SignUpCubit>().state.email,
-                    'phone': context.read<SignUpCubit>().state.phone,
-                    'password': context.read<SignUpCubit>().state.password,
-                  },
-                  status: 'RE',
-                  verificationId: state.verificationId,
-                ),
+                builder: (context) => const SignInScreen(fromSignUp: true),
+              ),
+                  (route) => false,
+            );
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Signed up successfully! Please log in.'),
               ),
             );
-          } else if (state is OtpAuthError) {
+          } else if (state is EmailAuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
             );
@@ -120,10 +105,17 @@ class SignUpScreen extends StatelessWidget {
                               : () {
                             final formData = context.read<SignUpCubit>().submitForm();
                             if (formData != null) {
-                              context.read<OtpAuthBloc>().add(OtpAuthCheckEmail(formData['email']!));
+                              context.read<EmailAuthBloc>().add(
+                                EmailAuthSignUp(
+                                  name: formData['name']!,
+                                  email: formData['email']!,
+                                  phone: formData['phone']!,
+                                  password: formData['password']!,
+                                ),
+                              );
                             }
                           },
-                          isLoading: context.watch<OtpAuthBloc>().state is OtpAuthLoading,
+                          isLoading: context.watch<EmailAuthBloc>().state is EmailAuthLoading,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,

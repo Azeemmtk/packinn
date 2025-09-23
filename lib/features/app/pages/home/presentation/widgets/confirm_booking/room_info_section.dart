@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:packinn/features/app/pages/home/presentation/widgets/confirm_booking/image_section.dart';
 
 import '../../../../../../../core/constants/const.dart';
 import '../../../../../../../core/widgets/main_image_container.dart';
@@ -15,7 +16,7 @@ class RoomInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MainImageContainer(
+        ImageSection(
           img: room['img'] ?? imagePlaceHolder,
         ),
         height20,

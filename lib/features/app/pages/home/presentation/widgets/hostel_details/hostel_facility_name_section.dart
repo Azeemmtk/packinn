@@ -8,32 +8,38 @@ import '../../../../../../../core/constants/const.dart';
 import 'facility_container.dart';
 
 class HostelFacilityNameSection extends StatelessWidget {
-
-  const HostelFacilityNameSection({super.key, required this.hostel,});
+  const HostelFacilityNameSection({super.key, required this.hostel});
 
   final HostelEntity hostel;
 
   @override
   Widget build(BuildContext context) {
+    // Combine main image and small images into a single list
+    final List<String> allImages = [
+      if (hostel.mainImageUrl != null) hostel.mainImageUrl!,
+      ...hostel.smallImageUrls,
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MainImageContainer(img: hostel.mainImageUrl ?? imagePlaceHolder),
+        MainImageContainer(images: allImages),
         height20,
         Wrap(
           spacing: 8.0,
           runSpacing: 8.0,
           children: [
-            ...hostel.facilities.map((e) => FacilityContainer(facility: e),),
-          ]
+            ...hostel.facilities.map((e) => FacilityContainer(facility: e)),
+          ],
         ),
         height20,
         Text(
           hostel.name,
           style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 25,
-              color: headingTextColor),
+            fontWeight: FontWeight.bold,
+            fontSize: 25,
+            color: headingTextColor,
+          ),
         ),
         Row(
           children: [

@@ -78,18 +78,23 @@ class _SearchScreenState extends State<SearchScreen> {
                     builder: (context, state) {
                       String locationText = 'Location';
                       if (state is LocationLoading) {
-                        locationText = 'Loading location...';
+                        locationText = ' Loading location...';
                       } else if (state is LocationLoaded) {
                         locationText = state.placeName;
                       } else if (state is LocationError) {
                         locationText = 'Location unavailable';
                       }
-                      return Text(
-                        locationText,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      return Row(
+                        children: [
+                          Icon(Icons.location_on, color: mainColor,),
+                          Text(
+                            locationText,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),

@@ -8,6 +8,7 @@ import '../../../../../../../core/constants/colors.dart';
 import '../../../../../../../core/constants/const.dart';
 import '../../../../../../auth/presentation/provider/bloc/auth_bloc.dart';
 import '../../../../../../auth/presentation/provider/bloc/email/email_auth_state.dart';
+import '../../../../account/presentation/screens/profile_screen.dart';
 
 class HomeCustomAppbarWidget extends StatelessWidget {
   const HomeCustomAppbarWidget({super.key});
@@ -19,7 +20,7 @@ class HomeCustomAppbarWidget extends StatelessWidget {
         color: secondaryColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -38,76 +39,86 @@ class HomeCustomAppbarWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                BlocBuilder<AuthBloc, dynamic>(
-                  builder: (context, state) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 4, vertical: 4),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 16,
-                            backgroundImage: state is EmailAuthAuthenticated &&
-                                    state.user.photoURL != null
-                                ? NetworkImage(state.user.photoURL!)
-                                : const NetworkImage(
-                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuCV2BT4s-9VHuSPY0hF-wXQMqcHzjl76lbXSVv_vE0XLm1gsNZI5oNbo0-8QH4PKU91PHAolqn_CcwBb389vu7vQYqqBUOUMhXqsShZWO31BlMz7CvnOCaXCFFWbJdzpAY7t-LuAua5C7QdIlE4szqdRZHLk0eRRegTfrRdcPTQ0zwMT7Qg_H9qDgH_1LkagoKJh-jg0IZdNFyEXFbbMHhdMebFNrRl4c6kvzqEbHXX0LCWv695yNAC_PLfzrnCiImB4jU7LZ0d_FLg',
-                                  ),
-                          ),
-                          const SizedBox(width: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                state is EmailAuthAuthenticated &&
-                                        state.user.displayName?.isNotEmpty ==
-                                            true
-                                    ? state.user.displayName!
-                                    : 'user',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.location_on,
-                                    size: 14,
-                                    color: Colors.grey[500],
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    state is EmailAuthAuthenticated &&
-                                        state.user.address?.isNotEmpty ==
-                                            true
-                                        ? state.user.address!
-                                        : 'adress',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey[500],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(width: 12),
-                        ],
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileScreen(),
                       ),
                     );
                   },
+                  child: BlocBuilder<AuthBloc, dynamic>(
+                    builder: (context, state) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 4),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundImage: state is EmailAuthAuthenticated &&
+                                      state.user.photoURL != null
+                                  ? NetworkImage(state.user.photoURL!)
+                                  : const NetworkImage(
+                                      'https://lh3.googleusercontent.com/aida-public/AB6AXuCV2BT4s-9VHuSPY0hF-wXQMqcHzjl76lbXSVv_vE0XLm1gsNZI5oNbo0-8QH4PKU91PHAolqn_CcwBb389vu7vQYqqBUOUMhXqsShZWO31BlMz7CvnOCaXCFFWbJdzpAY7t-LuAua5C7QdIlE4szqdRZHLk0eRRegTfrRdcPTQ0zwMT7Qg_H9qDgH_1LkagoKJh-jg0IZdNFyEXFbbMHhdMebFNrRl4c6kvzqEbHXX0LCWv695yNAC_PLfzrnCiImB4jU7LZ0d_FLg',
+                                    ),
+                            ),
+                            const SizedBox(width: 8),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  state is EmailAuthAuthenticated &&
+                                          state.user.displayName?.isNotEmpty ==
+                                              true
+                                      ? state.user.displayName!
+                                      : 'user',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.location_on,
+                                      size: 14,
+                                      color: Colors.grey[500],
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      state is EmailAuthAuthenticated &&
+                                          state.user.address?.isNotEmpty ==
+                                              true
+                                          ? state.user.address!
+                                          : 'adress',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[500],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 12),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
                 InkWell(
                   onTap: () async{

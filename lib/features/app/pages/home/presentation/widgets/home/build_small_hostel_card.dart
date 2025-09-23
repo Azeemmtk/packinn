@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:packinn/core/constants/const.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../../../../core/constants/colors.dart';
@@ -21,13 +22,13 @@ class BuildSmallHostelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(10),
-      width: 160,
+      width: width * 0.5,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

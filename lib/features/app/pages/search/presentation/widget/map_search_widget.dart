@@ -21,7 +21,7 @@ class MapSearchWidget extends StatefulWidget {
 
 class _MapSearchWidgetState extends State<MapSearchWidget> {
   final MapController _mapController = MapController();
-  LatLng _initialCenter = LatLng(9.9312, 76.2673); // Default fallback
+  LatLng _initialCenter = LatLng(9.9312, 76.2673);
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +151,8 @@ class _MapSearchWidgetState extends State<MapSearchWidget> {
                     child: Text('Failed to load hostels. Please try again.'));
               }
               return Card(
-                color: secondaryColor,
+                elevation: 2,
+                color: Colors.grey.shade200,
                 child: const Center(
                   child: Text(
                     'Tap on the map to search for hostels',

@@ -16,7 +16,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      // backgroundColor: Color(0xffe6ffee),
       body: Column(
         children: [
           const HomeCustomAppbarWidget(),
@@ -40,6 +40,7 @@ class HomeScreen extends StatelessWidget {
                   padding: EdgeInsets.all(padding),
                   child: Column(
                     children: [
+                      height10,
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -69,9 +70,8 @@ class HomeScreen extends StatelessWidget {
                           // ),
                         ],
                       ),
-                      height10,
                       SizedBox(
-                        height: height * 0.36,
+                        height: height * 0.34,
                         child: BlocBuilder<HostelBloc, HostelState>(
                           builder: (context, state) {
                             if (state is HostelLoading) {
@@ -86,7 +86,7 @@ class HomeScreen extends StatelessWidget {
                                   child: Text('Hostels Not Available'),
                                 );
                               }
-                              return ListView.separated(
+                              return ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 itemCount: state.hostels.length,
                                 itemBuilder: (context, index) {
@@ -110,7 +110,6 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                   );
                                 },
-                                separatorBuilder: (context, index) => width10,
                               );
                             } else if (state is HostelError) {
                               return Center(
@@ -128,19 +127,19 @@ class HomeScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            'Hostels',
+                            'All hostels',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          // Text(
-                          //   'See more...',
-                          //   style: TextStyle(
-                          //     fontSize: 14,
-                          //     color: mainColor,
-                          //   ),
-                          // ),
+                          Text(
+                            'See more...',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: mainColor,
+                            ),
+                          ),
                         ],
                       ),
                       height10,
@@ -155,7 +154,7 @@ class HomeScreen extends StatelessWidget {
                           } else if (state is HostelLoaded) {
                             if (state.hostels.isEmpty) {
                               return SizedBox(
-                                height: 170,
+                                height: 19,
                                 child: const Center(
                                   child: Text('Hostels Not Available'),
                                 ),
@@ -163,7 +162,7 @@ class HomeScreen extends StatelessWidget {
                             }
                             return SizedBox(
                               height: 190,
-                              child: ListView.separated(
+                              child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 itemCount: state.hostels.length,
                                 itemBuilder: (context, index) {
@@ -185,7 +184,6 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                   );
                                 },
-                                separatorBuilder: (context, index) => width5,
                               ),
                             );
                           } else if (state is HostelError) {

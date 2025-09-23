@@ -54,7 +54,7 @@ class AllChatCardWidget extends StatelessWidget {
                   style: TextStyle(fontSize: 18, color: headingTextColor),
                 ),
                 SizedBox(
-                  width: width * 0.64,
+                  width: width * 0.62,
                   child: Text(
                     lastMessage,
                     overflow: TextOverflow.ellipsis,
@@ -63,14 +63,7 @@ class AllChatCardWidget extends StatelessWidget {
                 ),
               ],
             ),
-            const Spacer(),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(time),
-              ],
-            ),
+            Text(time),
           ],
         ),
       ),

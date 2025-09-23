@@ -356,6 +356,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final userModel = UserModel(
           uid: firebaseUser.uid,
           name: name,
+          displayName: name,
           email: email,
           phone: phone,
           phoneVerified: true,
