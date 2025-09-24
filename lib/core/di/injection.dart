@@ -28,22 +28,27 @@ import 'package:packinn/features/app/pages/chat/presentation/providers/bloc/chat
 import 'package:packinn/features/app/pages/home/data/datasource/occupant_remote_data_sourse.dart';
 import 'package:packinn/features/app/pages/home/data/datasource/report_data_source.dart';
 import 'package:packinn/features/app/pages/home/data/datasource/review_remote_data_source.dart';
+import 'package:packinn/features/app/pages/home/data/datasource/user_details_remote_data_source.dart';
 import 'package:packinn/features/app/pages/home/data/repository/occupant_repository_impl.dart';
 import 'package:packinn/features/app/pages/home/data/repository/report_repository_impl.dart';
 import 'package:packinn/features/app/pages/home/data/repository/review_repository_impl.dart';
+import 'package:packinn/features/app/pages/home/data/repository/user_details_repository_impl.dart';
 import 'package:packinn/features/app/pages/home/domain/repository/occupants_repository.dart';
 import 'package:packinn/features/app/pages/home/domain/repository/report_repository.dart';
 import 'package:packinn/features/app/pages/home/domain/repository/review_repository.dart';
+import 'package:packinn/features/app/pages/home/domain/repository/user_details_repository.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/add_review_use_case.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/delete_occupant.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/fetch_occupants.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/get_review_use_case.dart';
+import 'package:packinn/features/app/pages/home/domain/usecases/get_user_details.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/report/fetch_user_report_use_case.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/report/submit_report_usecase.dart';
 import 'package:packinn/features/app/pages/home/domain/usecases/save_occupant.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/bloc/add_cooupant/add_occupant_bloc.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/bloc/report/report_bloc.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/bloc/review/review_bloc.dart';
+import 'package:packinn/features/app/pages/home/presentation/provider/bloc/userdetails/user_details_bloc.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/cubit/occupant_field_cubit.dart';
 import 'package:packinn/features/app/pages/my_booking/data/datasourse/booking_remote_data_source.dart';
 import 'package:packinn/features/app/pages/my_booking/domain/repository/booking_repository.dart';
@@ -189,6 +194,10 @@ Future<void> initializeDependencies() async {
         () => ReportDataSourceImpl(firestore:  getIt<FirebaseFirestore>()),
   );
 
+  getIt.registerLazySingleton<UserDetailsRemoteDataSource>(
+        () => UserDetailsRemoteDataSourceImpl(firestore:  getIt<FirebaseFirestore>()),
+  );
+
 
 
 
@@ -247,6 +256,10 @@ Future<void> initializeDependencies() async {
           cloudinaryService: getIt<CloudinaryService>(),
           dataSource: getIt<ReportDataSource>()
         ),
+  );
+
+  getIt.registerLazySingleton<UserDetailsRepository>(
+        () => UserDetailsRepositoryImpl(remoteDataSource: getIt<UserDetailsRemoteDataSource>()),
   );
 
   // Use Cases
@@ -312,6 +325,8 @@ Future<void> initializeDependencies() async {
   //auto complete
   getIt.registerLazySingleton(() => GetAutocompleteSuggestions(getIt<HostelSearchRepository>()));
 
+  //get user details
+ getIt.registerLazySingleton(() => GetUserDetailsUseCase(getIt<UserDetailsRepository>()));
 
 
   // BLoCs
@@ -408,6 +423,11 @@ Future<void> initializeDependencies() async {
   getIt.registerFactory(() => ReportBloc(
     fetchUserReportsUseCase: getIt<FetchUserReportsUseCase>(),
     submitReportUseCase: getIt<SubmitReportUseCase>(),
+  ));
+
+  // user details
+  getIt.registerFactory(() => UserDetailsBloc(
+      userDetailsUseCase: getIt<GetUserDetailsUseCase>(),
   ));
 
 
