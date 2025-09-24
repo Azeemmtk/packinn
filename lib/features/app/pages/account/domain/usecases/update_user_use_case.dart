@@ -3,7 +3,7 @@ import 'package:packinn/core/error/failures.dart';
 import 'package:packinn/core/usecases/usecase.dart';
 import 'package:packinn/features/app/pages/account/domain/repository/user_profile_repository.dart';
 
-import '../../../../../auth/data/model/user_model.dart';
+import '../../../../../../core/model/user_model.dart';
 
 class UpdateUserUseCase implements UseCase<void, UserModel> {
   final UserProfileRepository repository;

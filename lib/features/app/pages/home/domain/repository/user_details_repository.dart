@@ -1,9 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:packinn/core/error/failures.dart';
-
 import '../../../../../../core/model/user_model.dart';
 
-abstract class UserProfileRepository {
+abstract class UserDetailsRepository {
   Future<Either<Failure, UserModel>> getUser(String uid);
-  Future<Either<Failure, void>> updateUser(UserModel user);
 }

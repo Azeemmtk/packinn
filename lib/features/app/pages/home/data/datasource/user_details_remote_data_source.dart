@@ -3,15 +3,14 @@ import 'package:packinn/core/error/exceptions.dart';
 
 import '../../../../../../core/model/user_model.dart';
 
-abstract class UserProfileRemoteDataSource {
+abstract class UserDetailsRemoteDataSource {
   Future<UserModel> getUser(String uid);
-  Future<void> updateUser(UserModel user);
 }
 
-class UserProfileRemoteDataSourceImpl implements UserProfileRemoteDataSource {
+class UserDetailsRemoteDataSourceImpl implements UserDetailsRemoteDataSource {
   final FirebaseFirestore firestore;
 
-  UserProfileRemoteDataSourceImpl({required this.firestore});
+  UserDetailsRemoteDataSourceImpl({required this.firestore});
 
   @override
   Future<UserModel> getUser(String uid) async {
@@ -22,15 +21,6 @@ class UserProfileRemoteDataSourceImpl implements UserProfileRemoteDataSource {
         throw ServerException('User not found');
       }
       return UserModel.fromFirestore(doc);
-    } catch (e) {
-      throw ServerException(e.toString());
-    }
-  }
-
-  @override
-  Future<void> updateUser(UserModel user) async {
-    try {
-      await firestore.collection('users').doc(user.uid).update(user.toFirestore());
     } catch (e) {
       throw ServerException(e.toString());
     }

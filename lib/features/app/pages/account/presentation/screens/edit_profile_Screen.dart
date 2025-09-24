@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
 import 'package:packinn/core/widgets/custom_snack_bar.dart';
-import '../../../../../auth/data/model/user_model.dart';
+import '../../../../../../core/model/user_model.dart';
 import '../provider/bloc/edit_profile/edit_profile_bloc.dart';
 import '../widgets/edit/edit_profile_form.dart';
 

@@ -103,22 +103,23 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   width: double.infinity,
                   child: Stack(
                     children: [
-                      Image.asset(
-                        'assets/images/Background.jpg',
-                        fit: BoxFit.cover,
+                      Container(
+                        // 'assets/images/Background.jpg',
+                        // fit: BoxFit.cover,
                         width: double.infinity,
                         height: double.infinity,
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withOpacity(0.1),
-                              Colors.black.withOpacity(0.3),
-                            ],
-                          ),
+                          color: Colors.white
+                          // gradient: LinearGradient(
+                          //   begin: Alignment.topCenter,
+                          //   end: Alignment.bottomCenter,
+                          //   colors: [
+                          //     Colors.black.withOpacity(0.1),
+                          //     Colors.black.withOpacity(0.3),
+                          //   ],
+                          // ),
                         ),
                       ),
                     ],

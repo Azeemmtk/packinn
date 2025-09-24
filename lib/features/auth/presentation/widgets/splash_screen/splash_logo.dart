@@ -28,7 +28,7 @@ class SplashLogo extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Image.asset(
-              'assets/images/PackInn_l.png',
+              'assets/images/app_logo.png',
               height: 150,
               width: 150,
               fit: BoxFit.contain,

@@ -1,5 +1,5 @@
 
-import '../model/user_model.dart';
+import '../../../../core/model/user_model.dart';
 
 abstract class UserRemoteDataSource {
   Future<void> saveUserToFirestore(UserModel user);

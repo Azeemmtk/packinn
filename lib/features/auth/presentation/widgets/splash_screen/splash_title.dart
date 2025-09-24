@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:packinn/core/constants/colors.dart';
 
 class SplashTitle extends StatelessWidget {
   final Animation<double> fade;
@@ -19,8 +20,15 @@ class SplashTitle extends StatelessWidget {
             textStyle: TextStyle(
               fontSize: MediaQuery.of(context).size.width * 0.08,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: mainColor,
               letterSpacing: 2,
+              shadows: [
+                Shadow(
+                  color: Colors.black.withOpacity(0.5),
+                  offset: const Offset(2, 2),
+                  blurRadius: 4,
+                ),
+              ],
             ),
           ),
         ),

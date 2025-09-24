@@ -5,13 +5,13 @@ import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/services/current_user.dart';
 import 'package:packinn/core/widgets/details_row_widget.dart';
 
-import '../../../../../../auth/data/model/user_model.dart';
+import '../../../../../../../core/model/user_model.dart';
 import '../../provider/bloc/profile/profile_bloc.dart';
 import '../../screens/edit_profile_Screen.dart';
 
 class ProfileContentWidget extends StatelessWidget {
   final UserModel user;
-  const ProfileContentWidget({super.key, required this.user});
+  const   ProfileContentWidget({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {

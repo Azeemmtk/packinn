@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:packinn/core/constants/colors.dart';
 
 class SplashVersion extends StatelessWidget {
   final Animation<double> fade;
@@ -14,7 +15,7 @@ class SplashVersion extends StatelessWidget {
         'Version 1.0.0',
         style: GoogleFonts.poppins(
           textStyle: TextStyle(
-            color: Colors.white.withOpacity(0.6),
+            color: mainColor,
             fontSize: 12,
             fontWeight: FontWeight.w300,
           ),

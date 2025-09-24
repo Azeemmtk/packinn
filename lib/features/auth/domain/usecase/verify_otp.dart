@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
-import 'package:packinn/features/auth/domain/entities/user_entity.dart';
+import 'package:packinn/core/entity/user_entity.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../repository/auth_repository.dart';

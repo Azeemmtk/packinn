@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../entities/user_entity.dart';
+import '../../../../core/entity/user_entity.dart';
 import '../repository/auth_repository.dart';
 
 class GoogleSignIn implements UseCaseNoParams<UserEntity> {

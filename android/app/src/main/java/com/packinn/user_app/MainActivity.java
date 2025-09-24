@@ -1,4 +1,4 @@
-package com.example.packinn;
+package com.packinn.user_app;
 
 import io.flutter.embedding.android.FlutterFragmentActivity;
 
