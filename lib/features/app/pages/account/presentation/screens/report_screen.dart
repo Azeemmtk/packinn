@@ -4,7 +4,7 @@ import 'package:packinn/core/services/current_user.dart';
 import '../../../../../../core/di/injection.dart';
 import '../../../../../../core/widgets/custom_app_bar_widget.dart';
 import '../../../home/presentation/provider/bloc/report/report_bloc.dart';
-import '../widgets/report_card_widget.dart';
+import '../widgets/report/report_card_widget.dart';
 
 class ReportScreen extends StatelessWidget {
   const ReportScreen({super.key});

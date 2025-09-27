@@ -7,17 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:152988047457:android:90bcc8defce025c833f220",
+        "mobilesdk_app_id": "1:152988047457:android:36b4f5f3509edd3433f220",
         "android_client_info": {
-          "package_name": "com.example.packinh"
+          "package_name": "com.packinh.hostel_owner_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "152988047457-emh171gm2su0e9un5bksm502ek02b2ae.apps.googleusercontent.com",
+          "client_id": "152988047457-the45im5601eq1svdnmt9v1v5kt0p3d9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.packinh",
+            "package_name": "com.packinh.hostel_owner_app",
             "certificate_hash": "2c1374c83edeff25b3e5e82ee1f1da8d84e274ac"
           }
         },
@@ -57,6 +57,22 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "152988047457-efo80862m8pmd0ajghgmbtfjgg4aid6m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.packinn.user_app",
+            "certificate_hash": "2c1374c83edeff25b3e5e82ee1f1da8d84e274ac"
+          }
+        },
+        {
+          "client_id": "152988047457-p7safo5e027r3hqh61deqbcmjnpi38e8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.packinn.user_app",
+            "certificate_hash": "c335f86ad5f03795dad8bdaf74b2e6320fb7d46a"
+          }
+        },
         {
           "client_id": "152988047457-be5v27i1g943gg943okfr8b7gd8mq1cl.apps.googleusercontent.com",
           "client_type": 3

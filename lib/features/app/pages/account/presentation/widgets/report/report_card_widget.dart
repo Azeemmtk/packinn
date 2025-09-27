@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:packinn/core/constants/colors.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../home/domain/entity/report_entity.dart';
+import '../../../../home/domain/entity/report_entity.dart';
 
 class ReportCardWidget extends StatelessWidget {
   const ReportCardWidget({

@@ -5,56 +5,37 @@ import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
 import 'package:packinn/core/widgets/custom_green_button_widget.dart';
 import 'package:packinn/core/entity/occupant_entity.dart';
-import 'package:packinn/core/widgets/custom_snack_bar.dart';
 import 'package:packinn/features/app/pages/home/presentation/provider/cubit/occupant_field_cubit.dart';
 import '../provider/bloc/add_cooupant/add_occupant_bloc.dart';
-import '../widgets/edit_occupant/edit_guardian_section.dart';
-import '../widgets/edit_occupant/edit_image_section.dart';
-import '../widgets/edit_occupant/edit_occupant_section.dart';
+import '../widgets/edit_occupant/edit_occupant_form.dart';
+import '../widgets/edit_occupant/occupant_form_controllers.dart';
 
 class EditOccupantScreen extends StatefulWidget {
   final OccupantEntity occupant;
   final Map<String, dynamic> room;
 
-  const EditOccupantScreen(
-      {super.key, required this.occupant, required this.room});
+  const EditOccupantScreen({
+    super.key,
+    required this.occupant,
+    required this.room,
+  });
 
   @override
   _EditOccupantScreenState createState() => _EditOccupantScreenState();
 }
 
 class _EditOccupantScreenState extends State<EditOccupantScreen> {
-  late final TextEditingController _nameController;
-  late final TextEditingController _phoneController;
-  late final TextEditingController _ageController;
-  late final TextEditingController _guardianNameController;
-  late final TextEditingController _guardianPhoneController;
-  late final TextEditingController _guardianRelationController;
+  late final OccupantFormControllers _controllers;
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with occupant data
-    _nameController = TextEditingController(text: widget.occupant.name);
-    _phoneController = TextEditingController(text: widget.occupant.phone);
-    _ageController =
-        TextEditingController(text: widget.occupant.age.toString());
-    _guardianNameController =
-        TextEditingController(text: widget.occupant.guardian?.name ?? '');
-    _guardianPhoneController =
-        TextEditingController(text: widget.occupant.guardian?.phone ?? '');
-    _guardianRelationController =
-        TextEditingController(text: widget.occupant.guardian?.relation ?? '');
+    _controllers = OccupantFormControllers(widget.occupant);
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
-    _ageController.dispose();
-    _guardianNameController.dispose();
-    _guardianPhoneController.dispose();
-    _guardianRelationController.dispose();
+    _controllers.dispose();
     super.dispose();
   }
 
@@ -90,137 +71,19 @@ class _EditOccupantScreenState extends State<EditOccupantScreen> {
             ),
         ),
       ],
-      child: BlocConsumer<AddOccupantBloc, AddOccupantState>(
-        listener: (context, state) {
-          if (state is AddOccupantSuccess) {
-            Navigator.pop(context, true);
-          } else if (state is AddOccupantError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              customSnackBar(text: state.message)
-            );
-          }
-        },
-        builder: (context, state) {
-          return BlocBuilder<OccupantFieldCubit, OccupantFieldState>(
-            builder: (context, textFieldState) {
-              final addOccupantBloc = context.read<AddOccupantBloc>();
-              final textFieldCubit = context.read<OccupantFieldCubit>();
-              final currentState = state is AddOccupantLoaded
-                  ? state
-                  : AddOccupantLoaded(
-                      name: textFieldState.name,
-                      phone: textFieldState.phone,
-                      age: int.tryParse(textFieldState.age),
-                      guardianName: textFieldState.guardianName,
-                      guardianPhone: textFieldState.guardianPhone,
-                      guardianRelation: textFieldState.guardianRelation,
-                      idProof: null,
-                      addressProof: null,
-                      idProofUrl: widget.occupant.idProofUrl,
-                      addressProofUrl: widget.occupant.addressProofUrl,
-                      occupants: [],
-                      showForm: true,
-                    );
-
-              // Update controllers only if the text field state changes significantly
-              if (_nameController.text != textFieldState.name) {
-                _nameController.text = textFieldState.name;
-              }
-              if (_phoneController.text != textFieldState.phone) {
-                _phoneController.text = textFieldState.phone;
-              }
-              if (_ageController.text != textFieldState.age) {
-                _ageController.text = textFieldState.age;
-              }
-              if (_guardianNameController.text != textFieldState.guardianName) {
-                _guardianNameController.text = textFieldState.guardianName;
-              }
-              if (_guardianPhoneController.text !=
-                  textFieldState.guardianPhone) {
-                _guardianPhoneController.text = textFieldState.guardianPhone;
-              }
-              if (_guardianRelationController.text !=
-                  textFieldState.guardianRelation) {
-                _guardianRelationController.text =
-                    textFieldState.guardianRelation;
-              }
-
-              return Scaffold(
-                body: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        CustomAppBarWidget(title: 'Edit Occupant Details'),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            child: Padding(
-                              padding: EdgeInsets.all(padding),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  EditOccupantSection(
-                                    addOccupantBloc: addOccupantBloc,
-                                    textFieldCubit: textFieldCubit,
-                                    currentState: currentState,
-                                    nameController: _nameController,
-                                    phoneController: _phoneController,
-                                    ageController: _ageController,
-                                  ),
-                                  EditGuardianSection(
-                                    addOccupantBloc: addOccupantBloc,
-                                    textFieldCubit: textFieldCubit,
-                                    currentState: currentState,
-                                    guardianNameController:
-                                        _guardianNameController,
-                                    guardianPhoneController:
-                                        _guardianPhoneController,
-                                    guardianRelationController:
-                                        _guardianRelationController,
-                                    ageText: _ageController.text,
-                                  ),
-                                  EditImageSection(
-                                    addOccupantBloc: addOccupantBloc,
-                                    textFieldCubit: textFieldCubit,
-                                    currentState: currentState,
-                                  ),
-                                  CustomGreenButtonWidget(
-                                    name: 'Save and Continue',
-                                    onPressed: () {
-                                      final error =
-                                          textFieldCubit.validateAndGetError();
-                                      if (error == null) {
-                                        addOccupantBloc.add(SaveOccupantEvent(
-                                          widget.room,
-                                          occupantId: widget.occupant.id,
-                                        ));
-                                      } else {
-                                        textFieldCubit.validateFields(
-                                            isSubmitted: true);
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          customSnackBar(text: error, color: Colors.red),
-                                        );
-                                      }
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (state is AddOccupantLoading)
-                      Container(
-                        color: Colors.black54,
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
+      child: Scaffold(
+        body: Column(
+          children: [
+            CustomAppBarWidget(title: 'Edit Occupant Details'),
+            Expanded(
+              child: EditOccupantForm(
+                occupant: widget.occupant,
+                room: widget.room,
+                controllers: _controllers,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../../core/services/current_user.dart';
 import '../../../../domain/usecase/google_sign_in.dart';
 import 'google_auth_event.dart';
 import 'google_auth_state.dart';
@@ -17,7 +18,11 @@ class GoogleAuthBloc extends Bloc<GoogleAuthEvent, GoogleAuthState> {
     final result = await googleSignIn();
     result.fold(
           (failure) => emit(GoogleAuthError(message: failure.message)),
-          (user) => emit(GoogleAuthAuthenticated(user: user)),
+          (user) {
+            CurrentUser().name = user.name;
+            CurrentUser().uId = user.uid;
+            emit(GoogleAuthAuthenticated(user: user));
+          },
     );
   }
 }

@@ -14,6 +14,7 @@ class HomeCustomAppbarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('----------------------${CurrentUser().uId}');
     return BlocProvider(
       create: (context) => getIt<UserDetailsBloc>()..add(FetchUserDetails(CurrentUser().uId!)),
       child: Container(
@@ -51,6 +52,7 @@ class HomeCustomAppbarWidget extends StatelessWidget {
                     },
                     child: BlocBuilder<UserDetailsBloc, UserDetailsState>(
                       builder: (context, state) {
+
                         return Container(
                           decoration: BoxDecoration(
                             color: Colors.white,

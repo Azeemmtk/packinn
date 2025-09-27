@@ -53,7 +53,6 @@ class _IndividualChatScreenState extends State<IndividualChatScreen> {
             ),
             body: Column(
               children: [
-
                 Expanded(
                   child: Container(
                     color: Colors.grey[50],

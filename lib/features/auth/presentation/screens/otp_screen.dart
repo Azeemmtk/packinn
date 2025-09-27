@@ -37,20 +37,21 @@ class OtpScreen extends StatelessWidget {
       child: Scaffold(
         body: BlocListener<OtpAuthBloc, OtpAuthState>(
           listener: (context, state) {
-            if (state is OtpAuthAuthenticated && status == 'FP') {
-              // For forgot password, navigate to NewPasswordScreen with only uid
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NewPasswordScreen(
-                    uid: state.user.uid,
-                  ),
-                ),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(
-                 customSnackBar(text: 'Verification Successful!')
-              );
-            } else if (state is OtpAuthAuthenticated && status == 'RE') {
+            // if (state is OtpAuthAuthenticated && status == 'FP') {
+            //   // For forgot password, navigate to NewPasswordScreen with only uid
+            //   Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => NewPasswordScreen(
+            //         uid: state.user.uid,
+            //       ),
+            //     ),
+            //   );
+            //   ScaffoldMessenger.of(context).showSnackBar(
+            //      customSnackBar(text: 'Verification Successful!')
+            //   );
+            // }
+             if (state is OtpAuthAuthenticated && status == 'RE') {
               // For registration, proceed with signup
               print(
                   'otpScreen============${data['name']},${data['email']}, ${data['phone']}, ${data['password']}');

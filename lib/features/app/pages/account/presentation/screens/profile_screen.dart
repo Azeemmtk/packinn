@@ -4,7 +4,6 @@ import 'package:get_it/get_it.dart';
 import 'package:packinn/core/constants/const.dart';
 import 'package:packinn/core/services/current_user.dart';
 import 'package:packinn/core/widgets/custom_app_bar_widget.dart';
-import '../../../../../../core/model/user_model.dart';
 import '../provider/bloc/profile/profile_bloc.dart';
 import '../widgets/profile/profile_content_widget.dart';
 
@@ -13,6 +12,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('----------------------${CurrentUser().uId}');
     return BlocProvider(
       create: (context) => GetIt.instance<ProfileBloc>()
         ..add(LoadProfileEvent(CurrentUser().uId!)),

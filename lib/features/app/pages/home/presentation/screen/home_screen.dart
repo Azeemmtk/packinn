@@ -61,13 +61,6 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          // Text(
-                          //   'See more...',
-                          //   style: TextStyle(
-                          //     fontSize: 14,
-                          //     color: mainColor,
-                          //   ),
-                          // ),
                         ],
                       ),
                       SizedBox(

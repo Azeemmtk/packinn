@@ -34,7 +34,7 @@ class AddOccupantScreen extends StatelessWidget {
       child: BlocConsumer<AddOccupantBloc, AddOccupantState>(
         listener: (context, state) {
           if (state is AddOccupantSuccess) {
-            // Show a SnackBar to indicate successful addition
+            //success
             ScaffoldMessenger.of(context).showSnackBar(
               customSnackBar(text: 'Occupant added successfully')
             );
