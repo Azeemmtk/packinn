@@ -31,6 +31,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       return;
     }
 
+
     if (event.query.isEmpty &&
         event.filters.facilities.isEmpty &&
         event.filters.roomTypes.isEmpty &&
@@ -41,24 +42,45 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     }
     emit(SearchLoading());
     try {
+
       final result =
       await searchHostels(SearchHostelParams(event.query, event.filters));
       result.fold(
             (failure) => emit(SearchError(failure.message)),
             (hostels) {
           final filteredHostels = hostels.where((hostel) {
+            //  Check hostel name, place name, facilities, and room additionalFacility
             bool matchesQuery = event.query.isEmpty ||
                 hostel.name.toLowerCase().contains(event.query.toLowerCase()) ||
-                hostel.placeName.toLowerCase().contains(event.query.toLowerCase());
+                hostel.placeName.toLowerCase().contains(event.query.toLowerCase()) ||
+                hostel.facilities.any((facility) =>
+                    facility.toLowerCase().contains(event.query.toLowerCase())) ||
+                hostel.rooms.any((room) =>
+                    (room['additionalFacility'] ?? '')
+                        .toLowerCase()
+                        .contains(event.query.toLowerCase()));
+
+            // Facility filter: Check both hostel facilities and room additionalFacility
             bool matchesFacilities = event.filters.facilities.isEmpty ||
-                event.filters.facilities.every((facility) => hostel.facilities.contains(facility));
+                event.filters.facilities.every((facility) =>
+                hostel.facilities.contains(facility) ||
+                    hostel.rooms.any((room) =>
+                        (room['additionalFacility'] ?? '')
+                            .toLowerCase()
+                            .contains(facility.toLowerCase())));
+
+            // Room type filter
             bool matchesRoomTypes = event.filters.roomTypes.isEmpty ||
-                hostel.rooms.any((room) => event.filters.roomTypes.contains(room['type']));
+                hostel.rooms.any((room) =>
+                    event.filters.roomTypes.contains(room['type']));
+
+            // Price filter
             bool matchesPrice = hostel.rooms.isEmpty ||
                 hostel.rooms.any((room) =>
                 room['rate'] != null &&
                     room['rate'] >= event.filters.priceRange.start &&
                     room['rate'] <= event.filters.priceRange.end);
+
             return matchesQuery && matchesFacilities && matchesRoomTypes && matchesPrice;
           }).toList();
           _cache[cacheKey] = filteredHostels;

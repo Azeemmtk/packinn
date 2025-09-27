@@ -16,7 +16,7 @@ class HostelSearchRemoteDataSourceImpl implements HostelSearchRemoteDataSource {
   @override
   Future<Either<Failure, List<HostelEntity>>> getHostelData() async {
     try {
-      final querySnapshot = await firestore.collection('hostels').get();
+      final querySnapshot = await firestore.collection('hostels').where('status', isEqualTo: 'approved').get();
       final hostels = querySnapshot.docs
           .map((doc) => HostelModel.fromJson(doc.data()).toEntity())
           .toList();
