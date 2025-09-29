@@ -31,25 +31,14 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       return;
     }
 
-
-    if (event.query.isEmpty &&
-        event.filters.facilities.isEmpty &&
-        event.filters.roomTypes.isEmpty &&
-        event.filters.priceRange.start == 1000 &&
-        event.filters.priceRange.end == 10000) {
-      emit(SearchInitial());
-      return;
-    }
     emit(SearchLoading());
     try {
-
-      final result =
-      await searchHostels(SearchHostelParams(event.query, event.filters));
+      final result = await searchHostels(SearchHostelParams(event.query, event.filters));
       result.fold(
             (failure) => emit(SearchError(failure.message)),
             (hostels) {
           final filteredHostels = hostels.where((hostel) {
-            //  Check hostel name, place name, facilities, and room additionalFacility
+            // Check hostel name, place name, facilities, and room additionalFacility
             bool matchesQuery = event.query.isEmpty ||
                 hostel.name.toLowerCase().contains(event.query.toLowerCase()) ||
                 hostel.placeName.toLowerCase().contains(event.query.toLowerCase()) ||

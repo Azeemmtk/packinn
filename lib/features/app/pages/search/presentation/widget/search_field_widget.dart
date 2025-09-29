@@ -26,6 +26,18 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
   final Debouncer _debouncer = Debouncer(delay: const Duration(milliseconds: 500));
 
   @override
+  void initState() {
+    super.initState();
+    // Add listener for focus changes
+    widget.focusNode?.addListener(() {
+      if (widget.focusNode!.hasFocus && (widget.controller?.text.isEmpty ?? true)) {
+        // Trigger search for all hostels when field is tapped and empty
+        context.read<SearchBloc>().add(SearchHostelsEvent('', context.read<SearchFilterCubit>().state));
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final parentContext = context;
     return Column(
@@ -40,6 +52,7 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
                 _debouncer.run(() {
                   if (value.isEmpty) {
                     context.read<SearchBloc>().add(GetAutocompleteSuggestionsEvent(''));
+                    context.read<SearchBloc>().add(SearchHostelsEvent('', filterState));
                   } else {
                     context.read<SearchBloc>().add(GetAutocompleteSuggestionsEvent(value));
                     context.read<SearchBloc>().add(SearchHostelsEvent(value, filterState));
@@ -104,8 +117,6 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
         ),
         BlocBuilder<SearchBloc, SearchState>(
           builder: (context, state) {
-            // Only show suggestions if the state is AutocompleteSuggestionsLoaded,
-            // the suggestions list is not empty, and the search query is not empty
             if (state is AutocompleteSuggestionsLoaded &&
                 state.suggestions.isNotEmpty &&
                 (widget.controller?.text.isNotEmpty ?? false)) {
