@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:packinn/core/constants/stripe.dart';
 import 'package:packinn/core/di/injection.dart';
 import 'package:packinn/core/theme/app_theme.dart';
 import 'package:packinn/features/auth/presentation/screens/splash_screen.dart';

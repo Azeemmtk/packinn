@@ -57,7 +57,7 @@ class HostelSearchResultCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '4.5',
+                      (hostel.rating ?? 0.0).toString(),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),

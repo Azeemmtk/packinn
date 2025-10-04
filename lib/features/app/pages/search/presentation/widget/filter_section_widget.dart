@@ -6,7 +6,9 @@ import '../provider/cubit/search_filter/search_filter_cubit.dart';
 import '../provider/cubit/search_filter/search_filter_state.dart';
 
 class FilterSectionWidget extends StatelessWidget {
-  const FilterSectionWidget({super.key});
+  final TextEditingController? searchController; // Add controller to access search query
+
+  const FilterSectionWidget({super.key, this.searchController});
 
   @override
   Widget build(BuildContext context) {
@@ -140,9 +142,16 @@ class FilterSectionWidget extends StatelessWidget {
                     },
                     child: const Text('Cancel', style: TextStyle(color: Colors.redAccent, fontSize: 16)),
                   ),
+                  TextButton(
+                    onPressed: () {
+                      context.read<SearchFilterCubit>().resetFilters();
+                    },
+                    child: const Text('Clear Filters', style: TextStyle(color: Colors.blue, fontSize: 16)),
+                  ),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<SearchFilterCubit>().applyFilters();
+                      // Pass the current search query when applying filters
+                      context.read<SearchFilterCubit>().applyFilters(context, searchController?.text ?? '');
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(

@@ -28,10 +28,8 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
   @override
   void initState() {
     super.initState();
-    // Add listener for focus changes
     widget.focusNode?.addListener(() {
       if (widget.focusNode!.hasFocus && (widget.controller?.text.isEmpty ?? true)) {
-        // Trigger search for all hostels when field is tapped and empty
         context.read<SearchBloc>().add(SearchHostelsEvent('', context.read<SearchFilterCubit>().state));
       }
     });
@@ -88,9 +86,16 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                           ),
-                          builder: (bottomSheetContext) => BlocProvider.value(
-                            value: BlocProvider.of<SearchFilterCubit>(parentContext),
-                            child: FilterSectionWidget(),
+                          builder: (bottomSheetContext) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider.value(
+                                value: BlocProvider.of<SearchFilterCubit>(parentContext),
+                              ),
+                              BlocProvider.value(
+                                value: BlocProvider.of<SearchBloc>(parentContext),
+                              ),
+                            ],
+                            child: FilterSectionWidget(searchController: widget.controller),
                           ),
                         );
                       },

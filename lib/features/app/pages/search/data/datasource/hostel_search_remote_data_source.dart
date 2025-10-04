@@ -16,10 +16,20 @@ class HostelSearchRemoteDataSourceImpl implements HostelSearchRemoteDataSource {
   @override
   Future<Either<Failure, List<HostelEntity>>> getHostelData() async {
     try {
-      final querySnapshot = await firestore.collection('hostels').where('status', isEqualTo: 'approved').get();
+      final querySnapshot = await firestore
+          .collection('hostels')
+          .where('status', isEqualTo: 'approved')
+          .get();
       final hostels = querySnapshot.docs
           .map((doc) => HostelModel.fromJson(doc.data()).toEntity())
-          .toList();
+          .toList()
+        ..sort((a, b) {
+          // Handle null ratings by placing them at the end
+          if (a.rating == null && b.rating == null) return 0;
+          if (a.rating == null) return 1;
+          if (b.rating == null) return -1;
+          return b.rating!.compareTo(a.rating!);
+        });
       return Right(hostels);
     } catch (e) {
       return Left(ServerFailure('Failed to fetch hostels: $e'));

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../bloc/search/search_bloc.dart';
+import '../../bloc/search/search_event.dart';
 import 'search_filter_state.dart';
 
 class SearchFilterCubit extends Cubit<SearchFilterState> {
@@ -34,8 +36,10 @@ class SearchFilterCubit extends Cubit<SearchFilterState> {
     emit(state.copyWith(priceRange: priceRange));
   }
 
-  void applyFilters() {
+  void applyFilters(BuildContext context, String searchQuery) {
     emit(state.copyWith());
+    // Trigger a search with the current query and updated filters
+    context.read<SearchBloc>().add(SearchHostelsEvent(searchQuery, state));
   }
 
   void resetFilters() {
