@@ -37,14 +37,25 @@ class AllChatScreen extends StatelessWidget {
                       itemCount: state.chats.length,
                       itemBuilder: (context, index) {
                         final chat = state.chats[index];
-                        final currentUid = FirebaseAuth.instance.currentUser!.uid;
-                        final otherUid = chat.participants.firstWhere((id) => id != currentUid);
-                        final otherName = chat.participantsInfo[otherUid]?['name'] ?? 'Unknown';
-                        final otherPhoto = chat.participantsInfo[otherUid]?['photo'] ?? '';
+                        final currentUid =
+                            FirebaseAuth.instance.currentUser!.uid;
+                        final otherUid = chat.participants
+                            .firstWhere((id) => id != currentUid);
+                        final otherName = chat.participantsInfo[otherUid]
+                                ?['name'] ??
+                            'Unknown';
+                        final otherPhoto =
+                            chat.participantsInfo[otherUid]?['photo'] ?? '';
                         final lastMessage = chat.lastMessage;
                         final time = formatTime(chat.lastTimestamp);
 
-                        return AllChatCardWidget(chat: chat, otherName: otherName, otherPhoto: otherPhoto, lastMessage: lastMessage, time: time);
+                        return AllChatCardWidget(
+                          chat: chat,
+                          otherName: otherName,
+                          otherPhoto: otherPhoto,
+                          lastMessage: lastMessage,
+                          time: time,
+                        );
                       },
                     );
                   } else if (state is AllChatsError) {
@@ -60,4 +71,3 @@ class AllChatScreen extends StatelessWidget {
     );
   }
 }
-

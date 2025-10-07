@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:packinn/core/constants/colors.dart';
 import 'package:packinn/core/constants/const.dart';
+import 'package:packinn/core/utils/date_formate.dart';
 import 'package:packinn/features/app/pages/wallet/data/model/payment_model.dart';
 import 'package:packinn/features/app/pages/wallet/presentation/screens/payment_screen.dart';
 
@@ -115,7 +116,7 @@ class WalletCardWidget extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    'Due: ${DateFormat('dd-MMM-yyyy').format(payment.dueDate)}',
+                    'Due: ${dateFormate.format(payment.dueDate)}',
                     style: TextStyle(
                       fontSize: 12,
                       color: isOverdue ? Colors.red : Colors.grey,

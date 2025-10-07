@@ -1,3 +1,5 @@
+import 'date_formate.dart';
+
 String formatTime(DateTime dateTime) {
   final now = DateTime.now();
   final difference = now.difference(dateTime);
@@ -8,6 +10,6 @@ String formatTime(DateTime dateTime) {
   } else if (difference.inHours < 24) {
     return '${difference.inHours}h ago';
   } else {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+    return dateFormate.format(dateTime);
   }
 }

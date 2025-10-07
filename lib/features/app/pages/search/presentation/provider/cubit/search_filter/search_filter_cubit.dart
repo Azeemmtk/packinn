@@ -10,6 +10,8 @@ class SearchFilterCubit extends Cubit<SearchFilterState> {
     facilities: [],
     roomTypes: [],
     priceRange: const RangeValues(1000, 10000),
+    distanceRange: const RangeValues(2, 20),
+    context: null,
   ));
 
   void toggleFacility(String facility) {
@@ -36,9 +38,12 @@ class SearchFilterCubit extends Cubit<SearchFilterState> {
     emit(state.copyWith(priceRange: priceRange));
   }
 
+  void updateDistanceRange(RangeValues distanceRange) {
+    emit(state.copyWith(distanceRange: distanceRange));
+  }
+
   void applyFilters(BuildContext context, String searchQuery) {
-    emit(state.copyWith());
-    // Trigger a search with the current query and updated filters
+    emit(state.copyWith(context: context)); // Store context in state
     context.read<SearchBloc>().add(SearchHostelsEvent(searchQuery, state));
   }
 
@@ -47,6 +52,8 @@ class SearchFilterCubit extends Cubit<SearchFilterState> {
       facilities: [],
       roomTypes: [],
       priceRange: const RangeValues(1000, 10000),
+      distanceRange: const RangeValues(2, 20),
+      context: null,
     ));
   }
 }

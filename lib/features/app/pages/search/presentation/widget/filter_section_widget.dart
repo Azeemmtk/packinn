@@ -62,15 +62,18 @@ class FilterSectionWidget extends StatelessWidget {
               height20,
               const Text('Distance (km)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               RangeSlider(
-                values: const RangeValues(2, 20),
+                values: state.distanceRange,
                 min: 2,
                 max: 20,
                 divisions: 18,
                 activeColor: mainColor,
                 inactiveColor: secondaryColor,
-                labels: const RangeLabels('2', '20'),
+                labels: RangeLabels(
+                  state.distanceRange.start.round().toString(),
+                  state.distanceRange.end.round().toString(),
+                ),
                 onChanged: (RangeValues values) {
-                  // No-op: Distance filter is UI-only
+                  context.read<SearchFilterCubit>().updateDistanceRange(values);
                 },
               ),
               height20,

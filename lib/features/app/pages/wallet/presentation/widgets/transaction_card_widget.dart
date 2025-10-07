@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:packinn/core/utils/date_formate.dart';
 import '../../data/model/transaction model.dart';
 
 class TransactionCardWidget extends StatelessWidget {
@@ -13,9 +14,12 @@ class TransactionCardWidget extends StatelessWidget {
       elevation: 2,
       child: ListTile(
         title: Text(
-            '${transaction.type.capitalize()} - ₹${transaction.amount.toStringAsFixed(2)}',style: TextStyle(color: Colors.black),),
+          '${transaction.type.capitalize()} - ₹${transaction.amount.toStringAsFixed(2)}',
+          style: TextStyle(color: Colors.black),
+        ),
         subtitle: Text(
-            '${transaction.description}\n${transaction.timestamp?.toString() ?? 'No date'}',style: TextStyle(color: Colors.black)),
+            '${transaction.description}\n${dateTimeFormate.format(transaction.timestamp!)}',
+            style: TextStyle(color: Colors.black)),
       ),
     );
   }

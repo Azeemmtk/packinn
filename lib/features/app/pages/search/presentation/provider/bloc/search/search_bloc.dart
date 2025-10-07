@@ -1,7 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../../../domain/usecases/get_autocomlete_suggestion.dart';
 import '../../../../domain/usecases/search_hostel.dart';
 import '../../cubit/search_filter/search_filter_state.dart';
+import '../../cubit/loacation/location_cubit.dart';
+import '../../cubit/loacation/location_state.dart';
 import 'search_event.dart';
 import 'search_state.dart';
 import '../../../../../../../../core/entity/hostel_entity.dart';
@@ -20,7 +23,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 
   String _generateCacheKey(String query, SearchFilterState filters) {
-    return '${query}_${filters.facilities.join(',')}_${filters.roomTypes.join(',')}_${filters.priceRange.start}_${filters.priceRange.end}';
+    return '${query}_${filters.facilities.join(',')}_${filters.roomTypes.join(',')}_${filters.priceRange.start}_${filters.priceRange.end}_${filters.distanceRange.start}_${filters.distanceRange.end}';
   }
 
   Future<void> _onSearchHostels(
@@ -36,8 +39,30 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       final result = await searchHostels(SearchHostelParams(event.query, event.filters));
       result.fold(
             (failure) => emit(SearchError(failure.message)),
-            (hostels) {
-          final filteredHostels = hostels.where((hostel) {
+            (hostels) async {
+          List<HostelEntity> filteredHostels = hostels;
+
+          // Get current location from LocationCubit using the context from the event
+          Position? userPosition;
+          if (event.filters.context != null) {
+            final locationState = BlocProvider.of<LocationCubit>(event.filters.context!).state;
+            if (locationState is LocationLoaded) {
+              userPosition = Position(
+                latitude: locationState.latitude,
+                longitude: locationState.longitude,
+                timestamp: DateTime.now(),
+                accuracy: 0.0,
+                altitude: 0.0,
+                heading: 0.0,
+                speed: 0.0,
+                speedAccuracy: 0.0,
+                altitudeAccuracy: 0.0,
+                headingAccuracy: 0.0,
+              );
+            }
+          }
+
+          filteredHostels = hostels.where((hostel) {
             // Check hostel name, place name, facilities, and room additionalFacility
             bool matchesQuery = event.query.isEmpty ||
                 hostel.name.toLowerCase().contains(event.query.toLowerCase()) ||
@@ -70,8 +95,26 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
                     room['rate'] >= event.filters.priceRange.start &&
                     room['rate'] <= event.filters.priceRange.end);
 
-            return matchesQuery && matchesFacilities && matchesRoomTypes && matchesPrice;
+            // Distance filter
+            bool matchesDistance = true;
+            if (userPosition != null) {
+              final distance = Geolocator.distanceBetween(
+                userPosition.latitude,
+                userPosition.longitude,
+                hostel.latitude,
+                hostel.longitude,
+              ) / 1000; // Convert meters to kilometers
+              matchesDistance = distance >= event.filters.distanceRange.start &&
+                  distance <= event.filters.distanceRange.end;
+            }
+
+            return matchesQuery &&
+                matchesFacilities &&
+                matchesRoomTypes &&
+                matchesPrice &&
+                matchesDistance;
           }).toList();
+
           _cache[cacheKey] = filteredHostels;
           emit(SearchLoaded(filteredHostels));
         },
